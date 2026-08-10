@@ -60,6 +60,13 @@ nav button:focus-visible,button:focus-visible,input:focus-visible{
 .tb-meta b{display:block;font:600 11px/1.2 var(--mono);letter-spacing:.1em}
 .tb-meta span{display:block;font:400 9px/1.5 var(--mono);letter-spacing:.14em;color:var(--muted)}
 @media (min-width:1080px){.tb-meta{display:block}}
+/* mode switch — one structure, or the whole block */
+.modesw{display:flex;align-items:center;padding:0 10px;gap:5px;border-right:1px solid var(--line2)}
+.modesw button{appearance:none;cursor:pointer;background:var(--panel2);border:1px solid var(--line2);
+  color:var(--muted);font:600 9.5px var(--mono);letter-spacing:.11em;text-transform:uppercase;
+  padding:6px 10px;white-space:nowrap}
+.modesw button:hover{color:var(--ink)}
+.modesw button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 
 /* ── frame ── */
 main{display:grid;grid-template-columns:246px 1fr 320px;min-height:0}
@@ -73,11 +80,12 @@ aside{overflow-y:auto;background:var(--panel);min-height:0}
 .lbl{font:600 9.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
   border-bottom:1px solid var(--line);padding:14px 0 4px;margin:0 0 8px}
 .lbl:first-child{padding-top:2px}
-#nameip{width:100%;appearance:none;background:none;border:none;border-bottom:1.5px solid var(--line2);
+#nameip,#siteip{width:100%;appearance:none;background:none;border:none;border-bottom:1.5px solid var(--line2);
   color:var(--ink);font:600 14px var(--mono);letter-spacing:.06em;padding:3px 1px 5px}
-#nameip::placeholder{color:var(--faint);font-weight:400}
-#nameip:focus{border-bottom-color:var(--accent);outline:none}
+#nameip::placeholder,#siteip::placeholder{color:var(--faint);font-weight:400}
+#nameip:focus,#siteip:focus{border-bottom-color:var(--accent);outline:none}
 .tpls{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:2px 0 4px}
+.tpls.one{grid-template-columns:1fr}
 .tpls button{appearance:none;cursor:pointer;background:var(--panel);border:1px solid var(--line2);
   color:var(--muted);font:600 9.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;
   padding:6px 4px}
@@ -96,6 +104,30 @@ aside{overflow-y:auto;background:var(--panel);min-height:0}
 .note b{color:var(--ink);font-weight:600}
 .note .k{display:inline-block;font:600 9.5px var(--mono);color:var(--accent);letter-spacing:.06em}
 
+/* ── Mars-wide lot list ── */
+.lots{display:flex;flex-direction:column;gap:4px;margin:2px 0 4px}
+.lot{display:flex;gap:4px;align-items:stretch}
+.lot button{appearance:none;cursor:pointer;background:var(--panel);border:1px solid var(--line2);
+  color:var(--muted);font:600 11px var(--mono);padding:6px 8px}
+.lot button:hover{border-color:var(--accent);color:var(--accent)}
+.lot .pick{flex:1;text-align:left;letter-spacing:.04em;color:var(--ink);min-width:0}
+.lot .pick small{display:block;font:400 9.5px var(--mono);color:var(--muted);letter-spacing:.02em;
+  margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lot.sel .pick{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.lot.sel .pick small{color:var(--on-accent);opacity:.8}
+.nudge{display:grid;place-items:center;gap:4px;margin:8px 0 2px}
+.nudge div{display:flex;gap:24px}
+.nudge button{appearance:none;cursor:pointer;background:var(--panel2);border:1px solid var(--line2);
+  color:var(--muted);font:600 12px var(--mono);width:44px;height:32px}
+.nudge button:hover{border-color:var(--accent);color:var(--accent)}
+.nudge small{font:400 10.5px var(--sans);color:var(--muted)}
+.addlot{display:flex;gap:5px;margin:2px 0 6px}
+.addlot input{flex:1;min-width:0;appearance:none;background:var(--paper);color:var(--ink);
+  border:1px solid var(--line2);font:400 11.5px var(--mono);padding:7px 8px}
+.addlot input:focus{border-color:var(--accent);outline:none}
+.addlot button{appearance:none;cursor:pointer;background:var(--accent);border:1px solid var(--accent);
+  color:var(--on-accent);font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:0 12px}
+
 /* ── tool rail (in viewport) ── */
 .tools{position:absolute;top:10px;left:12px;display:flex;flex-direction:column;gap:4px;z-index:4}
 .tools button{appearance:none;cursor:pointer;display:flex;align-items:center;gap:7px;
@@ -106,13 +138,20 @@ aside{overflow-y:auto;background:var(--panel);min-height:0}
 .tools button:hover{color:var(--ink);border-color:var(--line2)}
 .tools button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .tools button.on kbd{color:var(--on-accent);border-color:transparent;background:rgba(0,0,0,.14)}
-.tools .sub{display:none;gap:4px;margin-left:15px}
-.tools .sub.show{display:flex}
-.tools .sub button{min-width:0;padding:4px 9px;font-size:9px}
-.tools .sub button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tools[hidden]{display:none}
+/* sub-options for the tool that has them (span direction · wall opening) */
+.subs{position:absolute;top:10px;left:120px;z-index:4;display:none;flex-direction:column;gap:4px}
+.subs.show{display:flex}
+.subs .grp{display:flex;gap:4px}
+.subs .grp[hidden]{display:none}
+.subs button{appearance:none;cursor:pointer;background:var(--panel);border:1px solid var(--line2);
+  color:var(--muted);font:600 9.5px var(--mono);letter-spacing:.09em;padding:5px 9px;white-space:nowrap}
+.subs button:hover{color:var(--ink)}
+.subs button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 button,canvas{-webkit-tap-highlight-color:transparent}
 @media (pointer:coarse){
   .tools button{padding:9px 10px 9px 9px}
+  .subs button{padding:9px 12px}
   .vopts button{padding:6px 10px 6px 22px}
   .vopts button.act{padding-left:10px}
   nav button{padding:0 15px}
@@ -143,6 +182,12 @@ button,canvas{-webkit-tap-highlight-color:transparent}
   font-variant-numeric:tabular-nums;color:var(--ink);background:var(--paper);
   border:1px solid var(--line2);padding:0 5px;white-space:nowrap;pointer-events:none;z-index:2}
 .dim.soft{color:var(--muted);font-weight:400}
+.dim.lot{border-color:var(--line2);background:var(--panel);padding:2px 7px;text-align:center;
+  letter-spacing:.06em;text-transform:uppercase;font-size:10px}
+.dim.lot small{display:block;font:400 9px var(--mono);color:var(--muted);letter-spacing:.02em;
+  text-transform:none;margin-top:1px}
+.dim.lot.sel{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.dim.lot.sel small{color:var(--on-accent);opacity:.85}
 #hintov{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:2}
 #hintov div{text-align:center;font:600 12px/2 var(--mono);letter-spacing:.18em;color:var(--muted);
   text-transform:uppercase}
@@ -161,6 +206,9 @@ button,canvas{-webkit-tap-highlight-color:transparent}
 .kitcall div{font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase}
 .kitcall div small{display:block;font:400 9.5px var(--mono);letter-spacing:.02em;color:var(--muted);
   text-transform:none;margin-top:2px}
+.kitcall.solar{border-color:var(--straw);margin-top:2px}
+.kitcall.solar b{color:var(--straw);font-size:20px}
+table.mini td small{color:var(--muted);font-size:9.5px;margin-left:4px}
 table.sch{width:100%;border-collapse:collapse;margin:2px 0 4px}
 table.sch td{padding:3.5px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
 table.sch tr:last-child td{border-bottom:none}
@@ -196,99 +244,194 @@ footer{display:flex;justify-content:space-between;gap:16px;border-top:1.5px soli
 footer b{font-weight:600;color:var(--accent)}
 footer span:last-child{text-align:right}
 
-/* ── mobile ── */
+/* ── sheet chrome · only ever shown on small screens ── */
+.shhead{display:none;position:sticky;top:0;z-index:2;background:var(--panel);
+  align-items:center;gap:9px;padding:9px 14px 8px;border-bottom:1px solid var(--line);
+  margin:-12px -14px 4px}
+.shhead b{flex:1;font:600 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
+.shhead .grab{width:34px;height:4px;border-radius:3px;background:var(--line2)}
+.shhead .shx{appearance:none;cursor:pointer;background:none;border:1px solid var(--line2);
+  color:var(--muted);font:600 12px/1 var(--mono);width:30px;height:30px}
+#mbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;align-items:stretch;
+  background:var(--panel);border-top:2px solid var(--rule)}
+#mbar > button{flex:1;min-width:0;appearance:none;cursor:pointer;background:none;border:none;
+  border-left:1px solid var(--line);color:var(--muted);
+  font:600 10px var(--mono);letter-spacing:.11em;text-transform:uppercase;padding:15px 4px 14px}
+#mbar > button.on{background:var(--accent);color:var(--on-accent)}
+#mbar > button.on #curtool{color:var(--on-accent)}
+#mbar .modesw{border-right:none;padding:0 7px;gap:4px}
+#mbar .modesw button{padding:9px 9px}
+#curtool{color:var(--accent);font-weight:600}
+
+/* ── mobile: the view owns the screen, the panels slide up over it ── */
 @media (max-width:940px){
-  html,body{height:auto}
-  #app{height:auto;min-height:100dvh}
-  main{display:flex;flex-direction:column}
-  #viewport{height:52vh;height:54dvh;min-height:340px;order:-1;border-bottom:1px solid var(--line2)}
-  aside{overflow:visible}
-  #controls{border-right:none;border-bottom:1px solid var(--line2)}
-  #schedule{border-left:none}
-  .tb-title{min-width:110px}
-  .tools{flex-direction:row;right:56px;flex-wrap:wrap}
-  .tools button{min-width:0;padding:8px 9px}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  #app{height:100dvh;grid-template-rows:auto 1fr}
+  header{flex-wrap:nowrap;overflow:hidden;min-height:48px}
+  .tb-title{min-width:0;padding:8px 11px 7px;border-right:1px solid var(--line2);
+    display:flex;align-items:center}
+  .tb-title span{display:none}
+  header .modesw{display:none}          /* the mode switch lives in the thumb bar down there */
+  nav{flex:1}
+  nav button{padding:0 16px;font-size:16px;letter-spacing:0;min-height:48px}
+  nav button .lb{display:none}
+  main{display:block;position:relative;min-height:0}
+  #viewport{position:absolute;inset:0}
+  aside{position:fixed;left:0;right:0;bottom:0;z-index:35;max-height:76dvh;overflow-y:auto;
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    background:var(--panel);border:none;border-top:2px solid var(--rule);
+    padding:12px 14px 74px;transform:translateY(102%);transition:transform .22s ease;
+    box-shadow:0 -12px 34px rgba(0,0,0,.18)}
+  aside .shhead{display:flex}
+  body.sh-setup #controls{transform:none}
+  body.sh-count #schedule{transform:none}
+  #mbar{display:flex}
+  footer{display:none}
+  /* tools wrap into a thumb-height pad across the bottom — nothing hides off-screen */
+  .tools{top:auto;left:0;right:0;bottom:52px;flex-direction:row;flex-wrap:wrap;
+    justify-content:center;gap:5px;padding:0 8px}
+  .tools button{flex:0 0 auto;min-width:0;padding:11px 12px;font-size:10.5px;
+    justify-content:center}
   .tools button kbd{display:none}
-  .tools .sub{margin-left:0;align-items:stretch}
-  .tools .sub button{padding:8px 9px}
-  footer{flex-direction:column;gap:2px}
-  footer span:last-child{text-align:left}
+  /* sub-options ride up top, clear of the tool pad */
+  .subs{top:40px;left:10px;right:10px;bottom:auto;flex-direction:row;flex-wrap:wrap}
+  .subs button{padding:9px 13px;font-size:10px}
+  /* view options move up top so they never fight the tool strip */
+  .vopts{top:10px;left:10px;bottom:auto;gap:5px}
+  .vopts button{font-size:9px;padding:5px 9px 5px 19px}
+  /* everything inside a sheet gets a thumb-sized target */
+  .tpls button{padding:12px 6px;font-size:10px}
+  .lot button{padding:11px 9px}
+  .lot .pick{font-size:12px}
+  .nudge button{width:56px;height:40px}
+  .addlot input{padding:11px 9px;font-size:16px}      /* 16px keeps iOS from zooming */
+  .addlot button{padding:0 16px}
+  #nameip,#siteip{font-size:16px;padding:6px 1px 8px}
+  .tog{margin:14px 0 12px}
+  .tog .box{flex-basis:20px;height:20px;font-size:13px}
+  .hint{display:none}
+  .compass{top:10px;right:10px}
+  #toast{bottom:152px}
+  #hintov{inset:0 0 150px}
+  #hintov div{padding:0 24px}
+  .dim.lot{font-size:9.5px;padding:2px 6px}
+}
+@media (max-width:940px) and (prefers-reduced-motion:reduce){aside{transition:none}}
+@media (max-width:400px){
+  .tb-title b{font-size:11px}
+  .modesw button{padding:7px 7px;letter-spacing:.06em}
 }
 </style>
 <div id="app">
   <header>
     <div class="tb-title"><b>RACK LAB</b><span>A MARS MUSIC SHEET · M-5s</span></div>
+    <div class="modesw" id="modesw" role="group" aria-label="Mode">
+      <button data-m="build" class="on" title="Sketch one structure">Structure</button>
+      <button data-m="site" title="Place camps on the block (M)">Mars-wide</button>
+    </div>
     <nav id="acts" aria-label="Actions">
-      <button id="aUndo" title="Undo (Ctrl+Z)">↶ Undo</button>
-      <button id="aRedo" title="Redo (Ctrl+Y)">↷ Redo</button>
-      <button id="aClear">Clear</button>
-      <button id="aLink" title="Copies a link that rebuilds this exact sketch">Copy share link</button>
-      <button id="aSheet" title="Copies the materials count as text">Copy count sheet</button>
+      <button id="aUndo" title="Undo (Ctrl+Z)">↶<span class="lb"> Undo</span></button>
+      <button id="aRedo" title="Redo (Ctrl+Y)">↷<span class="lb"> Redo</span></button>
+      <button id="aClear">✕<span class="lb"> Clear</span></button>
+      <button id="aLink" title="Copies a link that rebuilds exactly what you see">🔗<span class="lb"> Copy share link</span></button>
+      <button id="aSheet" title="Copies the count sheet as text">⧉<span class="lb"> Copy count sheet</span></button>
     </nav>
     <div class="tb-meta"><b>STRUCTURE SKETCHPAD</b><span>8′ GRID · UNCUT STOCK · NO CONCRETE</span></div>
   </header>
   <main>
     <aside id="controls" aria-label="Setup">
-      <h3 class="lbl">Structure</h3>
-      <input id="nameip" placeholder="name your build" maxlength="28" autocomplete="off" spellcheck="false">
-      <h3 class="lbl">Start from</h3>
-      <div class="tpls" id="tpls">
-        <button data-t="blank">Blank slab</button>
-        <button data-t="stage">Stage + FOH</button>
-        <button data-t="tower">Tower</button>
-        <button data-t="gate">Gate</button>
-        <button data-t="grove">Shade grove</button>
-        <button data-t="porch">Porch</button>
-        <button data-t="solar">Solar shed</button>
+      <div class="shhead"><span class="grab"></span><b>Setup</b><button class="shx" aria-label="Close">✕</button></div>
+      <div id="buildpanel">
+        <h3 class="lbl">Structure</h3>
+        <input id="nameip" placeholder="name your build" maxlength="28" autocomplete="off" spellcheck="false">
+        <h3 class="lbl">Start from</h3>
+        <div class="tpls" id="tpls">
+          <button data-t="blank">Blank slab</button>
+          <button data-t="stage">Stage + FOH</button>
+          <button data-t="tower">Tower</button>
+          <button data-t="gate">Gate</button>
+          <button data-t="grove">Shade grove</button>
+          <button data-t="porch">Porch</button>
+          <button data-t="rooms">Two-room hut</button>
+          <button data-t="solar">Solar shed</button>
+        </div>
+        <h3 class="lbl">Options</h3>
+        <label class="tog"><input type="checkbox" id="railtog" checked>
+          <span class="box"></span><span class="txt">Auto-railings
+          <small>42″ rail on every open deck edge — counted in the sheet</small></span></label>
+        <div class="note"><b>How it works.</b> <span class="k">BUILD</span> and click the ground to raise
+          an 8′×8′×8′ rack bay. Click a side to grow, the top to stack.
+          <span class="k">SPAN 16′</span> drops a double-length bay on lumber beams — uprights at the
+          ends only. <span class="k">DECK</span> floors a bay, <span class="k">SLOPE</span> leans an
+          angled panel off any face, <span class="k">SOLAR</span> turns slopes and rooftops into panel
+          arrays, <span class="k">SHADE</span> crowns a column, <span class="k">RISER</span> drops an
+          18″ stage, <span class="k">ERASE</span> — or right-click — takes it back.</div>
+        <div class="note"><b>Walls, doors, windows.</b> <span class="k">WALL</span> skins a face —
+          pick <b>solid</b>, <b>door</b> or <b>window</b> from the strip that appears. Click a bay's
+          <b>top</b> and the wall lands on the nearest edge, so you can drop <b>partitions between
+          bays</b> and cut a four-bay shed into rooms. The count sheet lists the rooms it finds.</div>
+        <div class="note"><b>Stairs.</b> <span class="k">STAIRS</span> off any bay face runs two 8′
+          flights and a mid landing down to grade — 8′ of rise over 16′, about 34°. The railing
+          opens where the stair arrives, because that's the way up.</div>
+        <div class="note"><b>One kit, no cuts:</b> pallet-rack frames · 8′ beams · uncut 2×4s · 4′×8′ ply.
+          A deck kit (2 beams + 6 joists + 1 sheet) floors 32 ft². 16′ spans swap steel for doubled 2×6
+          lumber; angled panels and door openings mean cut sheets — the count calls them out.</div>
+        <div class="note"><b>Your design lives in the link.</b> Copy the share link and send it to your
+          crew — the sketch rebuilds itself on their screen. Then switch to
+          <span class="k">MARS-WIDE</span> and paste in what your neighbors send back.</div>
       </div>
-      <h3 class="lbl">Options</h3>
-      <label class="tog"><input type="checkbox" id="railtog" checked>
-        <span class="box"></span><span class="txt">Auto-railings
-        <small>42″ rail on every open deck edge — counted in the sheet</small></span></label>
-      <div class="note"><b>How it works.</b> <span class="k">BUILD</span> and click the ground to raise
-        an 8′×8′×8′ rack bay. Click a side to grow, the top to stack.
-        <span class="k">SPAN 16′</span> drops a double-length bay on lumber beams — uprights at the
-        ends only. <span class="k">DECK</span> floors a bay, <span class="k">WALL</span> skins a face,
-        <span class="k">SLOPE</span> leans an angled panel off any face (click a bay top for a shed
-        roof), <span class="k">SOLAR</span> turns slopes and rooftops into panel arrays.
-        <span class="k">SHADE</span> crowns a column, <span class="k">RISER</span> drops an 18″ stage,
-        <span class="k">ERASE</span> — or right-click — takes it back.</div>
-      <div class="note"><b>One kit, no cuts:</b> pallet-rack frames · 8′ beams · uncut 2×4s · 4′×8′ ply.
-        A deck kit (2 beams + 6 joists + 1 sheet) floors 32 ft². 16′ spans swap steel for doubled 2×6
-        lumber; angled panels mean cut sheets — the count calls both out.</div>
-      <div class="note"><b>Your design lives in the link.</b> Copy the share link and send it to your
-        crew — the sketch rebuilds itself on their screen.</div>
+      <div id="sitepanel" hidden></div>
     </aside>
     <div id="viewport">
       <div class="tools" id="tools" aria-label="Tools">
         <button data-t="build">Build<kbd>B</kbd></button>
         <button data-t="span">Span 16′<kbd>L</kbd></button>
-        <div class="sub" id="spandir" aria-label="Span direction">
-          <button data-d="X" class="on">E–W</button>
-          <button data-d="Z">N–S</button>
-        </div>
         <button data-t="deck">Deck<kbd>D</kbd></button>
         <button data-t="wall">Wall<kbd>W</kbd></button>
+        <button data-t="stairs">Stairs<kbd>T</kbd></button>
         <button data-t="slope">Slope<kbd>A</kbd></button>
         <button data-t="solar">Solar<kbd>P</kbd></button>
         <button data-t="shade">Shade<kbd>S</kbd></button>
         <button data-t="riser">Riser<kbd>R</kbd></button>
         <button data-t="erase">Erase<kbd>E</kbd></button>
       </div>
+      <div class="subs" id="subs">
+        <div class="grp" id="spandir" hidden aria-label="Span direction">
+          <button data-d="X" class="on">E–W</button>
+          <button data-d="Z">N–S</button>
+        </div>
+        <div class="grp" id="wallmode" hidden aria-label="Wall type">
+          <button data-w="0" class="on">Solid</button>
+          <button data-w="1">Door</button>
+          <button data-w="2">Window</button>
+        </div>
+      </div>
       <div class="compass" aria-hidden="true"><div class="rose" id="rose"></div></div>
       <div class="vopts" id="vopts">
         <button data-v="dims">Dims</button>
+        <button data-v="lanes" hidden>Fire lanes</button>
         <button data-v="figure">Figure</button>
         <button data-v="ballast">Ballast</button>
-        <button class="act" id="vfit" title="Frame the whole sketch">⌖ Fit</button>
+        <button class="act" id="vfit" title="Frame everything">⌖ Fit</button>
       </div>
-      <div class="hint">1 unit = 1 ft · grid = 8′<br>drag orbit · scroll zoom · right-drag pan</div>
-      <div id="hintov" hidden><div>Click the ground to raise a bay<small>pick a tool on the left · drag to orbit</small></div></div>
+      <div class="hint" id="hinttxt">1 unit = 1 ft · grid = 8′<br>drag orbit · scroll zoom · right-drag pan</div>
+      <div id="hintov" hidden><div id="hintmsg">Click the ground to raise a bay<small>pick a tool · drag to orbit</small></div></div>
       <div id="dimlabels"></div>
       <div id="toast" role="status"></div>
     </div>
-    <aside id="schedule" aria-label="Count sheet"></aside>
+    <aside id="schedule" aria-label="Count sheet">
+      <div class="shhead"><span class="grab"></span><b id="schedttl">Count sheet</b><button class="shx" aria-label="Close">✕</button></div>
+      <div id="schedbody"></div>
+    </aside>
   </main>
+  <div id="mbar" aria-label="Panels">
+    <div class="modesw" role="group" aria-label="Mode">
+      <button data-m="build" class="on">Camp</button>
+      <button data-m="site">Block</button>
+    </div>
+    <button data-sh="setup">Setup · <span id="curtool">build</span></button>
+    <button data-sh="count">Count</button>
+  </div>
   <footer>
     <span><b>Ballast before height · railings before parties</b> · sketch it, count it, stake it out — then build</span>
     <span>Shared by Mars Music for every camp on Mars · a sketchpad, not engineering — get real eyes before you build tall</span>
@@ -1354,7 +1497,8 @@ footer span:last-child{text-align:right}
    Kit grammar shared with Sheet M-4i: pallet-rack frames + 8' beams + uncut
    2x4s + 4'x8' ply. 1 deck kit = 2 beams + 6 joists + 1 ply = one 4'x8' deck.
    All scene units are FEET. Cells are 8'x8'x8'. North = -Z.
-   The whole sketch round-trips through the URL hash so links rebuild it.   */
+   Two modes: STRUCTURE (build one camp) and MARS-WIDE (place camps together).
+   Both round-trip through the URL hash so links rebuild what you see.   */
 'use strict';
 
 /* ───────────────────────── model ───────────────────────── */
@@ -1366,52 +1510,70 @@ const cellX = i => (i-G/2)*8+4, cellZ = j => (j-G/2)*8+4;
 const edgeX = i => (i-G/2)*8,   edgeZ = j => (j-G/2)*8;
 const k3 = (i,j,y)=>i+','+j+','+y, kp=(i,j)=>i+','+j;
 const nums = k => k.split(',').map(Number);
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// names ride inside dot/tilde/bang-separated links — escape every separator we use
+const encPart = s => encodeURIComponent(s).replace(/[.!*~'()]/g, c=>'%'+c.charCodeAt(0).toString(16).toUpperCase());
+const PANEL_W = 300;                          // W per used panel — 250-400 in the wild
+const SUN_HR = 5, DERATE = .75;               // peak-sun hours · real-world losses
+const watts = n => n*PANEL_W;
+const kW = w => w>=1000 ? (w/1000).toFixed(w>=10000?0:1)+' kW' : w+' W';
 
-let model = { name:'', cells:new Map(), skins:new Set(), pads:new Map(),
-              spans:new Set(), slopes:new Map(), arrays:new Set() };
+const blank = ()=>({ name:'', cells:new Map(), skins:new Map(), pads:new Map(),
+                     spans:new Set(), slopes:new Map(), arrays:new Set(), stairs:new Map() });
+let model = blank();
 // cells: "i,j,y" -> {deck,canopy} · pads: "i,j" -> {canopy}
 // skins: "Z,i,j,y" wall at z=edgeZ(j) spanning cell i · "X,i,j,y" wall at x=edgeX(i) spanning cell j
+//        -> {op} 0 solid · 1 door · 2 window.  Interior partitions are the same keys.
 // spans: "X,i,j,y" = 16' lumber pair (i,j)+(i+1,j) · "Z,i,j,y" = pair (i,j)+(i,j+1) — end frames only
 // slopes: "i,j,y" -> {d,solar} angled panel in that cell volume; d 0 N 1 E 2 S 3 W = downhill dir
 // arrays: "i,j" flat-ish solar array riding the column's top deck
+// stairs: "i,j,y" -> {d} two-flight stair; occupies this cell AND the next one in dir d
 const DIRV = [[0,-1],[1,0],[0,1],[-1,0]];     // N E S W in grid steps
+const COMPASS = ['N','E','S','W'];
 let railsOn = true;
 let tool = 'build';
 let spanDir = 'X';                            // E–W pairs by default
-const view = { dims:true, figure:true, ballast:true };
+let wallMode = 0;                             // 0 solid · 1 door · 2 window
+const view = { dims:true, figure:true, ballast:true, lanes:true };
 let cur = null;                               // last derive() result
 
-const topmost = (i,j)=>{ for (let y=MAXL-1;y>=0;y--) if (model.cells.has(k3(i,j,y))) return y; return -1; };
+const topOf = (m,i,j)=>{ for (let y=MAXL-1;y>=0;y--) if (m.cells.has(k3(i,j,y))) return y; return -1; };
+const topmost = (i,j)=>topOf(model,i,j);
+const stairCells = (i,j,d)=>{ const [dx,dz]=DIRV[d]; return [[i,j],[i+dx,j+dz]]; };
 
 /* ─────────────────── share encoding ──────────────────────
-   #R2.<name>.<cells>.<skins>.<pads>.<spans>.<slopes>.<arrays>.<flags>
-   every part dot-free base36 · R1 links (no spans/slopes/arrays) still decode   */
-function encName(s){ return encodeURIComponent(s).replace(/\./g,'%2E'); }
-function encode(){
-  let c='',s='',p='',sp='',sl='',ar='';
-  for (const [k,v] of model.cells){ const [i,j,y]=nums(k);
+   #R3.<name>.<cells>.<skins>.<pads>.<spans>.<slopes>.<arrays>.<stairs>.<flags>
+   every part dot-free base36 · R2 and R1 links still decode
+   (door/window ride inside the skin char, so old R2 links read straight through) */
+const encName = encPart;
+function encode(m=model, rails=railsOn){
+  let c='',s='',p='',sp='',sl='',ar='',st='';
+  for (const [k,v] of m.cells){ const [i,j,y]=nums(k);
     c += i.toString(36)+j.toString(36)+((y<<2)|(v.deck?2:0)|(v.canopy?1:0)).toString(36); }
-  for (const k of model.skins){ const a=k.split(',');
-    s += (+a[1]).toString(36)+(+a[2]).toString(36)+((a[0]==='X'?3:0)+ +a[3]).toString(36); }
-  for (const [k,v] of model.pads){ const [i,j]=nums(k);
+  for (const [k,v] of m.skins){ const a=k.split(',');
+    s += (+a[1]).toString(36)+(+a[2]).toString(36)+
+         ((a[0]==='X'?3:0)+ +a[3] + 6*(v.op||0)).toString(36); }
+  for (const [k,v] of m.pads){ const [i,j]=nums(k);
     p += i.toString(36)+j.toString(36)+(v.canopy?1:0).toString(36); }
-  for (const k of model.spans){ const a=k.split(',');
+  for (const k of m.spans){ const a=k.split(',');
     sp += (+a[1]).toString(36)+(+a[2]).toString(36)+((a[0]==='Z'?3:0)+ +a[3]).toString(36); }
-  for (const [k,v] of model.slopes){ const [i,j,y]=nums(k);
+  for (const [k,v] of m.slopes){ const [i,j,y]=nums(k);
     sl += i.toString(36)+j.toString(36)+(y+3*v.d+(v.solar?12:0)).toString(36); }
-  for (const k of model.arrays){ const [i,j]=nums(k);
+  for (const k of m.arrays){ const [i,j]=nums(k);
     ar += i.toString(36)+j.toString(36); }
-  return 'R2.'+encName(model.name)+'.'+c+'.'+s+'.'+p+'.'+sp+'.'+sl+'.'+ar+'.'+(railsOn?'r':'n');
+  for (const [k,v] of m.stairs){ const [i,j,y]=nums(k);
+    st += i.toString(36)+j.toString(36)+(y+3*v.d).toString(36); }
+  return 'R3.'+encName(m.name)+'.'+c+'.'+s+'.'+p+'.'+sp+'.'+sl+'.'+ar+'.'+st+'.'+(rails?'r':'n');
 }
 function decode(str){
   if (!str) return null;
-  const v2 = str.startsWith('R2.');
-  if (!v2 && !str.startsWith('R1.')) return null;
+  const v3 = str.startsWith('R3.'), v2 = str.startsWith('R2.'), v1 = str.startsWith('R1.');
+  if (!v3 && !v2 && !v1) return null;
   const t = str.split('.');
-  if (t.length !== (v2?9:6)) return null;
+  const want = v3?10:(v2?9:6);
+  if (t.length !== want) return null;
   const d36 = ch => parseInt(ch,36);
-  const m = { name:'', cells:new Map(), skins:new Set(), pads:new Map(),
-              spans:new Set(), slopes:new Map(), arrays:new Set() };
+  const m = blank();
   try { m.name = decodeURIComponent(t[1]).slice(0,28); } catch(e){ m.name=''; }
   for (let n=0;n+3<=t[2].length;n+=3){
     const i=d36(t[2][n]), j=d36(t[2][n+1]), v=d36(t[2][n+2]);
@@ -1421,15 +1583,16 @@ function decode(str){
   }
   for (let n=0;n+3<=t[3].length;n+=3){
     const i=d36(t[3][n]), j=d36(t[3][n+1]), v=d36(t[3][n+2]);
-    if (isNaN(i)||isNaN(j)||isNaN(v)||v>5) continue;
-    m.skins.add((v>=3?'X':'Z')+','+i+','+j+','+(v%3));
+    if (isNaN(i)||isNaN(j)||isNaN(v)||v>17) continue;
+    const op=Math.floor(v/6), r=v%6;
+    m.skins.set((r>=3?'X':'Z')+','+i+','+j+','+(r%3), {op});
   }
   for (let n=0;n+3<=t[4].length;n+=3){
     const i=d36(t[4][n]), j=d36(t[4][n+1]), v=d36(t[4][n+2]);
     if (isNaN(i)||isNaN(j)||i>=G||j>=G) continue;
     m.pads.set(kp(i,j),{canopy:!!(v&1)});
   }
-  if (v2){
+  if (v2||v3){
     for (let n=0;n+3<=t[5].length;n+=3){
       const i=d36(t[5][n]), j=d36(t[5][n+1]), v=d36(t[5][n+2]);
       if (isNaN(i)||isNaN(j)||isNaN(v)||v>5) continue;
@@ -1448,8 +1611,15 @@ function decode(str){
       m.arrays.add(kp(i,j));
     }
   }
+  if (v3){
+    for (let n=0;n+3<=t[8].length;n+=3){
+      const i=d36(t[8][n]), j=d36(t[8][n+1]), v=d36(t[8][n+2]);
+      if (isNaN(i)||isNaN(j)||isNaN(v)||v>11||i>=G||j>=G) continue;
+      m.stairs.set(k3(i,j,v%3), {d:Math.floor(v/3)});
+    }
+  }
   pruneModel(m);
-  return { model:m, rails: t[v2?8:5] !== 'n' };
+  return { model:m, rails: t[want-1] !== 'n' };
 }
 
 /* ─────────────────── derived counts ─────────────────────── */
@@ -1458,14 +1628,45 @@ function screwCalc(studs, ply){
   const boxes = Math.max(1, ceil(n/350));
   return { n, boxes, cost: boxes*40 };
 }
-function derive(){
-  const cells = model.cells, pads = model.pads, skins = model.skins;
+/* rooms: flood-fill the cells on each level, walls block the crossing */
+function findRooms(m){
+  const seen = new Set(), rooms = [];
+  let partitions = 0;
+  for (const k of m.skins.keys()){
+    const a=k.split(','), i=+a[1], j=+a[2], y=+a[3];
+    const both = a[0]==='Z' ? (m.cells.has(k3(i,j,y)) && m.cells.has(k3(i,j-1,y)))
+                            : (m.cells.has(k3(i,j,y)) && m.cells.has(k3(i-1,j,y)));
+    if (both) partitions++;
+  }
+  for (const k of m.cells.keys()){
+    if (seen.has(k)) continue;
+    const [si,sj,y] = nums(k);
+    const q=[[si,sj]], reg=[]; seen.add(k);
+    while (q.length){
+      const [a,b] = q.pop(); reg.push([a,b]);
+      const nb = [[a,b-1,'Z,'+a+','+b],       [a,b+1,'Z,'+a+','+(b+1)],
+                  [a-1,b,'X,'+a+','+b],       [a+1,b,'X,'+(a+1)+','+b]];
+      for (const [na,nbj,wk] of nb){
+        const nk = k3(na,nbj,y);
+        if (!m.cells.has(nk) || seen.has(nk)) continue;
+        if (m.skins.has(wk+','+y)) continue;
+        seen.add(nk); q.push([na,nbj]);
+      }
+    }
+    rooms.push({y, cells:reg.length, area:reg.length*64});
+  }
+  rooms.sort((a,b)=>b.area-a.area || a.y-b.y);
+  return { rooms, partitions };
+}
+function derive(m=model, rails=railsOn){
+  const cells = m.cells, pads = m.pads, skins = m.skins;
   const has = (i,j,y)=>cells.has(k3(i,j,y));
+  const top = (i,j)=>topOf(m,i,j);
   const walk = (i,j,y)=>{ const c=cells.get(k3(i,j,y)); return !!(c && c.deck && !has(i,j,y+1)); };
 
   // span membership: cell key -> {D, s: span key, end: 0 west/north 1 east/south}
   const spanMem = new Map();
-  for (const s of model.spans){ const a=s.split(','), D=a[0], i=+a[1], j=+a[2], y=+a[3];
+  for (const s of m.spans){ const a=s.split(','), D=a[0], i=+a[1], j=+a[2], y=+a[3];
     spanMem.set(k3(i,j,y), {D, s, end:0});
     spanMem.set(k3(D==='X'?i+1:i, D==='Z'?j+1:j, y), {D, s, end:1});
   }
@@ -1473,22 +1674,23 @@ function derive(){
   const frames = new Set();
   let decked=0, maxLvl=-1, walkable=0;
   let minI=1e9,maxI=-1e9,minJ=1e9,maxJ=-1e9;
+  const grow = (i,j)=>{ if (i<minI)minI=i; if(i>maxI)maxI=i; if(j<minJ)minJ=j; if(j>maxJ)maxJ=j; };
   for (const [k,v] of cells){ const [i,j,y]=nums(k);
     if (!spanMem.has(k)){ frames.add(i+','+j+','+y); frames.add(i+','+(j+1)+','+y); }
     if (v.deck) decked++;
     if (y>maxLvl) maxLvl=y;
-    if (i<minI)minI=i; if(i>maxI)maxI=i; if(j<minJ)minJ=j; if(j>maxJ)maxJ=j;
+    grow(i,j);
   }
-  for (const k of pads.keys()){ const [i,j]=nums(k);
-    if (i<minI)minI=i; if(i>maxI)maxI=i; if(j<minJ)minJ=j; if(j>maxJ)maxJ=j; }
-  for (const k of model.slopes.keys()){ const [i,j]=nums(k);
-    if (i<minI)minI=i; if(i>maxI)maxI=i; if(j<minJ)minJ=j; if(j>maxJ)maxJ=j; }
+  for (const k of pads.keys()) grow(...nums(k));
+  for (const k of m.slopes.keys()){ const [i,j]=nums(k); grow(i,j); }
+  for (const [k,v] of m.stairs){ const [i,j,y]=nums(k);
+    for (const [a,b] of stairCells(i,j,v.d)) grow(a,b); }
 
   // span end frames (dedup shared corners between neighboring pairs)
   const spanFrames=[], sfSeen=new Set();
   const SF=(x,z,y,rot)=>{ const kk=x+'|'+z+'|'+y+'|'+rot;
     if (sfSeen.has(kk)) return; sfSeen.add(kk); spanFrames.push({x,z,y,rot}); };
-  for (const s of model.spans){ const a=s.split(','), D=a[0], i=+a[1], j=+a[2], y=+a[3];
+  for (const s of m.spans){ const a=s.split(','), D=a[0], i=+a[1], j=+a[2], y=+a[3];
     if (D==='X'){ const x0=edgeX(i)+.55, x1=edgeX(i+2)-.55;
       SF(x0,edgeZ(j),y,0); SF(x0,edgeZ(j+1),y,0); SF(x1,edgeZ(j),y,0); SF(x1,edgeZ(j+1),y,0);
     } else { const z0=edgeZ(j)+.55, z1=edgeZ(j+2)-.55;
@@ -1496,18 +1698,21 @@ function derive(){
     }
   }
 
-  const rails=[];
+  // rails skip the edge a stair arrives at — that opening is the way up
+  const rails_=[]; let stairEdges=0;
   for (const [k,v] of cells){ const [i,j,y]=nums(k);
     if (!walk(i,j,y)) continue;
     walkable++;
     const topY=(y+1)*8+.22;
     const x0=edgeX(i), x1=edgeX(i+1), z0=edgeZ(j), z1=edgeZ(j+1);
-    const E=[ [i,j-1,[x0,z0,x1,z0]], [i,j+1,[x0,z1,x1,z1]],
-              [i-1,j,[x0,z0,x0,z1]], [i+1,j,[x1,z0,x1,z1]] ];
-    for (const [ni,nj,seg] of E){
+    const E=[ [i,j-1,0,[x0,z0,x1,z0]], [i,j+1,2,[x0,z1,x1,z1]],
+              [i-1,j,3,[x0,z0,x0,z1]], [i+1,j,1,[x1,z0,x1,z1]] ];
+    for (const [ni,nj,dir,seg] of E){
       if (has(ni,nj,y+1)) continue;                    // taller neighbor blocks the edge
       if (walk(ni,nj,y)) continue;                     // continuous deck
-      rails.push({x1:seg[0],z1:seg[1],x2:seg[2],z2:seg[3],topY});
+      const st = m.stairs.get(k3(ni,nj,y));
+      if (st && st.d===dir){ stairEdges++; continue; } // stair head — leave it open
+      rails_.push({x1:seg[0],z1:seg[1],x2:seg[2],z2:seg[3],topY});
     }
   }
 
@@ -1516,10 +1721,10 @@ function derive(){
     if (y!==0) continue;
     if (!has(i,j-1,0)) barrels.push({x:cellX(i), z:edgeZ(j)-1.15});
     if (!has(i,j+1,0)) barrels.push({x:cellX(i), z:edgeZ(j+1)+1.15});
-    if (!cells.has(k3(i-1,j,0))) barrels.push({x:edgeX(i)-1.15, z:cellZ(j)});
-    if (!cells.has(k3(i+1,j,0))) barrels.push({x:edgeX(i+1)+1.15, z:cellZ(j)});
+    if (!has(i-1,j,0)) barrels.push({x:edgeX(i)-1.15, z:cellZ(j)});
+    if (!has(i+1,j,0)) barrels.push({x:edgeX(i+1)+1.15, z:cellZ(j)});
   }
-  for (const [k,v] of model.slopes){ const [i,j,y]=nums(k);   // ground lean-tos get ballast too
+  for (const [k,v] of m.slopes){ const [i,j,y]=nums(k);   // ground lean-tos get ballast too
     if (y!==0 || cells.has(k)) continue;
     const [dx,dz]=DIRV[v.d], lx=cellX(i)+dx*4.6, lz=cellZ(j)+dz*4.6;
     barrels.push({x:lx-dz*2, z:lz+dx*2}, {x:lx+dz*2, z:lz-dx*2});
@@ -1528,14 +1733,14 @@ function derive(){
   let canopies=0;
   const canopyDraws=[];
   for (const [k,v] of cells){ const [i,j,y]=nums(k);
-    if (v.canopy && topmost(i,j)===y){ canopies++; canopyDraws.push({x:cellX(i),z:cellZ(j),top:(y+1)*8}); } }
+    if (v.canopy && top(i,j)===y){ canopies++; canopyDraws.push({x:cellX(i),z:cellZ(j),top:(y+1)*8}); } }
   for (const [k,v] of pads){ if (v.canopy){ const [i,j]=nums(k);
     canopies++; canopyDraws.push({x:cellX(i),z:cellZ(j),top:1.55}); } }
 
   // solar arrays ride their column's top
   const arrayDraws=[];
-  for (const k of model.arrays){ const [i,j]=nums(k);
-    const y=topmost(i,j); if (y<0) continue;
+  for (const k of m.arrays){ const [i,j]=nums(k);
+    const y=top(i,j); if (y<0) continue;
     arrayDraws.push({i, j, x:cellX(i), z:cellZ(j),
       top:(y+1)*8 + (cells.get(k3(i,j,y)).deck ? .35 : .05)});
   }
@@ -1564,19 +1769,27 @@ function derive(){
     if (!um || um.D!==mm.D || b[1]!==a[1] || b[2]!==a[2]) badStacks++;
   }
 
+  let doors=0, wins=0;
+  for (const v of skins.values()){ if (v.op===1) doors++; else if (v.op===2) wins++; }
+  const { rooms, partitions } = findRooms(m);
+
   const nCells=cells.size, nPads=pads.size, skinsN=skins.size;
-  const nSpans=model.spans.size, nSlopes=model.slopes.size;
-  let solarSlopes=0; for (const v of model.slopes.values()) if (v.solar) solarSlopes++;
+  const nSpans=m.spans.size, nSlopes=m.slopes.size, nStairs=m.stairs.size;
+  let solarSlopes=0; for (const v of m.slopes.values()) if (v.solar) solarSlopes++;
   const plySlopes = nSlopes - solarSlopes;
-  const railEdges = railsOn ? rails.length : 0;
+  const railEdges = rails ? rails_.length : 0;
   const kits  = 2*decked + 2*nPads;
   const beams = 4*(nCells + nPads) - 8*nSpans;
   const lumber16 = 6*nSpans;
   const rafters12 = 3*nSlopes;
+  const stairStock = 12*nStairs;               // 6 stringers + 6 boards cut to 12 treads
   const solarPanels = 6*solarSlopes + 4*arrayDraws.length;
-  const studs = 6*kits + 2*skinsN + 4*railEdges + 4*canopies;
-  const ply   = kits + 2*skinsN + 2*plySlopes;
-  const sc    = (studs||ply||rafters12) ? screwCalc(studs+rafters12, ply) : {n:0,boxes:0,cost:0};
+  const solarWatts = watts(solarPanels);
+  const solarDay = solarWatts*SUN_HR*DERATE/1000;
+  const studs = 6*kits + 2*skinsN + 4*railEdges + 4*canopies + 12*nStairs;
+  const ply   = kits + 2*skinsN + 2*plySlopes + nStairs;
+  const cutSheets = 2*plySlopes + 2*(doors+wins);
+  const sc    = (studs||ply||rafters12) ? screwCalc(studs+rafters12+stairStock, ply) : {n:0,boxes:0,cost:0};
   let stacked=0; for (const f of frameList) if (f.y >= 1) stacked++;
   for (const f of spanFrames) if (f.y >= 1) stacked++;
 
@@ -1587,10 +1800,12 @@ function derive(){
     h: nCells ? (maxLvl+1)*8 : 1.5 };
 
   return { frames:frameList, spanFrames, spanMem, arrayDraws, collars,
-    rails, barrels, canopyDraws,
-    nCells, nPads, decked, kits, beams, studs, ply, sc,
+    rails:rails_, barrels, canopyDraws,
+    nCells, nPads, decked, kits, beams, studs, ply, sc, cutSheets,
     framesN: frameList.length + spanFrames.length,
-    nSpans, lumber16, nSlopes, plySlopes, solarSlopes, rafters12, solarPanels,
+    nSpans, lumber16, nSlopes, plySlopes, solarSlopes, rafters12,
+    solarPanels, solarWatts, solarDay,
+    nStairs, stairStock, stairEdges, doors, wins, rooms, partitions,
     pierced: collars.length, badStacks,
     straps: barrels.length, canopies, skinsN, railEdges,
     stacked, maxLvl, any, ft,
@@ -1598,7 +1813,7 @@ function derive(){
 }
 
 /* ─────────────────── three.js scene ─────────────────────── */
-let scene, camera, renderer, controls, sun, hemi, pt1, pt2, ground, grid;
+let scene, camera, renderer, controls, sun, hemi, pt1, pt2, ground, grid, siteGrid;
 let buildGroup, dimGroup, dimLabels = [];
 let pickGroup = null, groundPick = null;
 const bnd = {};
@@ -1613,10 +1828,17 @@ const MATS = {
   barrel:M('#5D6E76', {roughness:.5, metalness:.2}),
   cloth: M('#5A5F40', {transparent:true, opacity:.68, side:THREE.DoubleSide}),
   solar: M('#22384C', {roughness:.25, metalness:.6}),
+  glass: M('#9DB7C6', {transparent:true, opacity:.34, roughness:.08, metalness:.1}),
   figure:M('#2E2A24'),
 };
 let B = {};
+let XF = null;                                 // {a, ox, oz} lot transform in Mars-wide mode
 function box(k,x,y,z,sx,sy,sz,ry=0,rx=0,rz=0){
+  if (XF){                                     // Ry(a)·p + t · and Ry(a)·Ry(ry) = Ry(a+ry)
+    const c=Math.cos(XF.a), s=Math.sin(XF.a);
+    const nx = x*c + z*s, nz = -x*s + z*c;
+    x = nx + XF.ox; z = nz + XF.oz; ry += XF.a;
+  }
   (B[k] || (B[k]=[])).push({x,y,z,sx,sy,sz,rx,ry,rz});
   const r = Math.max(sx,sz)/2 + .5;
   if (x-r < bnd.minX) bnd.minX = x-r;  if (x+r > bnd.maxX) bnd.maxX = x+r;
@@ -1661,11 +1883,82 @@ function figureAt(x,z){
   box('figure',x,1.3,z,.62,2.6,.5); box('figure',x,3.85,z,.95,2.3,.62);
   box('figure',x,5.35,z,.62,.72,.62);
 }
+/* wall skin — solid, doorway, or window opening */
+function skinDraw(D,i,j,y,op){
+  const base = y*8+.1, H = 7.6, W = 7.8;
+  const put = (u,w,vc,h,mat)=>{
+    if (w<=0||h<=0) return;
+    if (D==='Z') box(mat||'ply', cellX(i)+u, vc, edgeZ(j), w, h, .09);
+    else         box(mat||'ply', edgeX(i), vc, cellZ(j)+u, .09, h, w);
+  };
+  if (op===1){                                 // door — 3'2" x 6'8", leaf swung open
+    const dw=3.2, dh=6.7, sw=(W-dw)/2, a=1.1;
+    put(-(dw+sw)/2, sw, base+H/2, H);
+    put( (dw+sw)/2, sw, base+H/2, H);
+    put(0, dw, base+dh+(H-dh)/2, H-dh);
+    for (const s of [-1,1]) put(s*dw/2, .16, base+dh/2, dh, 'wood');   // jambs
+    put(0, dw, base+dh+.1, .22, 'wood');                              // header trim
+    if (D==='Z') box('wood', cellX(i)-dw/2+dw/2*Math.cos(a), base+dh/2, edgeZ(j)+dw/2*Math.sin(a),
+                     dw, dh-.16, .13, a);
+    else         box('wood', edgeX(i)-dw/2*Math.sin(a), base+dh/2, cellZ(j)+dw/2-dw/2*Math.cos(a),
+                     dw, dh-.16, .13, Math.PI/2+a);
+  } else if (op===2){                          // window — 3'6" x 3'2", sill at 3'
+    const ww=3.5, wh=3.2, sill=3.0, sw=(W-ww)/2, hdr=H-sill-wh;
+    put(-(ww+sw)/2, sw, base+H/2, H);
+    put( (ww+sw)/2, sw, base+H/2, H);
+    put(0, ww, base+sill/2, sill);
+    put(0, ww, base+sill+wh+hdr/2, hdr);
+    put(0, ww+.3, base+sill+.06, .22, 'wood');                        // sill board
+    put(0, ww-.15, base+sill+wh/2, wh-.15, 'glass');
+  } else {
+    put(0, W, base+H/2, H);
+  }
+}
+/* stair — two 8'-stock flights with a mid landing, 8' rise across two cells */
+function stairDraw(i,j,y,d){
+  const [fx,fz]=DIRV[d], sx=-fz, sz=fx, NS=(d===0||d===2);
+  const ox=cellX(i)-fx*4, oz=cellZ(j)-fz*4;    // f=0 at the face of the uphill bay
+  const y0=y*8;
+  const P=(f,s)=>[ox+fx*f+sx*s, oz+fz*f+sz*s];
+  const flight=(fTop,fBot,h)=>{                // walks down from fTop(high) to fBot(low)
+    const run=fBot-fTop, rise=4, th=Math.atan2(rise,run);
+    const n=6;
+    for (let t=1;t<=n;t++){
+      const [px,pz]=P(fTop+run*(t-.5)/n, 0);
+      box('wood', px, h-rise*t/n+.06, pz, NS?4.1:run/n+.3, .14, NS?run/n+.3:4.1);
+    }
+    const L=Math.hypot(run,rise);
+    const rxs = NS ? (fz>0? th : -th) : 0;
+    const rzs = NS ? 0 : (fx>0? -th : th);
+    for (const o of [-1.95,0,1.95]){           // three stringers under the treads
+      const [ax,az]=P(fTop+run/2, o);
+      box('wood', ax, h-rise/2-.5, az, NS?.29:L, .95, NS?L:.29, 0, rxs, rzs);
+    }
+    for (const o of [-2.2,2.2]){               // graspable rail, both sides
+      for (const t of [.12,.5,.88]){
+        const [px,pz]=P(fTop+run*t, o);
+        box('wood', px, h-rise*t+1.6, pz, .15,3.2,.15);
+      }
+      const [mx,mz]=P(fTop+run/2, o);
+      box('wood', mx, h-rise/2+3.15, mz, NS?.14:L, .14, NS?L:.14, 0, rxs, rzs);
+    }
+  };
+  flight(.4, 6.4, y0+8);                       // upper flight, off the deck
+  const [lx,lz]=P(8.0,0);                      // mid landing
+  box('ply', lx, y0+3.96, lz, NS?4.6:3.4, .09, NS?3.4:4.6);
+  for (const o of [-2.1,2.1]){
+    const [ax,az]=P(8.0,o);
+    box('wood', ax, y0+2, az, .3, 4, .3);
+    for (const t of [6.6,9.4]){ const [px,pz]=P(t,o); box('wood',px,y0+5.6,pz,.15,3.2,.15); }
+    const [mx,mz]=P(8.0,o); box('wood', mx, y0+7.1, mz, NS?.14:3.2, .14, NS?3.2:.14);
+  }
+  flight(9.6, 15.6, y0+4);                     // lower flight, down to grade
+}
 
-function drawAll(D){
+function drawAll(D, m=model, rails=railsOn, withFigure=true){
   for (const f of D.frames) frame(cellX(f.i), edgeZ(f.j), f.y*8, 8);
   for (const f of D.spanFrames) frame(f.x, f.z, f.y*8, 8, f.rot);
-  for (const [k,v] of model.cells){
+  for (const [k,v] of m.cells){
     const [i,j,y]=nums(k), cx=cellX(i), cz=cellZ(j), topY=(y+1)*8;
     const sm = D.spanMem.get(k);
     if (!sm){
@@ -1690,7 +1983,7 @@ function drawAll(D){
     }
     if (v.deck) deck(cx,cz,7.9,7.9,topY+.22, sm && sm.D==='Z');
   }
-  for (const [k,v] of model.slopes){           // angled panels: ply or solar
+  for (const [k,v] of m.slopes){               // angled panels: ply or solar
     const [i,j,y]=nums(k), cx=cellX(i), cz=cellZ(j), yc=y*8+4;
     const [dx,dz]=DIRV[v.d], NS=(v.d===0||v.d===2), L=11.2, s45=Math.SQRT1_2;
     const rx = NS ? (v.d===2 ? Math.PI/4 : -Math.PI/4) : 0;
@@ -1705,6 +1998,7 @@ function drawAll(D){
       box('ply', cx, yc, cz, NS?7.8:L, .09, NS?L:7.8, 0, rx, rz);
     }
   }
+  for (const [k,v] of m.stairs){ const [i,j,y]=nums(k); stairDraw(i,j,y,v.d); }
   for (const a of D.arrayDraws){               // rooftop arrays, tipped a little south
     for (const gx of [-1.95,1.95]){
       for (const gz of [-1.9,1.9])
@@ -1715,26 +2009,25 @@ function drawAll(D){
   }
   for (const c of D.collars)                   // posts that pierce a ply deck below
     box('steel', c.x, c.topY+.09, c.z, .62, .3, .62);
-  for (const [k,v] of model.pads){
+  for (const [k,v] of m.pads){
     const [i,j]=nums(k), cx=cellX(i), cz=cellZ(j);
     for (const [ox,oz] of [[-2.6,-2.6],[2.6,-2.6],[-2.6,2.6],[2.6,2.6],[0,-2.6],[0,2.6]])
       box('wood',cx+ox,.45,cz+oz,2.6,.9,2.6);
     beamX(cx,1.1,cz-2.2,7.7); beamX(cx,1.1,cz+2.2,7.7);
     deck(cx,cz,7.9,7.9,1.55);
   }
-  for (const s of model.skins){
+  for (const [s,v] of m.skins){
     const a=s.split(','), i=+a[1], j=+a[2], y=+a[3];
-    if (a[0]==='Z') box('ply',cellX(i),y*8+3.9,edgeZ(j),7.8,7.6,.09);
-    else            box('ply',edgeX(i),y*8+3.9,cellZ(j),.09,7.6,7.8);
+    skinDraw(a[0], i, j, y, v.op||0);
   }
   for (const c of D.canopyDraws){
     for (const [ox,oz] of [[-3.6,-3.6],[3.6,-3.6],[-3.6,3.6],[3.6,3.6]])
       box('wood',c.x+ox,c.top+3.5,c.z+oz,.17,7,.17);
     box('cloth',c.x,c.top+7.12,c.z,8.7,.05,8.7);
   }
-  if (railsOn) for (const r of D.rails) railEdge(r.x1,r.z1,r.x2,r.z2,r.topY);
+  if (rails) for (const r of D.rails) railEdge(r.x1,r.z1,r.x2,r.z2,r.topY);
   if (view.ballast) for (const b of D.barrels) box('barrel',b.x,1.45,b.z,1,1,1);
-  if (view.figure && D.ft) figureAt(D.ft.x0-3.5, (D.ft.z0+D.ft.z1)/2);
+  if (withFigure && view.figure && D.ft) figureAt(D.ft.x0-3.5, (D.ft.z0+D.ft.z1)/2);
 }
 
 function initThree(){
@@ -1751,24 +2044,28 @@ function initThree(){
   controls.enableDamping = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   controls.dampingFactor = .08;
   controls.maxPolarAngle = Math.PI/2 - .03;
-  controls.minDistance = 6; controls.maxDistance = 600;
+  controls.minDistance = 6; controls.maxDistance = 1400;
   hemi = new THREE.HemisphereLight(0xffffff, 0x888866, .55); scene.add(hemi);
   sun = new THREE.DirectionalLight(0xfff1dc, 1.0);
   sun.position.set(35,75,50); sun.castShadow = true;
   const shdw = Math.min(screen.width, screen.height) < 800 ? 1024 : 2048;
   sun.shadow.mapSize.set(shdw,shdw); sun.shadow.bias = -0.0005;
-  sun.shadow.camera.left=-100; sun.shadow.camera.right=100;
-  sun.shadow.camera.top=100; sun.shadow.camera.bottom=-100;
+  sun.shadow.camera.left=-140; sun.shadow.camera.right=140;
+  sun.shadow.camera.top=140; sun.shadow.camera.bottom=-140;
   scene.add(sun);
   pt1 = new THREE.PointLight(0xffb067, 0, 110); pt1.position.set(0,13,4); scene.add(pt1);
   pt2 = new THREE.PointLight(0xff9a4d, 0, 90); pt2.position.set(-30,10,10); scene.add(pt2);
-  ground = new THREE.Mesh(new THREE.CircleGeometry(400,64),
+  ground = new THREE.Mesh(new THREE.CircleGeometry(900,72),
     new THREE.MeshStandardMaterial({color:C('#C9B48C'), roughness:1}));
   ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
   grid = new THREE.GridHelper(G*8, G, C('#8A7A5E'), C('#8A7A5E'));
   grid.material.transparent = true; grid.material.opacity = .26; grid.position.y = .03;
   scene.add(grid);
-  groundPick = new THREE.Mesh(new THREE.PlaneGeometry(G*8, G*8),
+  siteGrid = new THREE.GridHelper(640, 80, C('#8A7A5E'), C('#8A7A5E'));
+  siteGrid.material.transparent = true; siteGrid.material.opacity = .16;
+  siteGrid.position.y = .02; siteGrid.visible = false;
+  scene.add(siteGrid);
+  groundPick = new THREE.Mesh(new THREE.PlaneGeometry(1600, 1600),
     new THREE.MeshBasicMaterial({visible:false}));
   groundPick.rotation.x = -Math.PI/2; groundPick.userData = {t:'ground'};
   scene.add(groundPick);
@@ -1806,6 +2103,19 @@ const pickBox = new THREE.BoxGeometry(1,1,1);
 function buildPicks(){
   if (pickGroup) scene.remove(pickGroup);
   pickGroup = new THREE.Group();
+  if (mode==='site'){
+    site.lots.forEach((l,n)=>{
+      const r = lotRect(l); if (!r) return;
+      const h = Math.max(3, (l.D && l.D.ft ? l.D.ft.h : 8));
+      const m = new THREE.Mesh(pickBox, pickMat);
+      m.position.set((r.x0+r.x1)/2, h/2, (r.z0+r.z1)/2);
+      m.scale.set(Math.max(4,r.x1-r.x0), h, Math.max(4,r.z1-r.z0));
+      m.userData = {t:'lot', n};
+      pickGroup.add(m);
+    });
+    scene.add(pickGroup);
+    return;
+  }
   for (const k of model.cells.keys()){
     const [i,j,y]=nums(k);
     const m = new THREE.Mesh(pickBox, pickMat);
@@ -1820,7 +2130,7 @@ function buildPicks(){
     m.userData = {t:'pad',i,j};
     pickGroup.add(m);
   }
-  for (const s of model.skins){
+  for (const s of model.skins.keys()){
     const a=s.split(','), i=+a[1], j=+a[2], y=+a[3];
     const m = new THREE.Mesh(pickBox, pickMat);
     if (a[0]==='Z'){ m.position.set(cellX(i), y*8+3.9, edgeZ(j)); m.scale.set(7.8,7.6,.5); }
@@ -1837,6 +2147,16 @@ function buildPicks(){
     m.userData = {t:'slope', key:k};
     pickGroup.add(m);
   }
+  for (const [k,v] of model.stairs){
+    const [i,j,y]=nums(k);
+    stairCells(i,j,v.d).forEach(([a,b],n)=>{
+      const m = new THREE.Mesh(pickBox, pickMat);
+      m.position.set(cellX(a), y*8+(n?2.4:4.6), cellZ(b));
+      m.scale.set(7.2, n?5:7.4, 7.2);
+      m.userData = {t:'stair', key:k};
+      pickGroup.add(m);
+    });
+  }
   for (const k of model.arrays){
     const [i,j]=nums(k), y=topmost(i,j); if (y<0) continue;
     const m = new THREE.Mesh(pickBox, pickMat);
@@ -1847,12 +2167,21 @@ function buildPicks(){
   scene.add(pickGroup);
 }
 const raycaster = new THREE.Raycaster(), mouseV = new THREE.Vector2();
-function pick(ev){
+const groundPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
+const hitPt = new THREE.Vector3();
+function setRay(ev){
   const r = renderer.domElement.getBoundingClientRect();
   mouseV.set((ev.clientX-r.left)/r.width*2-1, -((ev.clientY-r.top)/r.height)*2+1);
   raycaster.setFromCamera(mouseV, camera);
+}
+function pick(ev){
+  setRay(ev);
   const hits = raycaster.intersectObjects([...pickGroup.children, groundPick], false);
   return hits[0] || null;
+}
+function groundAt(ev){
+  setRay(ev);
+  return raycaster.ray.intersectPlane(groundPlane, hitPt) ? hitPt.clone() : null;
 }
 
 /* ── ghosts ── */
@@ -1910,16 +2239,10 @@ function showGhost(a){
     ghostRiser.position.set(cellX(a.i), .85, cellZ(a.j)); ghostRiser.scale.set(7.9,1.7,7.9);
     ghostRiser.visible=true;
   }
-  if (a.kind==='skinOff'){
-    tint(true);
+  if (a.kind==='skinOff' || a.kind==='wall'){
     const p=a.key.split(','), i=+p[1], j=+p[2], y=+p[3];
-    ghostPlane.rotation.set(0, p[0]==='X'?Math.PI/2:0, 0);
-    ghostPlane.position.set(p[0]==='X'?edgeX(i):cellX(i), y*8+3.9, p[0]==='X'?cellZ(j):edgeZ(j));
-    ghostPlane.scale.set(7.8,7.6,1); ghostPlane.visible=true;
-  }
-  if (a.kind==='wall'){
-    tint(model.skins.has(a.key));
-    const p=a.key.split(','), i=+p[1], j=+p[2], y=+p[3];
+    const ex = model.skins.get(a.key);
+    tint(a.kind==='skinOff' || (ex && ex.op===a.op));
     ghostPlane.rotation.set(0, p[0]==='X'?Math.PI/2:0, 0);
     ghostPlane.position.set(p[0]==='X'?edgeX(i):cellX(i), y*8+3.9, p[0]==='X'?cellZ(j):edgeZ(j));
     ghostPlane.scale.set(7.8,7.6,1); ghostPlane.visible=true;
@@ -1934,7 +2257,7 @@ function showGhost(a){
   if (a.kind==='canopyCell' || a.kind==='canopyPad'){
     const off = a.kind==='canopyPad';
     const top = off ? 1.55 : ( (nums(a.k)[2]+1)*8 );
-    const [i,j] = off ? nums(a.k) : nums(a.k);
+    const [i,j] = nums(a.k);
     const had = off ? model.pads.get(a.k).canopy : model.cells.get(a.k).canopy;
     tint(!!had);
     ghostPlane.rotation.set(-Math.PI/2,0,0);
@@ -1959,6 +2282,16 @@ function showGhost(a){
     ghostSlope.rotation.set(NS?(d===2?Math.PI/4:-Math.PI/4):0, 0, NS?0:(d===1?-Math.PI/4:Math.PI/4));
     ghostSlope.visible=true;
   }
+  if (a.kind==='stairOn' || a.kind==='stairOff'){
+    tint(a.kind==='stairOff');
+    const [i,j,y]=nums(a.k);
+    const d = a.kind==='stairOn' ? a.d : model.stairs.get(a.k).d;
+    stairCells(i,j,d).forEach(([ci,cj],n)=>{
+      const g=ghostBoxes[n]; if(!g) return;
+      g.position.set(cellX(ci), y*8+(n?2.5:4), cellZ(cj));
+      g.scale.set(7.6, n?5:8, 7.6); g.visible=true;
+    });
+  }
   if (a.kind==='arrayOn' || a.kind==='arrayOff'){
     tint(a.kind==='arrayOff');
     const [i,j]=nums(a.k), y=topmost(i,j);
@@ -1970,6 +2303,24 @@ function showGhost(a){
 }
 
 /* ─────────────────── tool actions ───────────────────────── */
+function stairAt(i,j,y){                        // is this cell part of a stair?
+  for (const [k,v] of model.stairs){
+    const [si,sj,sy]=nums(k); if (sy!==y) continue;
+    for (const [a,b] of stairCells(si,sj,v.d)) if (a===i && b===j) return k;
+  }
+  return null;
+}
+function stairFits(i,j,y,d){
+  const [dx,dz]=DIRV[d], i2=i+dx, j2=j+dz;
+  if (i2<0||i2>=G||j2<0||j2>=G) return 'a stair wants two open cells — this one runs off the field';
+  for (const [a,b] of [[i,j],[i2,j2]]){
+    if (model.cells.has(k3(a,b,y))) return 'a stair wants two open cells';
+    if (stairAt(a,b,y)) return 'a stair is already there';
+    if (y===0 ? model.pads.has(kp(a,b)) : topOf(model,a,b)!==y-1)
+      return y===0 ? 'clear the riser first' : 'stairs land on the roof below — both cells';
+  }
+  return null;
+}
 function resolveAction(hit, tl){
   if (!hit) return null;
   const u = hit.object.userData, n = hit.face ? hit.face.normal : null;
@@ -1990,6 +2341,7 @@ function resolveAction(hit, tl){
     if (u.t==='ground' || u.t==='pad'){
       const c = u.t==='pad' ? [u.i,u.j] : cellOf(); if (!c) return null;
       if (model.cells.has(k3(c[0],c[1],0))) return null;
+      if (stairAt(c[0],c[1],0)) return {msg:'a stair holds that ground — erase it first'};
       return {kind:'place', list:[[c[0],c[1],0]], removePad: model.pads.has(kp(c[0],c[1])) ? kp(c[0],c[1]) : null};
     }
     if (u.t==='slope'){                         // frame the lean-to's volume — the panel becomes its roof
@@ -1997,6 +2349,7 @@ function resolveAction(hit, tl){
       const [i,j,y]=nums(u.key);
       return {kind:'place', list:[[i,j,y]], removePad: model.pads.has(kp(i,j)) ? kp(i,j) : null};
     }
+    if (u.t==='stair') return {msg:'a stair holds that ground — erase it first'};
     if (u.t==='array'){                         // stack on the column — the array rides up
       const [i,j]=nums(u.key), y=topmost(i,j);
       if (y+1 >= MAXL) return {msg:'24′ is the sketch ceiling'};
@@ -2013,6 +2366,7 @@ function resolveAction(hit, tl){
       const ti = u.i + Math.round(n.x), tj = u.j + Math.round(n.z);
       if (ti<0||ti>=G||tj<0||tj>=G) return {msg:'edge of the sketch field'};
       if (model.cells.has(k3(ti,tj,u.y))) return null;
+      if (stairAt(ti,tj,u.y)) return {msg:'a stair is in the way — erase it first'};
       const list=[];
       for (let y=0;y<=u.y;y++) if (!model.cells.has(k3(ti,tj,y))) list.push([ti,tj,y]);
       return {kind:'place', list, removePad: model.pads.has(kp(ti,tj)) ? kp(ti,tj) : null};
@@ -2050,20 +2404,26 @@ function resolveAction(hit, tl){
     return {msg:'deck floors a bay — click one'};
   }
   if (tl==='wall'){
-    if (u.t==='skin') return {kind:'wall', key:u.key};
+    if (u.t==='skin') return {kind:'wall', key:u.key, op:wallMode};
     if (u.t==='cell' && n){
-      if (Math.abs(n.y) > .5) return {msg:'walls go on side faces'};
       let key;
-      if (n.z < -.5)      key = 'Z,'+u.i+','+u.j+','+u.y;
+      if (n.y > .5){                            // top face: nearest edge — inside walls included
+        const dx = hit.point.x - cellX(u.i), dz = hit.point.z - cellZ(u.j);
+        key = Math.abs(dx) > Math.abs(dz)
+          ? (dx>0 ? 'X,'+(u.i+1)+','+u.j+','+u.y : 'X,'+u.i+','+u.j+','+u.y)
+          : (dz>0 ? 'Z,'+u.i+','+(u.j+1)+','+u.y : 'Z,'+u.i+','+u.j+','+u.y);
+      } else if (n.y < -.5) return {msg:'walls hang on side faces or the top of a bay'};
+      else if (n.z < -.5) key = 'Z,'+u.i+','+u.j+','+u.y;
       else if (n.z > .5)  key = 'Z,'+u.i+','+(u.j+1)+','+u.y;
       else if (n.x < -.5) key = 'X,'+u.i+','+u.j+','+u.y;
       else                key = 'X,'+(u.i+1)+','+u.j+','+u.y;
-      return {kind:'wall', key};
+      return {kind:'wall', key, op:wallMode};
     }
     return {msg:'walls hang on rack faces — build first'};
   }
   if (tl==='slope'){
     if (u.t==='slope') return {kind:'slopeOff', k:u.key};
+    if (u.t==='stair') return {msg:'a stair is there — erase it first'};
     if (u.t==='array') return {msg:'that rooftop is solar — erase it first'};
     if (u.t==='cell' && n){
       if (n.y > .5){                            // shed roof in this bay — downhill toward the click
@@ -2079,13 +2439,33 @@ function resolveAction(hit, tl){
       if (ni<0||ni>=G||nj<0||nj>=G) return {msg:'edge of the sketch field'};
       const nk=k3(ni,nj,u.y);
       if (model.cells.has(nk)) return {msg:'that side is framed — pick an open one'};
-      if (u.y>0 && topmost(ni,nj)!==u.y-1) return {msg:'lean-tos land on ground or the roof below'};
+      if (stairAt(ni,nj,u.y)) return {msg:'a stair is there — erase it first'};
+      if (u.y>0 && topOf(model,ni,nj)!==u.y-1) return {msg:'lean-tos land on ground or the roof below'};
       if (u.y===0 && model.pads.has(kp(ni,nj))) return {msg:'clear the riser first'};
       const ex=model.slopes.get(nk);
       if (ex && ex.d===d) return {kind:'slopeOff', k:nk};
       return {kind:'slopeOn', k:nk, d, solar: ex ? ex.solar : false};
     }
     return {msg:'slopes lean off built faces — build first'};
+  }
+  if (tl==='stairs'){
+    if (u.t==='stair') return {kind:'stairOff', k:u.key};
+    if (u.t==='cell' && n){
+      let d;
+      if (n.y > .5){                            // top face: run down toward the click
+        const dx=hit.point.x-cellX(u.i), dz=hit.point.z-cellZ(u.j);
+        d = Math.abs(dx)>Math.abs(dz) ? (dx>0?1:3) : (dz>0?2:0);
+      } else if (n.y < -.5) return {msg:'stairs run down off a side or a deck edge'};
+      else d = n.z<-.5?0 : n.z>.5?2 : n.x>.5?1 : 3;
+      const [dx,dz]=DIRV[d], ni=u.i+dx, nj=u.j+dz;
+      if (ni<0||ni>=G||nj<0||nj>=G) return {msg:'edge of the sketch field'};
+      const k=k3(ni,nj,u.y), ex=model.stairs.get(k);
+      if (ex && ex.d===d) return {kind:'stairOff', k};
+      const bad = stairFits(ni,nj,u.y,d);
+      if (bad) return {msg:bad};
+      return {kind:'stairOn', k, d};
+    }
+    return {msg:'stairs hang off a bay — click a face or its top'};
   }
   if (tl==='solar'){
     if (u.t==='slope'){ const v=model.slopes.get(u.key);
@@ -2108,17 +2488,19 @@ function resolveAction(hit, tl){
     if (u.t==='ground'){
       const c = cellOf(); if (!c) return null;
       if (model.cells.has(k3(c[0],c[1],0))) return {msg:'risers sit on open ground'};
+      if (stairAt(c[0],c[1],0)) return {msg:'a stair holds that ground'};
       if (model.pads.has(kp(c[0],c[1]))) return {kind:'padOff', i:c[0], j:c[1]};
       return {kind:'padOn', i:c[0], j:c[1]};
     }
     return {msg:'risers sit on open ground'};
   }
   if (tl==='erase'){
-    if (u.t==='skin') return {kind:'skinOff', key:u.key};
+    if (u.t==='skin')  return {kind:'skinOff', key:u.key};
     if (u.t==='slope') return {kind:'slopeOff', k:u.key};
+    if (u.t==='stair') return {kind:'stairOff', k:u.key};
     if (u.t==='array') return {kind:'arrayOff', k:u.key};
-    if (u.t==='pad')  return {kind:'padOff', i:u.i, j:u.j};
-    if (u.t==='cell') return {kind:'eraseCol', i:u.i, j:u.j, y:u.y};
+    if (u.t==='pad')   return {kind:'padOff', i:u.i, j:u.j};
+    if (u.t==='cell')  return {kind:'eraseCol', i:u.i, j:u.j, y:u.y};
     return null;
   }
   return null;
@@ -2128,8 +2510,8 @@ function pruneModel(m){
   for (let y=1;y<MAXL;y++) for (const k of [...m.cells.keys()]){
     const [i,j,yy]=nums(k); if (yy===y && !m.cells.has(k3(i,j,y-1))) m.cells.delete(k);
   }
-  const top = (i,j)=>{ for (let y=MAXL-1;y>=0;y--) if (m.cells.has(k3(i,j,y))) return y; return -1; };
-  for (const s of [...m.skins]){
+  const top = (i,j)=>topOf(m,i,j);
+  for (const s of [...m.skins.keys()]){
     const a=s.split(','), i=+a[1], j=+a[2], y=+a[3];
     const ok = a[0]==='Z'
       ? m.cells.has(k3(i,j,y)) || m.cells.has(k3(i,j-1,y))
@@ -2153,6 +2535,20 @@ function pruneModel(m){
       (y===0 ? !m.pads.has(kp(i,j)) : top(i,j)===y-1);
     if (!ok) m.slopes.delete(k);
   }
+  // stairs hang off a framed bay and need both cells clear, standing on grade or the roof below
+  const held = new Set();
+  for (const [k,v] of [...m.stairs]){
+    const [i,j,y]=nums(k), [dx,dz]=DIRV[v.d];
+    let ok = m.cells.has(k3(i-dx,j-dz,y));
+    for (const [a,b] of stairCells(i,j,v.d)){
+      if (a<0||a>=G||b<0||b>=G) ok=false;
+      else if (m.cells.has(k3(a,b,y)) || m.slopes.has(k3(a,b,y))) ok=false;
+      else if (held.has(k3(a,b,y))) ok=false;
+      else if (y===0 ? m.pads.has(kp(a,b)) : top(a,b)!==y-1) ok=false;
+    }
+    if (!ok){ m.stairs.delete(k); continue; }
+    for (const [a,b] of stairCells(i,j,v.d)) held.add(k3(a,b,y));
+  }
   // arrays ride a column's top — no column, no array
   for (const k of [...m.arrays]){ const [i,j]=nums(k); if (top(i,j)<0) m.arrays.delete(k); }
 }
@@ -2171,7 +2567,11 @@ function apply(a){
     if (a.span) model.spans.add(a.span);
   }
   if (a.kind==='deck'){ const c=model.cells.get(a.k); c.deck=!c.deck; }
-  if (a.kind==='wall'){ model.skins.has(a.key) ? model.skins.delete(a.key) : model.skins.add(a.key); }
+  if (a.kind==='wall'){
+    const ex = model.skins.get(a.key);
+    if (ex && (ex.op||0)===a.op) model.skins.delete(a.key);
+    else model.skins.set(a.key, {op:a.op});
+  }
   if (a.kind==='skinOff') model.skins.delete(a.key);
   if (a.kind==='canopyCell'){ const c=model.cells.get(a.k); c.canopy=!c.canopy; }
   if (a.kind==='canopyPad'){ const p=model.pads.get(a.k); p.canopy=!p.canopy; }
@@ -2181,6 +2581,12 @@ function apply(a){
   if (a.kind==='slopeOn') model.slopes.set(a.k, {d:a.d, solar:!!a.solar});
   if (a.kind==='slopeOff') model.slopes.delete(a.k);
   if (a.kind==='solarSlope'){ const v=model.slopes.get(a.k); if (v) v.solar=a.on; }
+  if (a.kind==='stairOn'){
+    const [i,j,y]=nums(a.k);
+    for (const [ci,cj] of stairCells(i,j,a.d)) model.slopes.delete(k3(ci,cj,y));
+    model.stairs.set(a.k, {d:a.d});
+  }
+  if (a.kind==='stairOff') model.stairs.delete(a.k);
   if (a.kind==='arrayOn') model.arrays.add(a.k);
   if (a.kind==='arrayOff') model.arrays.delete(a.k);
   if (a.kind==='eraseCol'){
@@ -2191,20 +2597,115 @@ function apply(a){
   rebuild(false); persist();
 }
 
+/* ═══════════════ Mars-wide placement mode ═══════════════
+   The block plan is its own link: #P1*<name>!<lot>!<lot>…
+   lot = <name>~<x>~<z>~<rot>~<that camp's R3 string>                     */
+let mode = 'build';
+let site = { name:'', lots:[] };                // lot: {name,enc,x,z,rot,m,rails,D}
+let selLot = -1;
+const P36 = v => Math.round(v+2048).toString(36);
+const snap8 = v => Math.round(v/8)*8;
+function encodeSite(){
+  return 'P1*'+encPart(site.name)+'!'+site.lots.map(l=>
+    [encPart(l.name), P36(l.x), P36(l.z), l.rot&3, l.enc].join('~')).join('!');
+}
+function decodeSite(str){
+  if (!str || !str.startsWith('P1*')) return null;
+  const parts = str.slice(3).split('!');
+  const s = { name:'', lots:[] };
+  try { s.name = decodeURIComponent(parts[0]).slice(0,32); } catch(e){}
+  for (let n=1;n<parts.length;n++){
+    const f = parts[n].split('~');
+    if (f.length < 5) continue;
+    const d = decode(f[4]);
+    if (!d) continue;
+    let nm=''; try { nm = decodeURIComponent(f[0]).slice(0,24); } catch(e){}
+    const x = parseInt(f[1],36)-2048, z = parseInt(f[2],36)-2048;
+    if (isNaN(x)||isNaN(z)) continue;
+    s.lots.push({ name: nm || d.model.name || 'camp', enc:f[4], x, z, rot:(+f[3])&3,
+                  m:d.model, rails:d.rails, D:null });
+  }
+  return s;
+}
+function addLot(enc, name, x, z, rot){
+  const d = decode(enc); if (!d) return false;
+  site.lots.push({ name: (name || d.model.name || 'camp').slice(0,24), enc,
+    x: x===undefined ? nextSlotX() : x, z: z||0, rot: rot||0,
+    m: d.model, rails: d.rails, D:null });
+  return true;
+}
+function nextSlotX(){                            // drop new arrivals clear of what's there
+  let mx = -60;
+  for (const l of site.lots){ const r = lotRect(l); if (r && r.x1 > mx) mx = r.x1; }
+  return snap8(mx + 40);
+}
+function lotRect(l){
+  const D = l.D || (l.D = derive(l.m, l.rails));
+  if (!D.ft) return null;
+  const {x0,x1,z0,z1} = D.ft, a = l.rot*Math.PI/2, c = Math.cos(a), s = Math.sin(a);
+  const pts = [[x0,z0],[x1,z0],[x1,z1],[x0,z1]].map(([x,z])=>[x*c+z*s+l.x, -x*s+z*c+l.z]);
+  const xs = pts.map(p=>p[0]), zs = pts.map(p=>p[1]);
+  return { x0:Math.min(...xs), x1:Math.max(...xs), z0:Math.min(...zs), z1:Math.max(...zs) };
+}
+function siteGaps(){
+  const rects = site.lots.map(lotRect), out = [];
+  for (let a=0;a<rects.length;a++) for (let b=a+1;b<rects.length;b++){
+    const A=rects[a], Z=rects[b];
+    if (!A || !Z) continue;
+    const gap = Math.max(Math.max(A.x0-Z.x1, Z.x0-A.x1), Math.max(A.z0-Z.z1, Z.z0-A.z1));
+    out.push({ a, b, gap });
+  }
+  return out;
+}
+function siteTotals(){
+  let bays=0, kits=0, framesN=0, panels=0, deckArea=0, stairs=0, rooms=0;
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9, maxH=0;
+  for (const l of site.lots){
+    const D = l.D || (l.D = derive(l.m, l.rails));
+    bays+=D.nCells; kits+=D.kits; framesN+=D.framesN; panels+=D.solarPanels;
+    deckArea+=D.deckArea; stairs+=D.nStairs; rooms+=D.rooms.length;
+    const r = lotRect(l); if (!r) continue;
+    x0=Math.min(x0,r.x0); x1=Math.max(x1,r.x1); z0=Math.min(z0,r.z0); z1=Math.max(z1,r.z1);
+    if (D.ft) maxH = Math.max(maxH, D.ft.h);
+  }
+  const any = x1 > x0;
+  return { bays, kits, framesN, panels, watts:watts(panels), deckArea, stairs, rooms, maxH, any,
+    w: any?rnd(x1-x0):0, d: any?rnd(z1-z0):0, x0,x1,z0,z1 };
+}
+function drawSite(){
+  for (let n=0;n<site.lots.length;n++){
+    const l = site.lots[n];
+    l.D = derive(l.m, l.rails);
+    XF = { a: l.rot*Math.PI/2, ox: l.x, oz: l.z };
+    drawAll(l.D, l.m, l.rails, false);
+    XF = null;
+  }
+  if (view.figure && site.lots.length){
+    const t = siteTotals();
+    if (t.any) figureAt(t.x0-6, (t.z0+t.z1)/2);
+  }
+}
+
 /* ─────────────────── undo · persist ─────────────────────── */
 let undoStack=[], redoStack=[];
+const snapshot = ()=> mode==='site' ? encodeSite() : encode();
 function pushUndo(){
-  undoStack.push(encode());
+  undoStack.push(snapshot());
   if (undoStack.length>120) undoStack.shift();
   redoStack.length=0; updateActs();
 }
 function undo(){ if(!undoStack.length) return;
-  redoStack.push(encode()); applyEnc(undoStack.pop()); }
+  redoStack.push(snapshot()); applyEnc(undoStack.pop()); }
 function redo(){ if(!redoStack.length) return;
-  undoStack.push(encode()); applyEnc(redoStack.pop()); }
+  undoStack.push(snapshot()); applyEnc(redoStack.pop()); }
 function applyEnc(enc){
-  const d = decode(enc); if (!d) return;
-  model = d.model; railsOn = d.rails;
+  if (enc.startsWith('P1*')){
+    const s = decodeSite(enc); if (!s) return;
+    site = s; selLot = -1; setMode('site', true);
+  } else {
+    const d = decode(enc); if (!d) return;
+    model = d.model; railsOn = d.rails; setMode('build', true);
+  }
   syncInputs(); rebuild(false); persist(); updateActs();
 }
 function updateActs(){
@@ -2215,9 +2716,9 @@ let persistT=0;
 function persist(){
   clearTimeout(persistT);
   persistT = setTimeout(()=>{
-    const enc = encode();
+    const enc = snapshot();
     try{ history.replaceState(null,'','#'+enc); }catch(e){}
-    try{ localStorage.setItem('racklab-v1', enc); }catch(e){}
+    try{ localStorage.setItem(mode==='site'?'racklab-site-v1':'racklab-v1', enc); }catch(e){}
   }, 250);
 }
 function syncInputs(){
@@ -2226,15 +2727,16 @@ function syncInputs(){
 }
 
 /* ─────────────────── templates ──────────────────────────── */
-function mk(cellArr, skinArr, padArr, spanArr, slopeArr, arrArr){
-  const m = { name:model.name, cells:new Map(), skins:new Set(), pads:new Map(),
-              spans:new Set(), slopes:new Map(), arrays:new Set() };
+function mk(cellArr, skinArr, padArr, spanArr, slopeArr, arrArr, stairArr){
+  const m = blank();
+  m.name = model.name;
   for (const [i,j,y,d,c] of cellArr) m.cells.set(k3(i,j,y), {deck:!!d, canopy:!!c});
-  for (const s of skinArr) m.skins.add(s.join(','));
+  for (const s of skinArr) m.skins.set(s.slice(0,4).join(','), {op:s[4]||0});
   for (const [i,j,c] of padArr) m.pads.set(kp(i,j), {canopy:!!c});
   for (const s of spanArr||[]) m.spans.add(s.join(','));
   for (const [i,j,y,d,sol] of slopeArr||[]) m.slopes.set(k3(i,j,y), {d, solar:!!sol});
   for (const [i,j] of arrArr||[]) m.arrays.add(kp(i,j));
+  for (const [i,j,y,d] of stairArr||[]) m.stairs.set(k3(i,j,y), {d});
   return m;
 }
 const TPL = {
@@ -2243,12 +2745,12 @@ const TPL = {
     const c=[[7,9,0,1,1],[8,9,0,1,1]], s=[['Z',7,9,0],['Z',8,9,0]], p=[];
     for (let i=6;i<=9;i++) for (let j=10;j<=11;j++) p.push([i,j,0]);
     p.push([7,14,0],[8,14,0]);
-    return mk(c,s,p);
+    return mk(c,s,p,[],[],[],[[9,9,0,1]]);
   },
-  tower: ()=>{
-    const c=[];
+  tower: ()=>{                                  // stairs zig-zag up the spur to the top deck
+    const c=[[9,7,0,1,0],[10,7,0,1,0]];
     for (const [i,j] of [[7,7],[8,7],[7,8],[8,8]]) c.push([i,j,0,1,0],[i,j,1,1,1]);
-    return mk(c,[],[]);
+    return mk(c,[],[],[],[],[],[[9,7,1,1],[11,7,0,1]]);
   },
   gate: ()=>{
     const c=[],s=[];
@@ -2266,6 +2768,14 @@ const TPL = {
     for (let i=6;i<=9;i++){ c.push([i,8,0,1,1]); s.push(['Z',i,8,0]); p.push([i,9,0]); }
     return mk(c,s,p);
   },
+  rooms: ()=>{                                  // four bays, two rooms, a door and windows
+    const c=[], s=[];
+    for (const [i,j] of [[7,7],[8,7],[7,8],[8,8]]) c.push([i,j,0,1,1]);
+    s.push(['Z',7,7,0,2],['Z',8,7,0,0],['X',7,7,0,0],['X',7,8,0,1],
+           ['X',9,7,0,0],['X',9,8,0,2],['Z',7,9,0,0],['Z',8,9,0,1],
+           ['Z',7,8,0,1],['Z',8,8,0,0]);        // the last pair is the interior partition
+    return mk(c,s,[]);
+  },
   solar: ()=>{
     const c=[[7,8,0,1,0],[8,8,0,1,0]], s=[['Z',7,8,0],['Z',8,8,0]];
     const sp=[['X',7,8,0]];
@@ -2280,19 +2790,54 @@ function isDark(){
   if (t) return t==='dark';
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
-function buildDims(D){
+function clearOverlay(){
   if (dimGroup){ scene.remove(dimGroup); dimGroup.traverse(o=>o.geometry&&o.geometry.dispose()); }
   document.getElementById('dimlabels').innerHTML = ''; dimLabels = [];
   dimGroup = new THREE.Group();
-  const pts = [], lab = (p,t,soft)=>{
+}
+function buildDims(D){
+  clearOverlay();
+  const pts = [], lab = (p,t,cls)=>{
     const el = document.createElement('div');
-    el.className = 'dim'+(soft?' soft':''); el.textContent = t;
+    el.className = 'dim'+(cls?' '+cls:''); el.innerHTML = t;
     document.getElementById('dimlabels').appendChild(el);
     dimLabels.push({el, v:new THREE.Vector3(...p)});
   };
   const seg = (a,b)=>{ pts.push(new THREE.Vector3(...a), new THREE.Vector3(...b)); };
   const tick = (x,y,z,ax)=>{ if(ax==='x') seg([x-.7,y,z-.7],[x+.7,y,z+.7]); else seg([x-.7,y,z+.7],[x+.7,y,z-.7]); };
-  if (D.ft){
+  if (mode==='site'){
+    const gaps = siteGaps();
+    site.lots.forEach((l,n)=>{
+      const r = lotRect(l); if (!r) return;
+      const sel = n===selLot;
+      const o = sel ? 1.2 : 0;
+      const y = .06;
+      const c=[[r.x0-o,r.z0-o],[r.x1+o,r.z0-o],[r.x1+o,r.z1+o],[r.x0-o,r.z1+o]];
+      for (let q=0;q<4;q++) seg([c[q][0],y,c[q][1]], [c[(q+1)%4][0],y,c[(q+1)%4][1]]);
+      if (view.lanes){                          // 10' fire-lane envelope
+        const F=10, f=[[r.x0-F,r.z0-F],[r.x1+F,r.z0-F],[r.x1+F,r.z1+F],[r.x0-F,r.z1+F]];
+        for (let q=0;q<4;q++){
+          const A=f[q], Z=f[(q+1)%4];
+          for (let t=0;t<1;t+=.08){             // dashed
+            const t2=Math.min(1,t+.045);
+            seg([A[0]+(Z[0]-A[0])*t, .05, A[1]+(Z[1]-A[1])*t],
+                [A[0]+(Z[0]-A[0])*t2,.05, A[1]+(Z[1]-A[1])*t2]);
+          }
+        }
+      }
+      const D2 = l.D;
+      lab([(r.x0+r.x1)/2, (D2&&D2.ft?D2.ft.h:8)+4, (r.z0+r.z1)/2],
+        `${esc(l.name)}<small>${FT(rnd(r.x1-r.x0))}×${FT(rnd(r.z1-r.z0))} · ${D2?D2.nCells:0} bays</small>`,
+        'lot'+(sel?' sel':''));
+    });
+    gaps.forEach(g=>{                           // call out the tight ones
+      if (g.gap >= 10 || g.gap < 0) return;
+      const A=lotRect(site.lots[g.a]), Z=lotRect(site.lots[g.b]);
+      if (!A||!Z) return;
+      lab([ (Math.max(A.x0,Z.x0)+Math.min(A.x1,Z.x1))/2, 1.5,
+            (Math.max(A.z0,Z.z0)+Math.min(A.z1,Z.z1))/2 ], FT(rnd(g.gap)), 'soft');
+    });
+  } else if (D && D.ft){
     const {x0,x1,z0,z1,w,d,h} = D.ft;
     const zd = z0-5, xd = x0-5;
     seg([x0,.05,z0-1.2],[x0,.05,zd-.9]); seg([x1,.05,z0-1.2],[x1,.05,zd-.9]);
@@ -2309,8 +2854,9 @@ function buildDims(D){
     const g = new THREE.BufferGeometry().setFromPoints(pts);
     dimGroup.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({color:C('#6E6455')})));
   }
-  dimGroup.visible = view.dims;
-  document.getElementById('dimlabels').style.display = view.dims?'':'none';
+  const on = mode==='site' ? true : view.dims;
+  dimGroup.visible = on;
+  document.getElementById('dimlabels').style.display = on?'':'none';
   scene.add(dimGroup);
 }
 function fitCamera(){
@@ -2323,7 +2869,7 @@ function fitCamera(){
   const vf = camera.fov*Math.PI/180;
   const hf = 2*Math.atan(Math.tan(vf/2)*Math.max(camera.aspect,.4));
   const d = r/Math.tan(Math.min(vf,hf)/2)*1.06;
-  const th=.62, ph=1.13;
+  const th=.62, ph = mode==='site' ? .92 : 1.13;
   controls.target.set(cx, ty, cz);
   camera.position.set(cx+d*Math.sin(ph)*Math.sin(th),
                       d*Math.cos(ph)+(bnd.maxY>0?bnd.maxY*.4:6),
@@ -2337,13 +2883,15 @@ const SKY = { light:{sky:'#E6E1D1', ground:'#C9B48C', hSky:'#F2EEE2', hGnd:'#B09
 function applyTheme(){
   const th = isDark()?SKY.dark:SKY.light;
   scene.background = C(th.sky);
-  scene.fog = new THREE.Fog(C(th.sky), th.fog[0], th.fog[1]);
+  const far = mode==='site' ? 2.2 : 1;
+  scene.fog = new THREE.Fog(C(th.sky), th.fog[0]*far, th.fog[1]*far);
   ground.material.color = C(th.ground);
   hemi.color = C(th.hSky); hemi.groundColor = C(th.hGnd); hemi.intensity = th.hemI;
   sun.color = C(th.sunC); sun.intensity = th.sunI;
   pt1.intensity = isDark()? .95 : 0;
   pt2.intensity = isDark()? .6 : 0;
   grid.material.opacity = isDark()? .32 : .26;
+  siteGrid.material.opacity = isDark()? .2 : .16;
 }
 function animate(){
   requestAnimationFrame(animate);
@@ -2362,18 +2910,29 @@ function animate(){
 }
 
 /* ─────────────────── rebuild pipeline ───────────────────── */
+let liteDraw = false;                            // skip panel re-render mid-drag
 function rebuild(refit){
-  cur = derive();
   B = {};
   bnd.minX=1e9; bnd.maxX=-1e9; bnd.minZ=1e9; bnd.maxZ=-1e9; bnd.maxY=0;
-  drawAll(cur);
+  if (mode==='site'){
+    drawSite();
+    cur = null;
+  } else {
+    cur = derive();
+    drawAll(cur, model, railsOn);
+  }
   flush();
   buildPicks();
   buildDims(cur);
   applyTheme();
-  renderSchedule(cur);
-  document.getElementById('hintov').hidden = cur.any;
-  if (cur.any){
+  if (!liteDraw){
+    renderSchedule(cur);
+    if (mode==='site') renderSitePanel();
+  }
+  grid.visible = mode!=='site';
+  siteGrid.visible = mode==='site';
+  document.getElementById('hintov').hidden = mode==='site' ? site.lots.length>0 : cur.any;
+  if (bnd.minX < bnd.maxX){
     pt1.position.set((bnd.minX+bnd.maxX)/2, 13, (bnd.minZ+bnd.maxZ)/2+4);
     pt2.position.set((bnd.minX+bnd.maxX)/2-30, 10, (bnd.minZ+bnd.maxZ)/2+10);
   }
@@ -2386,18 +2945,23 @@ function needRow(name, raw, waste){
   return `<tr><td class="i">${name}</td><td class="q">${need.toLocaleString()}
     ${waste?`<small>${raw.toLocaleString()} +10%</small>`:''}</td></tr>`;
 }
+function solarLine(panels, w){
+  if (!panels) return '—';
+  return `${kW(w)} <small>${panels} × ${PANEL_W} W</small>`;
+}
 function renderSchedule(D){
-  const host = document.getElementById('schedule');
+  const host = document.getElementById('schedbody');
+  if (mode==='site'){ host.innerHTML = siteSheetHTML(); return; }
   if (!D.any){
     host.innerHTML = `
       <div class="kitcall"><b>0</b><div>deck kits
         <small>2 beams + 6 joists + 1 ply + ~45 screws each</small></div></div>
       <h3 class="lbl">Count sheet</h3>
       <div class="spec">Nothing on the pad yet. Pick <b>BUILD</b>, click the ground, and this
-        panel turns into a live materials count — frames, beams, 2×4s, ply, screws — for whatever
-        you sketch.</div>
+        panel turns into a live materials count — frames, beams, 2×4s, ply, screws, solar watts —
+        for whatever you sketch.</div>
       <div class="spec"><b>Try a start:</b> the templates on the left drop in a stage, a tower,
-        a gate — then reshape them bay by bay.</div>
+        a gate, a two-room hut — then reshape them bay by bay.</div>
       <div class="gate"><b>The ethos</b><br>
         Uncut stock on an 8′ grid — every stick goes home whole. Count your camp's rack stock
         before you order anything.</div>`;
@@ -2410,15 +2974,21 @@ function renderSchedule(D){
   if (D.nSpans) chips.push(`<span class="chip warn">16′ lumber spans — doubled 2×6 floor, keep loads light</span>`);
   if (D.stacked > 0) chips.push(`<span class="chip warn">${D.stacked} frames above 8′ — want 12′/16′ uprights</span>`);
   if (D.plySlopes) chips.push(`<span class="chip warn">angled panels are cut sheets — plan the waste</span>`);
-  if (D.solarPanels) chips.push(`<span class="chip info">solar counts panels only — batteries · wire not counted</span>`);
-  if (D.walkable > 0) chips.push(`<span class="chip info">plan ladder or stair access — not counted</span>`);
+  if (D.doors+D.wins) chips.push(`<span class="chip info">${D.doors} door${D.doors===1?'':'s'} · ${D.wins} window${D.wins===1?'':'s'} — openings mean cut sheets</span>`);
+  if (D.nStairs) chips.push(`<span class="chip good">${D.nStairs} stair${D.nStairs===1?'':'s'} — two 8′ flights + landing, ~34° · 16′ of run</span>`);
+  else if (D.walkable > 0) chips.push(`<span class="chip warn">no stair sketched — walkable decks need a way up</span>`);
+  if (D.solarPanels) chips.push(`<span class="chip info">solar ${kW(D.solarWatts)} — panels only, no batteries or wire</span>`);
   const steelLo = D.framesN*60 + D.beams*25, steelHi = D.framesN*90 + D.beams*40;
   const buys = [];
   buys.push({n:`Screws ~${D.sc.n.toLocaleString()} (${D.sc.boxes} boxes)`, c:D.sc.cost});
   if (D.straps) buys.push({n:`Ratchet straps ×${D.straps} (ballast barrels)`, c:D.straps*12});
   if (D.canopies) buys.push({n:`Shade cloth ${(D.canopies*64).toLocaleString()} ft² + line + grommets`, c:D.canopies*32});
-  if (D.solarPanels) buys.push({n:`Solar panels ×${D.solarPanels} (used ballpark)`, c:D.solarPanels*80});
+  if (D.doors) buys.push({n:`Door slab + hinges + latch ×${D.doors}`, c:D.doors*60});
+  if (D.wins) buys.push({n:`Window glazing (polycarb) + trim ×${D.wins}`, c:D.wins*40});
+  if (D.nStairs) buys.push({n:`Stair hardware ×${D.nStairs} (hangers · rail brackets)`, c:D.nStairs*35});
+  if (D.solarPanels) buys.push({n:`Solar panels ×${D.solarPanels} — ${kW(D.solarWatts)} (used ballpark)`, c:D.solarPanels*80});
   const buyTot = buys.reduce((t,x)=>t+x.c,0);
+  const rms = D.rooms.filter(r=>r.cells>0);
   host.innerHTML = `
     <div class="kitcall"><b>${D.kits}</b><div>deck kits
       <small>2 beams + 6 joists + 1 ply + ~45 screws each</small></div></div>
@@ -2429,14 +2999,38 @@ function renderSchedule(D){
       ${needRow('Beams, 8′', D.beams)}
       ${D.nSpans?needRow('2×6 × 16′ <small>(span rails, doubled)</small>', D.lumber16):''}
       ${D.nSlopes?needRow('2×6 × 12′ <small>(slope rafters)</small>', D.rafters12):''}
+      ${D.nStairs?needRow('2×12 × 8′ <small>(stringers + treads)</small>', D.stairStock):''}
       ${needRow('2×4 × 8′ stud', D.studs, true)}
-      ${needRow('Ply 4×8 CDX'+(D.plySlopes?` <small>(${2*D.plySlopes} get cut)</small>`:''), D.ply, true)}
+      ${needRow('Ply 4×8 CDX'+(D.cutSheets?` <small>(${D.cutSheets} get cut)</small>`:''), D.ply, true)}
     </table>
     <h3 class="lbl">To buy</h3>
     <table class="sch">
       ${buys.map(x=>`<tr><td class="i">${x.n}</td><td class="c">${money(x.c)}</td></tr>`).join('')}
       <tr class="tot"><td class="i">Purchase subtotal</td><td class="c">${money(buyTot)}</td></tr>
     </table>
+    ${D.solarPanels?`
+    <h3 class="lbl">Solar output</h3>
+    <div class="kitcall solar"><b>${kW(D.solarWatts)}</b><div>array nameplate
+      <small>${D.solarPanels} panels × ${PANEL_W} W · ≈ ${D.solarDay.toFixed(1)} kWh/day
+      at ${SUN_HR} sun-hours, ${Math.round(DERATE*100)}% derate</small></div></div>
+    <table class="mini">
+      <tr><td>Sloped panel walls</td><td>${6*D.solarSlopes||'—'} <small>${kW(watts(6*D.solarSlopes))}</small></td></tr>
+      <tr><td>Rooftop arrays</td><td>${4*D.arrayDraws.length||'—'} <small>${kW(watts(4*D.arrayDraws.length))}</small></td></tr>
+      <tr><td>Total panels</td><td>${D.solarPanels} <small>${kW(D.solarWatts)}</small></td></tr>
+    </table>
+    <div class="spec">Nameplate, not delivered power. Used panels run <b>250–400 W</b> each —
+      count what you actually source. Charge controller, batteries, inverter and wire are
+      <b>not</b> in this sheet.</div>`:''}
+    ${D.partitions?`
+    <h3 class="lbl">Rooms — ${rms.length} enclosed</h3>
+    <table class="mini">
+      ${rms.slice(0,6).map((r,n)=>`<tr><td>Room ${n+1} <small>lvl ${r.y+1}</small></td>
+        <td>${r.area.toLocaleString()} ft²</td></tr>`).join('')}
+      ${rms.length>6?`<tr><td>+ ${rms.length-6} more</td><td>—</td></tr>`:''}
+    </table>
+    <div class="spec"><b>${D.partitions}</b> interior partition${D.partitions===1?'':'s'} split this
+      floor plan. Doorways still read as a wall here — count a room by what it's fenced by,
+      not by how you get in.</div>`:''}
     <div class="spec">No rack stock yet? Used-market ballpark for the steel:
       <b>${money(steelLo)}–${money(steelHi)}</b> (frames ~$60–90 · beams ~$25–40). Prices swing
       hard by region — count what you have before you order.</div>
@@ -2449,18 +3043,108 @@ function renderSchedule(D){
       <tr><td>Deck area, all levels</td><td>${D.deckArea.toLocaleString()} ft²</td></tr>
       <tr><td>Top deck</td><td>${D.ft.h>=8?FT(D.ft.h):'18″'}</td></tr>
       <tr><td>Wall faces</td><td>${D.skinsN||'—'}</td></tr>
+      <tr><td>Doors · windows</td><td>${D.doors||'—'} · ${D.wins||'—'}</td></tr>
+      <tr><td>Rooms</td><td>${D.partitions?rms.length:'—'}</td></tr>
+      <tr><td>Stairs</td><td>${D.nStairs||'—'}</td></tr>
       <tr><td>Angled panels</td><td>${D.nSlopes||'—'}</td></tr>
-      <tr><td>Solar panels</td><td>${D.solarPanels||'—'}</td></tr>
+      <tr><td>Solar output</td><td>${solarLine(D.solarPanels, D.solarWatts)}</td></tr>
       <tr><td>Shade cells</td><td>${D.canopies||'—'}</td></tr>
       <tr><td>Rail edges (42″)</td><td>${D.railEdges||'—'}</td></tr>
     </table>
     <div class="gate"><b>Before you build</b><br>
       Ballast every perimeter frame and strap every ply edge — wind is the design driver.
-      Rail every open deck edge before the first party. Above 16′, get an engineer's eyes.
-      16′ lumber spans and cut sheets bend the kit rules — flag them to whoever owns the stock.
-      No concrete: every stick goes home.</div>`;
+      Rail every open deck edge before the first party; a stair head is the one gap that belongs.
+      Above 16′, get an engineer's eyes. 16′ lumber spans, cut sheets and door openings bend the
+      kit rules — flag them to whoever owns the stock. No concrete: every stick goes home.</div>`;
+}
+function siteSheetHTML(){
+  const t = siteTotals();
+  if (!site.lots.length){
+    return `<div class="kitcall"><b>0</b><div>camps on the block
+        <small>paste a Rack Lab link to drop a neighbor in</small></div></div>
+      <h3 class="lbl">Mars-wide</h3>
+      <div class="spec">This is the block view. Every camp that sends you a Rack Lab link can be
+        dropped here and dragged into place — you see the whole neighborhood at once, at one scale,
+        with fire lanes drawn.</div>
+      <div class="spec"><b>Add your own sketch</b> with the button on the left, then paste in what
+        your neighbors send you.</div>
+      <div class="gate"><b>Placement is a conversation</b><br>
+        Shade falls where it falls and sound goes where it goes. Sketch the block before
+        anyone stakes anything out.</div>`;
+  }
+  const gaps = siteGaps();
+  const chips = [];
+  const bad = gaps.filter(g=>g.gap<0), tight = gaps.filter(g=>g.gap>=0 && g.gap<10);
+  for (const g of bad) chips.push(`<span class="chip bad">${esc(site.lots[g.a].name)} overlaps ${esc(site.lots[g.b].name)}</span>`);
+  for (const g of tight) chips.push(`<span class="chip warn">${rnd(g.gap)}′ between ${esc(site.lots[g.a].name)} and ${esc(site.lots[g.b].name)} — fire lanes want 10′</span>`);
+  if (!bad.length && !tight.length && gaps.length) chips.push(`<span class="chip good">every gap 10′ or better</span>`);
+  if (t.maxH >= 16) chips.push(`<span class="chip warn">something on this block is ${FT(t.maxH)} tall — check sightlines and shade</span>`);
+  const rows = site.lots.map((l,n)=>{
+    const D = l.D || (l.D = derive(l.m, l.rails));
+    const r = lotRect(l);
+    return `<tr${n===selLot?' class="sel"':''}><td class="i">${esc(l.name)}
+        <small>${r?FT(rnd(r.x1-r.x0))+'×'+FT(rnd(r.z1-r.z0)):'empty'} · ${D.nCells} bays · ${D.ft?FT(D.ft.h):'—'} tall</small></td>
+      <td class="q">${D.solarPanels?kW(watts(D.solarPanels)):'—'}</td></tr>`;
+  }).join('');
+  return `
+    <div class="kitcall"><b>${site.lots.length}</b><div>camps on the block
+      <small>${t.any?FT(t.w)+' × '+FT(t.d)+' envelope':'—'} · ${t.bays} bays · ${t.kits} deck kits</small></div></div>
+    ${chips.length?`<div class="chipline">${chips.join('')}</div>`:''}
+    <h3 class="lbl">Camps</h3>
+    <table class="sch">${rows}
+      <tr class="tot"><td class="i">Block solar</td><td class="q">${t.panels?kW(t.watts):'—'}</td></tr>
+    </table>
+    <h3 class="lbl">Block totals</h3>
+    <table class="mini">
+      <tr><td>Envelope</td><td>${t.any?FT(t.w)+' × '+FT(t.d):'—'}</td></tr>
+      <tr><td>Rack bays</td><td>${t.bays}</td></tr>
+      <tr><td>Upright frames</td><td>${t.framesN}</td></tr>
+      <tr><td>Deck kits</td><td>${t.kits}</td></tr>
+      <tr><td>Deck area</td><td>${t.deckArea.toLocaleString()} ft²</td></tr>
+      <tr><td>Stairs</td><td>${t.stairs||'—'}</td></tr>
+      <tr><td>Tallest</td><td>${t.maxH?FT(t.maxH):'—'}</td></tr>
+      <tr><td>Solar output</td><td>${solarLine(t.panels, t.watts)}</td></tr>
+    </table>
+    ${t.panels?`<div class="spec">Block-wide that's about
+      <b>${(t.watts*SUN_HR*DERATE/1000).toFixed(1)} kWh a day</b> at ${SUN_HR} sun-hours —
+      worth knowing before anyone plans a shared battery bank.</div>`:''}
+    <div class="gate"><b>What this view is for</b><br>
+      Fire lanes, shade shadows, sound lines, where the generators end up and who has to walk
+      past whom at 4am. Drag the camps around until the block reads right, then send the link —
+      it rebuilds this exact plan on everyone's screen.</div>`;
 }
 function sheetText(){
+  if (mode==='site'){
+    const t = siteTotals(), L=[], pad=(s,n=26)=>(s+' ').padEnd(n,'.');
+    L.push('RACK LAB BLOCK PLAN — '+((site.name||'untitled block').toUpperCase()));
+    L.push(`${site.lots.length} camps · ${t.any?t.w+"' x "+t.d+"' envelope":'—'} · ${t.bays} bays · ${t.kits} deck kits`);
+    L.push('');
+    L.push('CAMPS');
+    for (const l of site.lots){
+      const D = l.D || (l.D = derive(l.m, l.rails)), r = lotRect(l);
+      L.push('  '+pad(l.name)+' '+(r?`${rnd(r.x1-r.x0)}'x${rnd(r.z1-r.z0)}'`:'empty')+
+        `  ${D.nCells} bays  ${l.x>=0?l.x+"' E":(-l.x)+"' W"} ${l.z<=0?(-l.z)+"' N":l.z+"' S"}  rot ${l.rot*90}deg`+
+        (D.solarPanels?`  ${watts(D.solarPanels)} W`:''));
+    }
+    L.push('');
+    L.push('BLOCK TOTALS');
+    L.push('  '+pad('rack bays')+' '+t.bays);
+    L.push('  '+pad('upright frames')+' '+t.framesN);
+    L.push('  '+pad('deck kits')+' '+t.kits);
+    L.push('  '+pad('deck area')+' '+t.deckArea+' ft2');
+    L.push('  '+pad('stairs')+' '+t.stairs);
+    L.push('  '+pad('solar output')+' '+t.watts+' W  ('+t.panels+' panels x '+PANEL_W+' W)');
+    const gaps = siteGaps().filter(g=>g.gap<10);
+    if (gaps.length){
+      L.push('');
+      L.push('SPACING');
+      for (const g of gaps) L.push('  '+(g.gap<0?'OVERLAP  ':rnd(g.gap)+"' gap  ")+
+        site.lots[g.a].name+' / '+site.lots[g.b].name);
+    }
+    L.push('');
+    L.push('plan: '+location.href.split('#')[0]+'#'+encodeSite());
+    return L.join('\n');
+  }
   const D = cur, name = model.name || 'untitled sketch';
   const L = [], pad = (s,n=26)=>(s+' ').padEnd(n,'.');
   L.push('RACK LAB COUNT SHEET — '+name.toUpperCase());
@@ -2472,19 +3156,41 @@ function sheetText(){
     L.push('  '+pad("beams, 8'")+' '+D.beams);
     if (D.nSpans) L.push('  '+pad("2x6 x 16' span rails")+' '+D.lumber16+'   (doubled)');
     if (D.nSlopes) L.push('  '+pad("2x6 x 12' rafters")+' '+D.rafters12);
+    if (D.nStairs) L.push('  '+pad("2x12 x 8' stair stock")+' '+D.stairStock+'   (6 stringers + 6 boards cut to 12 treads per stair)');
     L.push('  '+pad("2x4 x 8' studs")+' '+ceil(D.studs*1.1)+'   (incl +10%)');
-    L.push('  '+pad('ply 4x8 CDX')+' '+ceil(D.ply*1.1)+'   (incl +10%)'+(D.plySlopes?` (${2*D.plySlopes} get cut)`:''));
+    L.push('  '+pad('ply 4x8 CDX')+' '+ceil(D.ply*1.1)+'   (incl +10%)'+(D.cutSheets?` (${D.cutSheets} get cut)`:''));
     L.push('');
     L.push('TO BUY');
     L.push('  '+pad(`screws ~${D.sc.n} (${D.sc.boxes} boxes)`)+' $'+D.sc.cost);
     if (D.straps) L.push('  '+pad(`ratchet straps x ${D.straps}`)+' $'+D.straps*12);
     if (D.canopies) L.push('  '+pad(`shade cloth ${D.canopies*64} ft2`)+' $'+D.canopies*32);
-    if (D.solarPanels) L.push('  '+pad(`solar panels x ${D.solarPanels}`)+' $'+D.solarPanels*80+'   (used ballpark; power gear not counted)');
+    if (D.doors) L.push('  '+pad(`door slab + hardware x ${D.doors}`)+' $'+D.doors*60);
+    if (D.wins) L.push('  '+pad(`window glazing x ${D.wins}`)+' $'+D.wins*40);
+    if (D.nStairs) L.push('  '+pad(`stair hardware x ${D.nStairs}`)+' $'+D.nStairs*35);
+    if (D.solarPanels) L.push('  '+pad(`solar panels x ${D.solarPanels}`)+' $'+D.solarPanels*80+'   (used ballpark)');
+    L.push('');
+    L.push('SOLAR OUTPUT');
+    if (D.solarPanels){
+      L.push('  '+pad('panels')+' '+D.solarPanels+'   ('+(6*D.solarSlopes)+' on sloped walls, '+(4*D.arrayDraws.length)+' rooftop)');
+      L.push('  '+pad('nameplate output')+' '+D.solarWatts+' W   ('+PANEL_W+' W per panel)');
+      L.push('  '+pad('rough harvest')+' '+D.solarDay.toFixed(1)+' kWh/day   ('+SUN_HR+' sun-hours, '+Math.round(DERATE*100)+'% derate)');
+      L.push('  charge controller / batteries / inverter / wire NOT counted');
+    } else L.push('  none sketched');
+    const rms = D.rooms;
+    if (D.partitions){
+      L.push('');
+      L.push('PLAN');
+      L.push('  '+pad('interior partitions')+' '+D.partitions);
+      L.push('  '+pad('enclosed rooms')+' '+rms.length+'   ('+rms.map(r=>r.area+' ft2').join(', ')+')');
+      L.push('  '+pad('doors / windows')+' '+D.doors+' / '+D.wins);
+    }
   } else L.push('(empty sketch)');
   L.push('');
   L.push('RULES OF THUMB');
   L.push("  ballast every perimeter frame - strap every ply edge");
-  L.push('  42" rails on open deck edges - plan ladder/stair access');
+  L.push('  42" rails on open deck edges - leave the stair head open');
+  if (D.nStairs) L.push("  stairs: two 8' flights + a mid landing, ~34 deg, 16' of run for 8' of rise");
+  else if (D.walkable) L.push('  no stair sketched yet - walkable decks need a way up');
   if (D.nSpans) L.push("  16' lumber spans: doubled 2x6 minimum - never stack rack mid-span");
   if (D.pierced) L.push(`  ${D.pierced} uprights land on ply decks - notch sheets around posts`);
   L.push("  above 16' get an engineer's eyes - uncut stock, no concrete, leave no trace");
@@ -2493,23 +3199,85 @@ function sheetText(){
   return L.join('\n');
 }
 
+/* ─────────────────── site panel ─────────────────────────── */
+function renderSitePanel(){
+  const host = document.getElementById('sitepanel');
+  const pos = l => `${l.x>=0?l.x+'′ E':(-l.x)+'′ W'} · ${l.z<=0?(-l.z)+'′ N':l.z+'′ S'}`;
+  host.innerHTML = `
+    <h3 class="lbl">The block</h3>
+    <input id="siteip" placeholder="name this block" maxlength="32" value="${esc(site.name)}"
+      autocomplete="off" spellcheck="false">
+    <h3 class="lbl">Camps · ${site.lots.length}</h3>
+    <div class="lots">${
+      site.lots.map((l,n)=>`<div class="lot${n===selLot?' sel':''}">
+        <button class="pick" data-a="sel" data-n="${n}">${esc(l.name)}
+          <small>${pos(l)} · ${l.rot*90}° · ${(r=>r?FT(rnd(r.x1-r.x0))+'×'+FT(rnd(r.z1-r.z0)):'empty')(lotRect(l))}</small></button>
+        <button data-a="rot" data-n="${n}" title="Rotate 90°">⟳</button>
+        <button data-a="del" data-n="${n}" title="Remove from block">✕</button>
+      </div>`).join('') || `<div class="spec">No camps on the block yet.</div>`}</div>
+    ${selLot>=0 ? `<div class="nudge" aria-label="Nudge the selected camp">
+      <button data-nx="0" data-nz="-8">▲</button>
+      <div><button data-nx="-8" data-nz="0">◀</button><button data-nx="8" data-nz="0">▶</button></div>
+      <button data-nx="0" data-nz="8">▼</button>
+      <small>8′ a tap · or drag it in the view</small></div>` : ''}
+    <h3 class="lbl">Add a camp</h3>
+    <div class="addlot">
+      <input id="lotip" placeholder="paste a Rack Lab link" autocomplete="off" spellcheck="false">
+      <button id="lotadd">Add</button>
+    </div>
+    <div class="tpls one"><button id="lotmine">＋ Add my current sketch</button></div>
+    <div class="note"><b>How it works.</b> Every Rack Lab sketch is a link. Paste the links your
+      neighbors send you and they land on this block at true scale — drag them into place,
+      rotate with <span class="k">⟳</span>, and read the gaps. Dashed lines are the 10′ fire lane
+      around each camp.</div>
+    <div class="note"><b>The lot line is the frame footprint</b> — what you'd stake out. Ballast
+      barrels, shade cloth and guy lines all live outside it, so give the gaps a little more than
+      the numbers say.</div>
+    <div class="note"><b>The block plan is a link too.</b> Copy share link and everyone sees the
+      same neighborhood — nobody has to trust a memory of who said they'd be where.</div>`;
+}
+
 /* ─────────────────── UI wiring ──────────────────────────── */
 function toast(msg){
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('on');
   clearTimeout(toast.t); toast.t = setTimeout(()=>el.classList.remove('on'), 1700);
 }
+const SUBOF = { span:'spandir', wall:'wallmode' };
 function setTool(t){
   tool = t;
   document.querySelectorAll('#tools button[data-t]').forEach(b=>b.classList.toggle('on', b.dataset.t===t));
-  document.getElementById('spandir').classList.toggle('show', t==='span');
+  const which = SUBOF[t];
+  document.getElementById('subs').classList.toggle('show', !!which);
+  document.querySelectorAll('#subs .grp').forEach(g=>g.hidden = g.id!==which);
+  document.getElementById('curtool').textContent = t==='stairs' ? 'stairs' : t;
   hideGhost();
+}
+function setMode(m, quiet){
+  mode = m;
+  document.body.classList.toggle('site', m==='site');
+  document.querySelectorAll('button[data-m]').forEach(b=>b.classList.toggle('on', b.dataset.m===m));
+  document.getElementById('buildpanel').hidden = m!=='build';
+  document.getElementById('sitepanel').hidden  = m!=='site';
+  document.getElementById('tools').hidden = m==='site';
+  document.getElementById('subs').classList.toggle('show', m!=='site' && !!SUBOF[tool]);
+  document.querySelectorAll('#vopts button[data-v]').forEach(b=>{
+    b.hidden = b.dataset.v==='lanes' ? m!=='site' : (b.dataset.v==='dims' && m==='site');
+  });
+  document.getElementById('hinttxt').innerHTML = m==='site'
+    ? 'drag a camp to move it · tap to select<br>8′ snap · dashed = 10′ fire lane'
+    : '1 unit = 1 ft · grid = 8′<br>drag orbit · scroll zoom · right-drag pan';
+  document.getElementById('hintmsg').innerHTML = m==='site'
+    ? 'Paste a camp‘s link to drop it on the block<small>then drag it where it goes</small>'
+    : 'Click the ground to raise a bay<small>pick a tool · drag to orbit</small>';
+  document.getElementById('schedttl').textContent = m==='site' ? 'Block plan' : 'Count sheet';
+  if (!quiet){ selLot = -1; rebuild(true); persist(); }
 }
 function copyText(txt, btn){
   const done = ()=>{
-    const old = btn.textContent;
-    btn.textContent = 'Copied ✓'; btn.classList.add('did');
-    setTimeout(()=>{ btn.textContent = old; btn.classList.remove('did'); }, 1400);
+    const old = btn.innerHTML;
+    btn.innerHTML = 'Copied ✓'; btn.classList.add('did');
+    setTimeout(()=>{ btn.innerHTML = old; btn.classList.remove('did'); }, 1400);
   };
   if (navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt, done));
@@ -2522,22 +3290,42 @@ function fallbackCopy(txt, done){
   try{ document.execCommand('copy'); done(); }catch(e){ window.prompt('Copy this:', txt); }
   document.body.removeChild(ta);
 }
+function openSheet(which){
+  document.body.classList.toggle('sh-setup', which==='setup');
+  document.body.classList.toggle('sh-count', which==='count');
+  document.querySelectorAll('#mbar button[data-sh]').forEach(b=>
+    b.classList.toggle('on', b.dataset.sh===which));
+}
+const sheetOpen = ()=>document.body.classList.contains('sh-setup')||document.body.classList.contains('sh-count');
 
 function wireUI(){
   document.getElementById('tools').addEventListener('click', e=>{
     const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.t) setTool(b.dataset.t);
+  });
+  document.getElementById('subs').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.d){
       spanDir = b.dataset.d;
       document.querySelectorAll('#spandir button').forEach(x=>x.classList.toggle('on', x.dataset.d===spanDir));
-      return;
     }
-    if (b.dataset.t) setTool(b.dataset.t);
+    if (b.dataset.w!==undefined){
+      wallMode = +b.dataset.w;
+      document.querySelectorAll('#wallmode button').forEach(x=>x.classList.toggle('on', +x.dataset.w===wallMode));
+    }
+  });
+  document.addEventListener('click', e=>{      // two switches, header and thumb bar
+    const b = e.target.closest('button[data-m]'); if (!b) return;
+    if (b.dataset.m===mode) return;
+    if (b.dataset.m==='site' && !site.lots.length) seedSite();
+    setMode(b.dataset.m);
+    if (b.dataset.m==='site' && matchMedia('(max-width:940px)').matches) openSheet('setup');
   });
   document.getElementById('tpls').addEventListener('click', e=>{
-    const b = e.target.closest('button'); if (!b) return;
+    const b = e.target.closest('button'); if (!b || !b.dataset.t) return;
     pushUndo();
     model = TPL[b.dataset.t]();
-    rebuild(true); persist();
+    rebuild(true); persist(); openSheet('');
     toast(b.dataset.t==='blank' ? 'clean slab' : 'template down — make it yours');
   });
   document.getElementById('vopts').addEventListener('click', e=>{
@@ -2557,23 +3345,96 @@ function wireUI(){
   document.getElementById('aUndo').addEventListener('click', undo);
   document.getElementById('aRedo').addEventListener('click', redo);
   document.getElementById('aClear').addEventListener('click', ()=>{
+    if (mode==='site'){
+      if (!site.lots.length) return;
+      pushUndo(); site.lots=[]; selLot=-1; rebuild(false); persist();
+      toast('block cleared — undo brings it back'); return;
+    }
     if (!cur || !cur.any) return;
     pushUndo(); model = mk([],[],[]); rebuild(false); persist(); toast('cleared — undo brings it back');
   });
   document.getElementById('aLink').addEventListener('click', e=>{
-    copyText(location.href.split('#')[0]+'#'+encode(), e.currentTarget);
+    copyText(location.href.split('#')[0]+'#'+snapshot(), e.currentTarget);
   });
   document.getElementById('aSheet').addEventListener('click', e=>{
     copyText(sheetText(), e.currentTarget);
   });
 
-  // click-vs-drag on the canvas
-  let downAt=null, wasMulti=false, pointers=0;
+  // site panel (delegated — the panel re-renders on every change)
+  document.getElementById('sitepanel').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id==='lotadd'){ addFromInput(); return; }
+    if (b.id==='lotmine'){
+      pushUndo();
+      addLot(encode(model, railsOn), model.name || 'my camp');
+      selLot = site.lots.length-1;
+      rebuild(!site.lots.length); persist(); toast('your sketch joined the block'); return;
+    }
+    if (b.dataset.nx!==undefined && selLot>=0){
+      pushUndo();
+      site.lots[selLot].x = snap8(site.lots[selLot].x + +b.dataset.nx);
+      site.lots[selLot].z = snap8(site.lots[selLot].z + +b.dataset.nz);
+      rebuild(false); persist(); return;
+    }
+    const n = +b.dataset.n;
+    if (b.dataset.a==='sel'){ selLot = selLot===n ? -1 : n; rebuild(false); return; }
+    if (b.dataset.a==='rot'){ pushUndo(); site.lots[n].rot=(site.lots[n].rot+1)&3; selLot=n; rebuild(false); persist(); return; }
+    if (b.dataset.a==='del'){ pushUndo(); site.lots.splice(n,1); selLot=-1; rebuild(false); persist(); return; }
+  });
+  document.getElementById('sitepanel').addEventListener('input', e=>{
+    if (e.target.id==='siteip'){ site.name = e.target.value; persist(); }
+  });
+  document.getElementById('sitepanel').addEventListener('keydown', e=>{
+    if (e.target.id==='lotip' && e.key==='Enter'){ e.preventDefault(); addFromInput(); }
+  });
+
+  // mobile sheets
+  document.getElementById('mbar').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (!b) return;
+    openSheet(document.body.classList.contains('sh-'+b.dataset.sh) ? '' : b.dataset.sh);
+  });
+  document.querySelectorAll('.shx').forEach(b=>b.addEventListener('click', ()=>openSheet('')));
+
+  // click-vs-drag on the canvas · lot dragging in site mode
+  let downAt=null, wasMulti=false, pointers=0, drag=null;
   const cv = renderer.domElement;
   cv.addEventListener('pointerdown', e=>{
+    if (sheetOpen()){ openSheet(''); }
     pointers++;
-    if (pointers>1) wasMulti=true;
-    if (e.isPrimary){ downAt={x:e.clientX, y:e.clientY, b:e.button}; }
+    if (pointers>1){ wasMulti=true; if (drag){ endDrag(); } }
+    if (!e.isPrimary) return;
+    downAt = {x:e.clientX, y:e.clientY, b:e.button};
+    if (mode==='site' && e.button!==2 && pointers===1){
+      const h = pick(e);
+      if (h && h.object.userData.t==='lot'){
+        const g = groundAt(e);
+        const l = site.lots[h.object.userData.n];
+        drag = {n:h.object.userData.n, ox: g? g.x-l.x : 0, oz: g? g.z-l.z : 0, moved:false, pushed:false};
+        controls.enabled = false;
+      }
+    }
+  });
+  function endDrag(){
+    if (!drag) return;
+    controls.enabled = true;
+    const moved = drag.moved; drag = null;
+    if (moved){ liteDraw = false; rebuild(false); persist(); }
+  }
+  cv.addEventListener('pointermove', e=>{
+    if (drag && e.isPrimary){
+      const g = groundAt(e); if (!g) return;
+      const l = site.lots[drag.n];
+      const nx = snap8(g.x - drag.ox), nz = snap8(g.z - drag.oz);
+      if (nx!==l.x || nz!==l.z){
+        if (!drag.pushed){ pushUndo(); drag.pushed = true; }
+        l.x = nx; l.z = nz; drag.moved = true; selLot = drag.n;
+        liteDraw = true; rebuild(false);
+      }
+      return;
+    }
+    if (e.pointerType!=='mouse' || mode==='site') return;
+    if (e.buttons){ hideGhost(); return; }
+    showGhost(resolveAction(pick(e), tool));
   });
   cv.addEventListener('pointerup', e=>{
     pointers = Math.max(0, pointers-1);
@@ -2581,19 +3442,22 @@ function wireUI(){
       const dx=e.clientX-downAt.x, dy=e.clientY-downAt.y;
       const lim = e.pointerType==='touch' ? 196 : 49;   // fingers wobble more than mice
       if (dx*dx+dy*dy < lim){
-        const a = resolveAction(pick(e), downAt.b===2 ? 'erase' : tool);
-        apply(a);
+        if (mode==='site'){
+          const h = pick(e);
+          const n = h && h.object.userData.t==='lot' ? h.object.userData.n : -1;
+          if (n !== selLot || n === -1){ selLot = n; rebuild(false); }
+        } else {
+          apply(resolveAction(pick(e), downAt.b===2 ? 'erase' : tool));
+        }
       }
     }
+    endDrag();
     if (pointers===0){ wasMulti=false; downAt=null; }
   });
-  cv.addEventListener('pointercancel', ()=>{ pointers=Math.max(0,pointers-1); if(!pointers){wasMulti=false; downAt=null;} });
-  cv.addEventListener('pointermove', e=>{
-    if (e.pointerType!=='mouse') return;
-    if (e.buttons){ hideGhost(); return; }
-    showGhost(resolveAction(pick(e), tool));
-  });
+  cv.addEventListener('pointercancel', ()=>{ pointers=Math.max(0,pointers-1); endDrag();
+    if(!pointers){wasMulti=false; downAt=null;} });
   cv.addEventListener('pointerleave', hideGhost);
+  cv.addEventListener('contextmenu', e=>e.preventDefault());
 
   window.addEventListener('keydown', e=>{
     const tgt = e.target;
@@ -2601,30 +3465,75 @@ function wireUI(){
     if ((e.ctrlKey||e.metaKey) && !e.shiftKey && e.key.toLowerCase()==='z'){ e.preventDefault(); undo(); return; }
     if ((e.ctrlKey||e.metaKey) && (e.key.toLowerCase()==='y' || (e.shiftKey && e.key.toLowerCase()==='z'))){ e.preventDefault(); redo(); return; }
     if (e.ctrlKey||e.metaKey||e.altKey) return;
-    const map = {b:'build', l:'span', d:'deck', w:'wall', a:'slope', p:'solar', s:'shade', r:'riser', e:'erase'};
     const k = e.key.toLowerCase();
+    if (k==='f'){ fitCamera(); return; }
+    if (k==='m'){ if (mode==='build' && !site.lots.length) seedSite(); setMode(mode==='site'?'build':'site'); return; }
+    if (mode==='site'){
+      if (selLot<0) return;
+      const l = site.lots[selLot];
+      const nud = {arrowup:[0,-8], arrowdown:[0,8], arrowleft:[-8,0], arrowright:[8,0]}[k];
+      if (nud){ e.preventDefault(); pushUndo(); l.x=snap8(l.x+nud[0]); l.z=snap8(l.z+nud[1]); rebuild(false); persist(); return; }
+      if (k==='r'){ pushUndo(); l.rot=(l.rot+1)&3; rebuild(false); persist(); }
+      if (k==='delete'||k==='backspace'){ pushUndo(); site.lots.splice(selLot,1); selLot=-1; rebuild(false); persist(); }
+      return;
+    }
+    const map = {b:'build', l:'span', d:'deck', w:'wall', a:'slope', p:'solar',
+                 t:'stairs', s:'shade', r:'riser', e:'erase'};
     if (map[k]) setTool(map[k]);
-    if (k==='f') fitCamera();
+    if (tool==='wall' && '123'.includes(k)){
+      wallMode = +k-1;
+      document.querySelectorAll('#wallmode button').forEach(x=>x.classList.toggle('on', +x.dataset.w===wallMode));
+    }
   });
 
   window.addEventListener('hashchange', ()=>{
     const h = location.hash.slice(1);
-    if (h && h!==encode()){
-      const d = decode(h);
-      if (d){ pushUndo(); model=d.model; railsOn=d.rails; syncInputs(); rebuild(true); }
+    if (!h || h===snapshot()) return;
+    if (h.startsWith('P1*')){
+      const s = decodeSite(h);
+      if (s){ pushUndo(); site=s; selLot=-1; setMode('site',true); rebuild(true); }
+      return;
     }
+    const d = decode(h);
+    if (d){ pushUndo(); model=d.model; railsOn=d.rails; setMode('build',true); syncInputs(); rebuild(true); }
   });
   const mq = window.matchMedia('(prefers-color-scheme: dark)');
   if (mq.addEventListener) mq.addEventListener('change', applyTheme);
   new MutationObserver(applyTheme).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
 
   if (window.matchMedia('(pointer:coarse)').matches)
-    document.querySelector('.hint').innerHTML =
+    document.getElementById('hinttxt').innerHTML =
       '1 unit = 1 ft · grid = 8′<br>one finger orbit · pinch zoom · tap = tool';
 
   // phones background the GL context freely — recover instead of going black
   cv.addEventListener('webglcontextlost', e=>e.preventDefault());
   cv.addEventListener('webglcontextrestored', ()=>rebuild(false));
+}
+function addFromInput(){
+  const ip = document.getElementById('lotip');
+  const raw = (ip.value||'').trim();
+  if (!raw){ toast('paste a rack lab link first'); return; }
+  const frag = raw.includes('#') ? raw.slice(raw.indexOf('#')+1) : raw;
+  if (frag.startsWith('P1*')){                   // someone sent a whole block — merge it in
+    const s = decodeSite(frag);
+    if (!s || !s.lots.length){ toast("that link didn't decode"); return; }
+    pushUndo();
+    for (const l of s.lots) site.lots.push(l);
+    ip.value=''; selLot = site.lots.length-1; rebuild(true); persist();
+    toast(`+${s.lots.length} camps from that block`); return;
+  }
+  pushUndo();
+  if (!addLot(frag)){ undoStack.pop(); updateActs(); toast("that link didn't decode"); return; }
+  ip.value=''; selLot = site.lots.length-1;
+  rebuild(site.lots.length===1); persist(); openSheet('');
+  toast('camp added — drag it into place');
+}
+function seedSite(){                             // first visit: your sketch plus two neighbors
+  if (site.lots.length) return;
+  addLot(encode(model, railsOn), model.name || 'my camp', 0, 0, 0);
+  addLot(encode(TPL.grove(), true), 'shade neighbor', 72, -16, 0);
+  addLot(encode(TPL.rooms(), true), 'camp across', -64, 24, 1);
+  if (!site.name) site.name = 'our block';
 }
 
 /* ─────────────────── boot ───────────────────────────────── */
@@ -2632,20 +3541,27 @@ initThree();
 initGhosts();
 wireUI();
 (function load(){
-  let d = null;
+  let d=null, s=null;
   const h = location.hash.slice(1);
-  if (h) d = decode(h);
-  if (!d){ try{ const s = localStorage.getItem('racklab-v1'); if (s) d = decode(s); }catch(e){} }
+  if (h.startsWith('P1*')) s = decodeSite(h);
+  else if (h) d = decode(h);
+  if (!d){ try{ const v = localStorage.getItem('racklab-v1'); if (v) d = decode(v); }catch(e){} }
+  if (!s){ try{ const v = localStorage.getItem('racklab-site-v1'); if (v) s = decodeSite(v); }catch(e){} }
   if (d){ model = d.model; railsOn = d.rails; }
   else  { model = TPL.stage(); }
+  if (s) site = s;
+  if (h.startsWith('P1*')) mode = 'site';
   syncInputs();
 })();
 document.querySelectorAll('#vopts button[data-v]').forEach(b=>b.classList.toggle('on', view[b.dataset.v]));
+document.querySelectorAll('#wallmode button').forEach(x=>x.classList.toggle('on', +x.dataset.w===wallMode));
 setTool('build');
+setMode(mode, true);
 updateActs();
 rebuild(true);
 animate();
-window.RACKLAB = { model:()=>model, encode, decode, rebuild, fitCamera };
+window.RACKLAB = { model:()=>model, site:()=>site, encode, decode, encodeSite, decodeSite,
+                   rebuild, fitCamera, setMode };
 
 </script>
 
