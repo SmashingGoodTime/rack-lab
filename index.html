@@ -370,9 +370,14 @@ footer span:last-child{text-align:right}
           pick <b>solid</b>, <b>door</b> or <b>window</b> from the strip that appears. Click a bay's
           <b>top</b> and the wall lands on the nearest edge, so you can drop <b>partitions between
           bays</b> and cut a four-bay shed into rooms. The count sheet lists the rooms it finds.</div>
+        <div class="note"><b>Which way the steel runs.</b> Rack is directional: frames stand on the
+          <b>N–S</b> lines and 8′ beams run <b>E–W</b> between them, so every beam is carried at
+          both ends and the middle of a bay is clear. An opening in an E–W wall is clean; one in a
+          N–S wall lands in a frame line, so the lacing is cut and headered — the sheet flags it.</div>
         <div class="note"><b>Stairs.</b> <span class="k">STAIRS</span> off any bay face runs two 8′
-          flights and a mid landing down to grade — 8′ of rise over 16′, about 34°. The railing
-          opens where the stair arrives, because that's the way up.</div>
+          flights and a mid landing down to grade — 8′ of rise over 16′, about 34°. Put stairs in
+          <b>neighbouring bays</b> and they merge into one wide stairway. The railing opens where
+          the stair arrives, because that's the way up.</div>
         <div class="note"><b>One kit, no cuts:</b> pallet-rack frames · 8′ beams · uncut 2×4s · 4′×8′ ply.
           A deck kit (2 beams + 6 joists + 1 sheet) floors 32 ft². 16′ spans swap steel for doubled 2×6
           lumber; angled panels and door openings mean cut sheets — the count calls them out.</div>
@@ -1676,7 +1681,7 @@ function derive(m=model, rails=railsOn){
   let minI=1e9,maxI=-1e9,minJ=1e9,maxJ=-1e9;
   const grow = (i,j)=>{ if (i<minI)minI=i; if(i>maxI)maxI=i; if(j<minJ)minJ=j; if(j>maxJ)maxJ=j; };
   for (const [k,v] of cells){ const [i,j,y]=nums(k);
-    if (!spanMem.has(k)){ frames.add(i+','+j+','+y); frames.add(i+','+(j+1)+','+y); }
+    if (!spanMem.has(k)){ frames.add(i+','+j+','+y); frames.add((i+1)+','+j+','+y); }
     if (v.deck) decked++;
     if (y>maxLvl) maxLvl=y;
     grow(i,j);
@@ -1686,16 +1691,27 @@ function derive(m=model, rails=railsOn){
   for (const [k,v] of m.stairs){ const [i,j,y]=nums(k);
     for (const [a,b] of stairCells(i,j,v.d)) grow(a,b); }
 
+  // stairs shoulder to shoulder in the same direction read as one wide stairway
+  const stairRuns=[], sSeen=new Set();
+  for (const [k,v] of m.stairs){
+    if (sSeen.has(k)) continue;
+    const [i,j,y]=nums(k), d=v.d, [px,pz]=DIRV[(d+1)&3];
+    let si=i, sj=j;                            // walk back to the near shoulder
+    for(;;){ const nv=m.stairs.get(k3(si-px,sj-pz,y)); if (nv && nv.d===d){ si-=px; sj-=pz; } else break; }
+    let ci=si, cj=sj, n=0;                     // then across
+    for(;;){ const kk=k3(ci,cj,y), nv=m.stairs.get(kk);
+      if (!nv || nv.d!==d) break;
+      sSeen.add(kk); n++; ci+=px; cj+=pz; }
+    stairRuns.push({i:si, j:sj, y, d, n});
+  }
+
   // span end frames (dedup shared corners between neighboring pairs)
   const spanFrames=[], sfSeen=new Set();
   const SF=(x,z,y,rot)=>{ const kk=x+'|'+z+'|'+y+'|'+rot;
     if (sfSeen.has(kk)) return; sfSeen.add(kk); spanFrames.push({x,z,y,rot}); };
   for (const s of m.spans){ const a=s.split(','), D=a[0], i=+a[1], j=+a[2], y=+a[3];
-    if (D==='X'){ const x0=edgeX(i)+.55, x1=edgeX(i+2)-.55;
-      SF(x0,edgeZ(j),y,0); SF(x0,edgeZ(j+1),y,0); SF(x1,edgeZ(j),y,0); SF(x1,edgeZ(j+1),y,0);
-    } else { const z0=edgeZ(j)+.55, z1=edgeZ(j+2)-.55;
-      SF(edgeX(i),z0,y,1); SF(edgeX(i+1),z0,y,1); SF(edgeX(i),z1,y,1); SF(edgeX(i+1),z1,y,1);
-    }
+    if (D==='X'){ SF(edgeX(i), cellZ(j), y, 0);   SF(edgeX(i+2), cellZ(j), y, 0); }
+    else        { SF(cellX(i), edgeZ(j), y, 1);   SF(cellX(i), edgeZ(j+2), y, 1); }
   }
 
   // rails skip the edge a stair arrives at — that opening is the way up
@@ -1755,10 +1771,10 @@ function derive(m=model, rails=railsOn){
     if (c && c.deck) collars.push({x:px, z:pz, topY:y*8+.22});
   };
   for (const f of frameList){ if (f.y>0){
-    post(cellX(f.i), edgeZ(f.j)-1.75, f.y); post(cellX(f.i), edgeZ(f.j)+1.75, f.y); } }
+    post(edgeX(f.i), cellZ(f.j)-POST, f.y); post(edgeX(f.i), cellZ(f.j)+POST, f.y); } }
   for (const f of spanFrames){ if (f.y>0){
-    if (f.rot){ post(f.x-1.75, f.z, f.y); post(f.x+1.75, f.z, f.y); }
-    else      { post(f.x, f.z-1.75, f.y); post(f.x, f.z+1.75, f.y); } } }
+    if (f.rot){ post(f.x-POST, f.z, f.y); post(f.x+POST, f.z, f.y); }
+    else      { post(f.x, f.z-POST, f.y); post(f.x, f.z+POST, f.y); } } }
 
   // rack stacked over the middle of a lumber span (only span-on-span stacks line up)
   let badStacks=0;
@@ -1769,12 +1785,25 @@ function derive(m=model, rails=railsOn){
     if (!um || um.D!==mm.D || b[1]!==a[1] || b[2]!==a[2]) badStacks++;
   }
 
-  let doors=0, wins=0;
-  for (const v of skins.values()){ if (v.op===1) doors++; else if (v.op===2) wins++; }
+  let doors=0, wins=0, framedOpen=0;
+  for (const [k,v] of skins){
+    if (v.op===1) doors++; else if (v.op===2) wins++; else continue;
+    if (k[0]==='X') framedOpen++;              // sits in a frame line — lacing gets cut
+  }
   const { rooms, partitions } = findRooms(m);
 
+  // one wide stairway costs the same per foot of width as a narrow one
+  let stairStock=0, stairPly=0, stairStuds=0, stairWide=0;
+  for (const r of stairRuns){
+    const W = stairWidth(r.n);
+    stairStock += 2*(Math.max(3, rnd(W/2)+1)) + ceil(1.5*W);   // stringers + tread boards
+    stairPly   += ceil(W*3.4/32);                              // mid landing
+    stairStuds += rnd(3*W);                                    // landing frame + rails
+    if (r.n > 1) stairWide++;
+  }
+
   const nCells=cells.size, nPads=pads.size, skinsN=skins.size;
-  const nSpans=m.spans.size, nSlopes=m.slopes.size, nStairs=m.stairs.size;
+  const nSpans=m.spans.size, nSlopes=m.slopes.size, nStairs=stairRuns.length;
   let solarSlopes=0; for (const v of m.slopes.values()) if (v.solar) solarSlopes++;
   const plySlopes = nSlopes - solarSlopes;
   const railEdges = rails ? rails_.length : 0;
@@ -1782,12 +1811,11 @@ function derive(m=model, rails=railsOn){
   const beams = 4*(nCells + nPads) - 8*nSpans;
   const lumber16 = 6*nSpans;
   const rafters12 = 3*nSlopes;
-  const stairStock = 12*nStairs;               // 6 stringers + 6 boards cut to 12 treads
   const solarPanels = 6*solarSlopes + 4*arrayDraws.length;
   const solarWatts = watts(solarPanels);
   const solarDay = solarWatts*SUN_HR*DERATE/1000;
-  const studs = 6*kits + 2*skinsN + 4*railEdges + 4*canopies + 12*nStairs;
-  const ply   = kits + 2*skinsN + 2*plySlopes + nStairs;
+  const studs = 6*kits + 2*skinsN + 4*railEdges + 4*canopies + stairStuds;
+  const ply   = kits + 2*skinsN + 2*plySlopes + stairPly;
   const cutSheets = 2*plySlopes + 2*(doors+wins);
   const sc    = (studs||ply||rafters12) ? screwCalc(studs+rafters12+stairStock, ply) : {n:0,boxes:0,cost:0};
   let stacked=0; for (const f of frameList) if (f.y >= 1) stacked++;
@@ -1805,7 +1833,8 @@ function derive(m=model, rails=railsOn){
     framesN: frameList.length + spanFrames.length,
     nSpans, lumber16, nSlopes, plySlopes, solarSlopes, rafters12,
     solarPanels, solarWatts, solarDay,
-    nStairs, stairStock, stairEdges, doors, wins, rooms, partitions,
+    nStairs, stairRuns, stairStock, stairEdges, stairWide, doors, wins, framedOpen,
+    rooms, partitions,
     pierced: collars.length, badStacks,
     straps: barrels.length, canopies, skinsN, railEdges,
     stacked, maxLvl, any, ft,
@@ -1845,20 +1874,44 @@ function box(k,x,y,z,sx,sy,sz,ry=0,rx=0,rz=0){
   if (z-r < bnd.minZ) bnd.minZ = z-r;  if (z+r > bnd.maxZ) bnd.maxZ = z+r;
   if (y+sy/2 > bnd.maxY) bnd.maxY = y+sy/2;
 }
-function frame(cx,cz,y0,h,rot){                // upright frame straddling a grid line
-  const o = 1.75;
-  const dl = Math.hypot(3.5,.38*h), ang = Math.atan2(.38*h,3.5);
-  if (rot){                                    // depth in X — end frame of an N–S lumber span
+/* Upright frame — two posts one bay apart, laced between. A frame stands ON a
+   grid line and the 8' beams land on its posts, so every beam is held at BOTH
+   ends. rot=0 puts the posts 7.5' apart in Z (the frame stands on an N–S line);
+   rot=1 spreads them in X for the end frame of an N–S lumber span.
+   `gap` = {b,t,half} carves a door/window portal through the lacing.          */
+const POST = 3.75;                             // half the post spacing
+const OPENGAP = { 1:{b:0, t:7.0, half:1.75}, 2:{b:3.0, t:6.5, half:1.9} };
+function frame(cx,cz,y0,h,rot,gap){
+  const o = POST, W = 2*o;
+  const dl = Math.hypot(W,.25*h), ang = Math.atan2(.25*h,W);
+  const cut = (a,b)=> gap && !(b < y0+gap.b || a > y0+gap.t);
+  const stub = o - (gap?gap.half:0), sc = (gap?gap.half:0) + stub/2;
+  const strut = (t)=>{
+    const y = y0+t*h;
+    if (!cut(y,y)){
+      if (rot) box('steel',cx,y,cz,W,.2,.12); else box('steel',cx,y,cz,.12,.2,W);
+      return;
+    }
+    if (stub < .3) return;                     // portal eats the whole strut
+    for (const s of [-1,1])
+      if (rot) box('steel',cx+s*sc,y,cz,stub,.2,.12); else box('steel',cx,y,cz+s*sc,.12,.2,stub);
+  };
+  if (rot){
     box('steel',cx-o,y0+h/2,cz,.29,h,.29); box('steel',cx+o,y0+h/2,cz,.29,h,.29);
-    for (const f of [.16,.55,.93]) box('steel',cx,y0+f*h,cz,3.35,.2,.12);
-    box('steel',cx,y0+.355*h,cz,dl,.09,.09,0,0,ang);
-    box('steel',cx,y0+.74*h, cz,dl,.09,.09,0,0,-ang);
-    return;
+  } else {
+    box('steel',cx,y0+h/2,cz-o,.29,h,.29); box('steel',cx,y0+h/2,cz+o,.29,h,.29);
   }
-  box('steel',cx,y0+h/2,cz-o,.29,h,.29); box('steel',cx,y0+h/2,cz+o,.29,h,.29);
-  for (const f of [.16,.55,.93]) box('steel',cx,y0+f*h,cz,.12,.2,3.35);
-  box('steel',cx,y0+.355*h,cz,.09,.09,dl,0,ang,0);
-  box('steel',cx,y0+.74*h, cz,.09,.09,dl,0,-ang,0);
+  for (const f of [.06,.5,.95]) strut(f);
+  for (const [t,s] of [[.205,1],[.455,-1],[.705,1]]){    // laced diagonals
+    const yc = y0+t*h;
+    if (cut(yc-.13*h, yc+.13*h)) continue;
+    if (rot) box('steel',cx,yc,cz,dl,.09,.09,0,0,s*ang);
+    else     box('steel',cx,yc,cz,.09,.09,dl,0,s*ang,0);
+  }
+  if (gap){                                    // header over the portal
+    const y = y0+gap.t+.12;
+    if (rot) box('steel',cx,y,cz,2*gap.half+.6,.3,.14); else box('steel',cx,y,cz,.14,.3,2*gap.half+.6);
+  }
 }
 function beamX(cx,y,z,len){ box('beam',cx,y,z,len,.32,.22); }
 function deck(cx,cz,w,d,topY,rot){
@@ -1914,27 +1967,35 @@ function skinDraw(D,i,j,y,op){
     put(0, W, base+H/2, H);
   }
 }
-/* stair — two 8'-stock flights with a mid landing, 8' rise across two cells */
-function stairDraw(i,j,y,d){
+/* Stair — two 8'-stock flights with a mid landing, 8' of rise across two cells.
+   Stairs side by side in the same direction merge into one wide flight: `n` is
+   how many bays wide the run is, so the treads and rails carry straight across. */
+function stairWidth(n){ return n*8 - 4; }      // 4' for one bay, +8' per bay after
+function stairDraw(i,j,y,d,n=1){
   const [fx,fz]=DIRV[d], sx=-fz, sz=fx, NS=(d===0||d===2);
-  const ox=cellX(i)-fx*4, oz=cellZ(j)-fz*4;    // f=0 at the face of the uphill bay
+  const W = stairWidth(n), half = W/2;
+  const ctr = (n-1)*4;                         // shift to the middle of the merged run
+  const ox=cellX(i)-fx*4+sx*ctr, oz=cellZ(j)-fz*4+sz*ctr;   // f=0 at the uphill bay face
   const y0=y*8;
   const P=(f,s)=>[ox+fx*f+sx*s, oz+fz*f+sz*s];
+  const stringers=[];                          // one every ~2', ends included
+  const ns=Math.max(3, Math.round(W/2)+1);
+  for (let q=0;q<ns;q++) stringers.push(-half+.15 + q*(W-.3)/(ns-1));
   const flight=(fTop,fBot,h)=>{                // walks down from fTop(high) to fBot(low)
     const run=fBot-fTop, rise=4, th=Math.atan2(rise,run);
-    const n=6;
-    for (let t=1;t<=n;t++){
-      const [px,pz]=P(fTop+run*(t-.5)/n, 0);
-      box('wood', px, h-rise*t/n+.06, pz, NS?4.1:run/n+.3, .14, NS?run/n+.3:4.1);
+    const n2=6;
+    for (let t=1;t<=n2;t++){
+      const [px,pz]=P(fTop+run*(t-.5)/n2, 0);
+      box('wood', px, h-rise*t/n2+.06, pz, NS?W:run/n2+.3, .14, NS?run/n2+.3:W);
     }
     const L=Math.hypot(run,rise);
     const rxs = NS ? (fz>0? th : -th) : 0;
     const rzs = NS ? 0 : (fx>0? -th : th);
-    for (const o of [-1.95,0,1.95]){           // three stringers under the treads
+    for (const o of stringers){
       const [ax,az]=P(fTop+run/2, o);
       box('wood', ax, h-rise/2-.5, az, NS?.29:L, .95, NS?L:.29, 0, rxs, rzs);
     }
-    for (const o of [-2.2,2.2]){               // graspable rail, both sides
+    for (const o of [-half-.25, half+.25]){    // graspable rail, both sides
       for (const t of [.12,.5,.88]){
         const [px,pz]=P(fTop+run*t, o);
         box('wood', px, h-rise*t+1.6, pz, .15,3.2,.15);
@@ -1945,36 +2006,46 @@ function stairDraw(i,j,y,d){
   };
   flight(.4, 6.4, y0+8);                       // upper flight, off the deck
   const [lx,lz]=P(8.0,0);                      // mid landing
-  box('ply', lx, y0+3.96, lz, NS?4.6:3.4, .09, NS?3.4:4.6);
-  for (const o of [-2.1,2.1]){
+  box('ply', lx, y0+3.96, lz, NS?W+.6:3.4, .09, NS?3.4:W+.6);
+  for (const o of [-half-.15, half+.15]){
     const [ax,az]=P(8.0,o);
     box('wood', ax, y0+2, az, .3, 4, .3);
     for (const t of [6.6,9.4]){ const [px,pz]=P(t,o); box('wood',px,y0+5.6,pz,.15,3.2,.15); }
     const [mx,mz]=P(8.0,o); box('wood', mx, y0+7.1, mz, NS?.14:3.2, .14, NS?3.2:.14);
   }
+  for (let q=1;q<n;q++){                       // a landing post every bay across a wide run
+    const [ax,az]=P(8.0, -half + q*W/n);
+    box('wood', ax, y0+2, az, .3, 4, .3);
+  }
   flight(9.6, 15.6, y0+4);                     // lower flight, down to grade
 }
 
 function drawAll(D, m=model, rails=railsOn, withFigure=true){
-  for (const f of D.frames) frame(cellX(f.i), edgeZ(f.j), f.y*8, 8);
+  const opening = k => { const s = m.skins.get(k); return s && s.op ? OPENGAP[s.op] : null; };
+  // a frame stands on an N–S grid line; a wall on that same line gets a portal
+  for (const f of D.frames)
+    frame(edgeX(f.i), cellZ(f.j), f.y*8, 8, 0, opening('X,'+f.i+','+f.j+','+f.y));
   for (const f of D.spanFrames) frame(f.x, f.z, f.y*8, 8, f.rot);
   for (const [k,v] of m.cells){
     const [i,j,y]=nums(k), cx=cellX(i), cz=cellZ(j), topY=(y+1)*8;
     const sm = D.spanMem.get(k);
     if (!sm){
-      const zn=edgeZ(j)+1.75, zs=edgeZ(j+1)-1.75;
+      const zn=edgeZ(j)+.25, zs=edgeZ(j+1)-.25;
       beamX(cx,topY-.2,zn,7.7); beamX(cx,topY-.2,zs,7.7);
-      if (!v.deck){ beamX(cx,y*8+4,zn,7.7); beamX(cx,y*8+4,zs,7.7); }
+      if (!v.deck){                            // mid rail steps aside for an opening
+        if (!opening('Z,'+i+','+j+','+y))     beamX(cx,y*8+4,zn,7.7);
+        if (!opening('Z,'+i+','+(j+1)+','+y)) beamX(cx,y*8+4,zs,7.7);
+      }
     } else if (sm.end===0){                    // lumber rails drawn once per pair
       const a=sm.s.split(','), ai=+a[1], aj=+a[2];
       if (sm.D==='X'){
-        const mx=edgeX(ai+1), zn=edgeZ(aj)+1.75, zs=edgeZ(aj+1)-1.75;
+        const mx=edgeX(ai+1), zn=edgeZ(aj)+.25, zs=edgeZ(aj+1)-.25;
         for (const z of [zn,zs]){
           for (const o of [-.16,.16]) box('wood',mx,topY-.28,z+o,15.2,.46,.14);
           box('wood',mx,y*8+4,z,15.2,.4,.16);
         }
       } else {
-        const mz=edgeZ(aj+1), xw=edgeX(ai)+1.75, xe=edgeX(ai+1)-1.75;
+        const mz=edgeZ(aj+1), xw=edgeX(ai)+.25, xe=edgeX(ai+1)-.25;
         for (const x of [xw,xe]){
           for (const o of [-.16,.16]) box('wood',x+o,topY-.28,mz,.14,.46,15.2);
           box('wood',x,y*8+4,mz,.16,.4,15.2);
@@ -1998,7 +2069,7 @@ function drawAll(D, m=model, rails=railsOn, withFigure=true){
       box('ply', cx, yc, cz, NS?7.8:L, .09, NS?L:7.8, 0, rx, rz);
     }
   }
-  for (const [k,v] of m.stairs){ const [i,j,y]=nums(k); stairDraw(i,j,y,v.d); }
+  for (const r of D.stairRuns) stairDraw(r.i, r.j, r.y, r.d, r.n);
   for (const a of D.arrayDraws){               // rooftop arrays, tipped a little south
     for (const gx of [-1.95,1.95]){
       for (const gz of [-1.9,1.9])
@@ -2975,8 +3046,10 @@ function renderSchedule(D){
   if (D.stacked > 0) chips.push(`<span class="chip warn">${D.stacked} frames above 8′ — want 12′/16′ uprights</span>`);
   if (D.plySlopes) chips.push(`<span class="chip warn">angled panels are cut sheets — plan the waste</span>`);
   if (D.doors+D.wins) chips.push(`<span class="chip info">${D.doors} door${D.doors===1?'':'s'} · ${D.wins} window${D.wins===1?'':'s'} — openings mean cut sheets</span>`);
-  if (D.nStairs) chips.push(`<span class="chip good">${D.nStairs} stair${D.nStairs===1?'':'s'} — two 8′ flights + landing, ~34° · 16′ of run</span>`);
+  if (D.framedOpen) chips.push(`<span class="chip warn">${D.framedOpen} opening${D.framedOpen===1?'':'s'} in a frame line — the lacing is cut and headered, don't stack over it</span>`);
+  if (D.nStairs) chips.push(`<span class="chip good">${D.nStairs} stairway${D.nStairs===1?'':'s'} — two 8′ flights + landing, ~34° · 16′ of run</span>`);
   else if (D.walkable > 0) chips.push(`<span class="chip warn">no stair sketched — walkable decks need a way up</span>`);
+  if (D.stairWide) chips.push(`<span class="chip info">${D.stairWide} merged wide stairway${D.stairWide===1?'':'s'} — treads run straight across the bays</span>`);
   if (D.solarPanels) chips.push(`<span class="chip info">solar ${kW(D.solarWatts)} — panels only, no batteries or wire</span>`);
   const steelLo = D.framesN*60 + D.beams*25, steelHi = D.framesN*90 + D.beams*40;
   const buys = [];
@@ -3045,7 +3118,7 @@ function renderSchedule(D){
       <tr><td>Wall faces</td><td>${D.skinsN||'—'}</td></tr>
       <tr><td>Doors · windows</td><td>${D.doors||'—'} · ${D.wins||'—'}</td></tr>
       <tr><td>Rooms</td><td>${D.partitions?rms.length:'—'}</td></tr>
-      <tr><td>Stairs</td><td>${D.nStairs||'—'}</td></tr>
+      <tr><td>Stairways</td><td>${D.nStairs?D.stairRuns.map(r=>FT(stairWidth(r.n))).join(' · '):'—'}</td></tr>
       <tr><td>Angled panels</td><td>${D.nSlopes||'—'}</td></tr>
       <tr><td>Solar output</td><td>${solarLine(D.solarPanels, D.solarWatts)}</td></tr>
       <tr><td>Shade cells</td><td>${D.canopies||'—'}</td></tr>
@@ -3156,7 +3229,8 @@ function sheetText(){
     L.push('  '+pad("beams, 8'")+' '+D.beams);
     if (D.nSpans) L.push('  '+pad("2x6 x 16' span rails")+' '+D.lumber16+'   (doubled)');
     if (D.nSlopes) L.push('  '+pad("2x6 x 12' rafters")+' '+D.rafters12);
-    if (D.nStairs) L.push('  '+pad("2x12 x 8' stair stock")+' '+D.stairStock+'   (6 stringers + 6 boards cut to 12 treads per stair)');
+    if (D.nStairs) L.push('  '+pad("2x12 x 8' stair stock")+' '+D.stairStock+
+      '   (stringers ~2\' o.c. + tread boards; widths '+D.stairRuns.map(r=>stairWidth(r.n)+"'").join(', ')+')');
     L.push('  '+pad("2x4 x 8' studs")+' '+ceil(D.studs*1.1)+'   (incl +10%)');
     L.push('  '+pad('ply 4x8 CDX')+' '+ceil(D.ply*1.1)+'   (incl +10%)'+(D.cutSheets?` (${D.cutSheets} get cut)`:''));
     L.push('');
