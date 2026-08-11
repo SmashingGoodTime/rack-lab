@@ -86,6 +86,14 @@ aside{overflow-y:auto;background:var(--panel);min-height:0}
 #nameip:focus,#siteip:focus{border-bottom-color:var(--accent);outline:none}
 .tpls{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:2px 0 4px}
 .tpls.one{grid-template-columns:1fr}
+.segrow{display:flex;align-items:center;gap:10px;margin:2px 0 8px}
+.segrow span{font:400 12.5px var(--sans);color:var(--muted)}
+.seg{display:flex;margin-left:auto}
+.seg button{appearance:none;cursor:pointer;background:var(--panel);border:1px solid var(--line2);
+  color:var(--muted);font:600 10px var(--mono);letter-spacing:.1em;padding:6px 11px}
+.seg button + button{border-left:none}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .tpls button{appearance:none;cursor:pointer;background:var(--panel);border:1px solid var(--line2);
   color:var(--muted);font:600 9.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;
   padding:6px 4px}
@@ -301,6 +309,8 @@ footer span:last-child{text-align:right}
   .vopts button{font-size:9px;padding:5px 9px 5px 19px}
   /* everything inside a sheet gets a thumb-sized target */
   .tpls button{padding:12px 6px;font-size:10px}
+  .seg button{padding:12px 15px;font-size:10.5px}
+  .segrow{margin:4px 0 10px}
   .lot button{padding:11px 9px}
   .lot .pick{font-size:12px}
   .nudge button{width:56px;height:40px}
@@ -355,6 +365,13 @@ footer span:last-child{text-align:right}
           <button data-t="rooms">Two-room hut</button>
           <button data-t="solar">Solar shed</button>
         </div>
+        <h3 class="lbl">Which way the steel runs</h3>
+        <div class="segrow"><span>8′ beams</span>
+          <div class="seg" id="graintog" role="group" aria-label="Beam direction">
+            <button data-g="X" class="on" title="Frames on the N–S lines (G)">E–W</button>
+            <button data-g="Z" title="Frames on the E–W lines (G)">N–S</button>
+          </div></div>
+        <div class="tpls one"><button id="aRot" title="Turn the whole sketch a quarter turn (O)">⟲ Rotate 90°</button></div>
         <h3 class="lbl">Options</h3>
         <label class="tog"><input type="checkbox" id="railtog" checked>
           <span class="box"></span><span class="txt">Auto-railings
@@ -370,10 +387,12 @@ footer span:last-child{text-align:right}
           pick <b>solid</b>, <b>door</b> or <b>window</b> from the strip that appears. Click a bay's
           <b>top</b> and the wall lands on the nearest edge, so you can drop <b>partitions between
           bays</b> and cut a four-bay shed into rooms. The count sheet lists the rooms it finds.</div>
-        <div class="note"><b>Which way the steel runs.</b> Rack is directional: frames stand on the
-          <b>N–S</b> lines and 8′ beams run <b>E–W</b> between them, so every beam is carried at
-          both ends and the middle of a bay is clear. An opening in an E–W wall is clean; one in a
-          N–S wall lands in a frame line, so the lacing is cut and headered — the sheet flags it.</div>
+        <div class="note"><b>Which way the steel runs.</b> Rack is directional. Every 8′ beam is
+          carried at both ends by a frame, so the middle of a bay is clear. An opening in a wall
+          <b>along</b> the beams is clean; one in a wall <b>across</b> them lands in a frame line,
+          so the lacing is cut and headered — the sheet flags it. Flip the beams to move that
+          problem, or <b>rotate</b> to turn the whole sketch — footprint, walls, stairs and steel
+          together — a quarter turn on the ground.</div>
         <div class="note"><b>Stairs.</b> <span class="k">STAIRS</span> off any bay face runs two 8′
           flights and a mid landing down to grade — 8′ of rise over 16′, about 34°. Put stairs in
           <b>neighbouring bays</b> and they merge into one wide stairway. The railing opens where
@@ -1523,8 +1542,10 @@ const SUN_HR = 5, DERATE = .75;               // peak-sun hours · real-world lo
 const watts = n => n*PANEL_W;
 const kW = w => w>=1000 ? (w/1000).toFixed(w>=10000?0:1)+' kW' : w+' W';
 
-const blank = ()=>({ name:'', cells:new Map(), skins:new Map(), pads:new Map(),
+const blank = ()=>({ name:'', grain:'X', cells:new Map(), skins:new Map(), pads:new Map(),
                      spans:new Set(), slopes:new Map(), arrays:new Set(), stairs:new Map() });
+// grain: which way the steel runs. 'X' = 8' beams E–W, frames on the N–S lines.
+//        'Z' = beams N–S, frames on the E–W lines. Rotating the sketch flips it.
 let model = blank();
 // cells: "i,j,y" -> {deck,canopy} · pads: "i,j" -> {canopy}
 // skins: "Z,i,j,y" wall at z=edgeZ(j) spanning cell i · "X,i,j,y" wall at x=edgeX(i) spanning cell j
@@ -1568,7 +1589,8 @@ function encode(m=model, rails=railsOn){
     ar += i.toString(36)+j.toString(36); }
   for (const [k,v] of m.stairs){ const [i,j,y]=nums(k);
     st += i.toString(36)+j.toString(36)+(y+3*v.d).toString(36); }
-  return 'R3.'+encName(m.name)+'.'+c+'.'+s+'.'+p+'.'+sp+'.'+sl+'.'+ar+'.'+st+'.'+(rails?'r':'n');
+  const flags = (rails?'r':'n') + (m.grain==='Z' ? 'z' : '');   // old 'r'/'n' links read as E–W
+  return 'R3.'+encName(m.name)+'.'+c+'.'+s+'.'+p+'.'+sp+'.'+sl+'.'+ar+'.'+st+'.'+flags;
 }
 function decode(str){
   if (!str) return null;
@@ -1624,7 +1646,9 @@ function decode(str){
     }
   }
   pruneModel(m);
-  return { model:m, rails: t[want-1] !== 'n' };
+  const flags = t[want-1] || '';
+  m.grain = flags.indexOf('z') >= 0 ? 'Z' : 'X';
+  return { model:m, rails: flags[0] !== 'n' };
 }
 
 /* ─────────────────── derived counts ─────────────────────── */
@@ -1665,6 +1689,7 @@ function findRooms(m){
 }
 function derive(m=model, rails=railsOn){
   const cells = m.cells, pads = m.pads, skins = m.skins;
+  const GZ = m.grain === 'Z';                  // beams run N–S, frames on the E–W lines
   const has = (i,j,y)=>cells.has(k3(i,j,y));
   const top = (i,j)=>topOf(m,i,j);
   const walk = (i,j,y)=>{ const c=cells.get(k3(i,j,y)); return !!(c && c.deck && !has(i,j,y+1)); };
@@ -1681,7 +1706,10 @@ function derive(m=model, rails=railsOn){
   let minI=1e9,maxI=-1e9,minJ=1e9,maxJ=-1e9;
   const grow = (i,j)=>{ if (i<minI)minI=i; if(i>maxI)maxI=i; if(j<minJ)minJ=j; if(j>maxJ)maxJ=j; };
   for (const [k,v] of cells){ const [i,j,y]=nums(k);
-    if (!spanMem.has(k)){ frames.add(i+','+j+','+y); frames.add((i+1)+','+j+','+y); }
+    if (!spanMem.has(k)){                      // a frame on each line the beams land on
+      frames.add(i+','+j+','+y);
+      frames.add(GZ ? i+','+(j+1)+','+y : (i+1)+','+j+','+y);
+    }
     if (v.deck) decked++;
     if (y>maxLvl) maxLvl=y;
     grow(i,j);
@@ -1771,7 +1799,8 @@ function derive(m=model, rails=railsOn){
     if (c && c.deck) collars.push({x:px, z:pz, topY:y*8+.22});
   };
   for (const f of frameList){ if (f.y>0){
-    post(edgeX(f.i), cellZ(f.j)-POST, f.y); post(edgeX(f.i), cellZ(f.j)+POST, f.y); } }
+    if (GZ){ post(cellX(f.i)-POST, edgeZ(f.j), f.y); post(cellX(f.i)+POST, edgeZ(f.j), f.y); }
+    else   { post(edgeX(f.i), cellZ(f.j)-POST, f.y); post(edgeX(f.i), cellZ(f.j)+POST, f.y); } } }
   for (const f of spanFrames){ if (f.y>0){
     if (f.rot){ post(f.x-POST, f.z, f.y); post(f.x+POST, f.z, f.y); }
     else      { post(f.x, f.z-POST, f.y); post(f.x, f.z+POST, f.y); } } }
@@ -1788,7 +1817,7 @@ function derive(m=model, rails=railsOn){
   let doors=0, wins=0, framedOpen=0;
   for (const [k,v] of skins){
     if (v.op===1) doors++; else if (v.op===2) wins++; else continue;
-    if (k[0]==='X') framedOpen++;              // sits in a frame line — lacing gets cut
+    if (k[0] === (GZ?'Z':'X')) framedOpen++;   // sits in a frame line — lacing gets cut
   }
   const { rooms, partitions } = findRooms(m);
 
@@ -1836,6 +1865,7 @@ function derive(m=model, rails=railsOn){
     nStairs, stairRuns, stairStock, stairEdges, stairWide, doors, wins, framedOpen,
     rooms, partitions,
     pierced: collars.length, badStacks,
+    grain: GZ?'Z':'X',
     straps: barrels.length, canopies, skinsN, railEdges,
     stacked, maxLvl, any, ft,
     deckArea: 64*(decked+nPads), walkable };
@@ -1914,6 +1944,7 @@ function frame(cx,cz,y0,h,rot,gap){
   }
 }
 function beamX(cx,y,z,len){ box('beam',cx,y,z,len,.32,.22); }
+function beamZ(x,y,cz,len){ box('beam',x,y,cz,.22,.32,len); }
 function deck(cx,cz,w,d,topY,rot){
   box('ply',cx,topY-.04,cz,w,.08,d);
   const n = Math.min(40, Math.floor(w/1.333)+1);
@@ -2022,19 +2053,23 @@ function stairDraw(i,j,y,d,n=1){
 
 function drawAll(D, m=model, rails=railsOn, withFigure=true){
   const opening = k => { const s = m.skins.get(k); return s && s.op ? OPENGAP[s.op] : null; };
-  // a frame stands on an N–S grid line; a wall on that same line gets a portal
+  const GZ = m.grain === 'Z';
+  // a frame stands on a grid line across the grain; a wall on that same line gets a portal
   for (const f of D.frames)
-    frame(edgeX(f.i), cellZ(f.j), f.y*8, 8, 0, opening('X,'+f.i+','+f.j+','+f.y));
+    GZ ? frame(cellX(f.i), edgeZ(f.j), f.y*8, 8, 1, opening('Z,'+f.i+','+f.j+','+f.y))
+       : frame(edgeX(f.i), cellZ(f.j), f.y*8, 8, 0, opening('X,'+f.i+','+f.j+','+f.y));
   for (const f of D.spanFrames) frame(f.x, f.z, f.y*8, 8, f.rot);
   for (const [k,v] of m.cells){
     const [i,j,y]=nums(k), cx=cellX(i), cz=cellZ(j), topY=(y+1)*8;
     const sm = D.spanMem.get(k);
     if (!sm){
-      const zn=edgeZ(j)+.25, zs=edgeZ(j+1)-.25;
-      beamX(cx,topY-.2,zn,7.7); beamX(cx,topY-.2,zs,7.7);
+      // two beam lines, a quarter foot in from the grid so they land on the posts
+      const a = GZ ? edgeX(i)+.25 : edgeZ(j)+.25, b = GZ ? edgeX(i+1)-.25 : edgeZ(j+1)-.25;
+      const run = (p,yy)=> GZ ? beamZ(p,yy,cz,7.7) : beamX(cx,yy,p,7.7);
+      run(a,topY-.2); run(b,topY-.2);
       if (!v.deck){                            // mid rail steps aside for an opening
-        if (!opening('Z,'+i+','+j+','+y))     beamX(cx,y*8+4,zn,7.7);
-        if (!opening('Z,'+i+','+(j+1)+','+y)) beamX(cx,y*8+4,zs,7.7);
+        if (!opening((GZ?'X,':'Z,')+i+','+j+','+y)) run(a,y*8+4);
+        if (!opening(GZ ? 'X,'+(i+1)+','+j+','+y : 'Z,'+i+','+(j+1)+','+y)) run(b,y*8+4);
       }
     } else if (sm.end===0){                    // lumber rails drawn once per pair
       const a=sm.s.split(','), ai=+a[1], aj=+a[2];
@@ -2052,7 +2087,8 @@ function drawAll(D, m=model, rails=railsOn, withFigure=true){
         }
       }
     }
-    if (v.deck) deck(cx,cz,7.9,7.9,topY+.22, sm && sm.D==='Z');
+    // joists span between the beams, so they run across whatever the grain is
+    if (v.deck) deck(cx,cz,7.9,7.9,topY+.22, sm ? sm.D==='Z' : GZ);
   }
   for (const [k,v] of m.slopes){               // angled panels: ply or solar
     const [i,j,y]=nums(k), cx=cellX(i), cz=cellZ(j), yc=y*8+4;
@@ -2795,9 +2831,54 @@ function persist(){
 function syncInputs(){
   document.getElementById('nameip').value = model.name;
   document.getElementById('railtog').checked = railsOn;
+  document.querySelectorAll('#graintog button').forEach(b=>
+    b.classList.toggle('on', b.dataset.g === (model.grain||'X')));
+}
+function setGrain(g){
+  if ((model.grain||'X') === g) return;
+  pushUndo(); model.grain = g; syncInputs(); rebuild(false); persist();
+  toast(g==='Z' ? 'beams run north–south' : 'beams run east–west');
+}
+function rotateSketch(){
+  if (!cur || !cur.any) return;
+  pushUndo(); model = rotateModel(model);
+  syncInputs(); rebuild(false); persist(); toast('turned a quarter turn');
 }
 
 /* ─────────────────── templates ──────────────────────────── */
+/* Turn the whole sketch a quarter turn on the grid. Cell (i,j) -> (j, G-1-i),
+   which sends East to North, so every direction steps back one compass point
+   and the grain turns with the steel. Walls swap axis: the line between two
+   cells is still the line between those same two cells after the turn.       */
+function rotateModel(src){
+  const m = blank();
+  m.name = src.name;
+  m.grain = src.grain === 'Z' ? 'X' : 'Z';
+  const R = (i,j)=>[j, G-1-i], turn = d=>(d+3)&3;
+  for (const [k,v] of src.cells){ const [i,j,y]=nums(k), [a,b]=R(i,j);
+    m.cells.set(k3(a,b,y), {deck:v.deck, canopy:v.canopy}); }
+  for (const [k,v] of src.pads){ const [i,j]=nums(k), [a,b]=R(i,j);
+    m.pads.set(kp(a,b), {canopy:v.canopy}); }
+  for (const k of src.arrays){ const [i,j]=nums(k), [a,b]=R(i,j); m.arrays.add(kp(a,b)); }
+  for (const [k,v] of src.slopes){ const [i,j,y]=nums(k), [a,b]=R(i,j);
+    m.slopes.set(k3(a,b,y), {d:turn(v.d), solar:v.solar}); }
+  for (const [k,v] of src.stairs){ const [i,j,y]=nums(k), [a,b]=R(i,j);
+    m.stairs.set(k3(a,b,y), {d:turn(v.d)}); }
+  for (const s of src.spans){
+    const p=s.split(','), D=p[0], i=+p[1], j=+p[2], y=+p[3];
+    const c1=R(i,j), c2=R(D==='X'?i+1:i, D==='Z'?j+1:j);
+    m.spans.add((c1[0]===c2[0] ? 'Z,' : 'X,') +
+      Math.min(c1[0],c2[0])+','+Math.min(c1[1],c2[1])+','+y);
+  }
+  for (const [s,v] of src.skins){
+    const p=s.split(','), i=+p[1], j=+p[2], y=+p[3];
+    // Z,i,j divides cells (i,j-1)|(i,j) · X,i,j divides (i-1,j)|(i,j)
+    m.skins.set(p[0]==='Z' ? 'X,'+j+','+(G-1-i)+','+y
+                           : 'Z,'+j+','+(G-i)+','+y, {op:v.op});
+  }
+  pruneModel(m);
+  return m;
+}
 function mk(cellArr, skinArr, padArr, spanArr, slopeArr, arrArr, stairArr){
   const m = blank();
   m.name = model.name;
@@ -3046,7 +3127,7 @@ function renderSchedule(D){
   if (D.stacked > 0) chips.push(`<span class="chip warn">${D.stacked} frames above 8′ — want 12′/16′ uprights</span>`);
   if (D.plySlopes) chips.push(`<span class="chip warn">angled panels are cut sheets — plan the waste</span>`);
   if (D.doors+D.wins) chips.push(`<span class="chip info">${D.doors} door${D.doors===1?'':'s'} · ${D.wins} window${D.wins===1?'':'s'} — openings mean cut sheets</span>`);
-  if (D.framedOpen) chips.push(`<span class="chip warn">${D.framedOpen} opening${D.framedOpen===1?'':'s'} in a frame line — the lacing is cut and headered, don't stack over it</span>`);
+  if (D.framedOpen) chips.push(`<span class="chip warn">${D.framedOpen} opening${D.framedOpen===1?'':'s'} in a${D.grain==='Z'?'n E–W':' N–S'} frame line — the lacing is cut and headered, don't stack over it</span>`);
   if (D.nStairs) chips.push(`<span class="chip good">${D.nStairs} stairway${D.nStairs===1?'':'s'} — two 8′ flights + landing, ~34° · 16′ of run</span>`);
   else if (D.walkable > 0) chips.push(`<span class="chip warn">no stair sketched — walkable decks need a way up</span>`);
   if (D.stairWide) chips.push(`<span class="chip info">${D.stairWide} merged wide stairway${D.stairWide===1?'':'s'} — treads run straight across the bays</span>`);
@@ -3110,6 +3191,7 @@ function renderSchedule(D){
     <h3 class="lbl">This sketch</h3>
     <table class="mini">
       <tr><td>Footprint</td><td>${FT(D.ft.w)} × ${FT(D.ft.d)}</td></tr>
+      <tr><td>Beams run</td><td>${D.grain==='Z'?'N–S':'E–W'} <small>frames ${D.grain==='Z'?'E–W':'N–S'}</small></td></tr>
       <tr><td>Rack bays</td><td>${D.nCells}</td></tr>
       <tr><td>16′ lumber spans</td><td>${D.nSpans||'—'}</td></tr>
       <tr><td>Risers (18″)</td><td>${D.nPads||'—'}</td></tr>
@@ -3223,6 +3305,7 @@ function sheetText(){
   L.push('RACK LAB COUNT SHEET — '+name.toUpperCase());
   if (D.any){
     L.push(`${D.ft.w}' x ${D.ft.d}' footprint · top deck ${D.ft.h>=8?D.ft.h+"'":'18"'} · ${D.nCells} bays · ${D.kits} deck kits`);
+    L.push(`beams run ${D.grain==='Z'?'N-S':'E-W'} · frames stand on the ${D.grain==='Z'?'E-W':'N-S'} lines`);
     L.push('');
     L.push('FROM STOCK (count first, order the gap)');
     L.push('  '+pad('upright frames')+' '+D.framesN+(D.stacked?`   (${D.stacked} above 8' want 12'/16' stock)`:''));
@@ -3410,6 +3493,10 @@ function wireUI(){
     b.classList.toggle('on', view[k]);
     rebuild(false);
   });
+  document.getElementById('graintog').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (b) setGrain(b.dataset.g);
+  });
+  document.getElementById('aRot').addEventListener('click', rotateSketch);
   document.getElementById('railtog').addEventListener('change', e=>{
     pushUndo(); railsOn = e.target.checked; rebuild(false); persist();
   });
@@ -3551,6 +3638,8 @@ function wireUI(){
       if (k==='delete'||k==='backspace'){ pushUndo(); site.lots.splice(selLot,1); selLot=-1; rebuild(false); persist(); }
       return;
     }
+    if (k==='g'){ setGrain((model.grain||'X')==='X' ? 'Z' : 'X'); return; }
+    if (k==='o'){ rotateSketch(); return; }
     const map = {b:'build', l:'span', d:'deck', w:'wall', a:'slope', p:'solar',
                  t:'stairs', s:'shade', r:'riser', e:'erase'};
     if (map[k]) setTool(map[k]);
