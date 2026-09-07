@@ -98,6 +98,19 @@ aside{overflow-y:auto;background:var(--panel);min-height:0}
   color:var(--muted);font:600 9.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;
   padding:6px 4px}
 .tpls button:hover{border-color:var(--accent);color:var(--accent)}
+.tpls.kit{grid-template-columns:1fr 1fr 1fr}
+.tpls.kit button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tpls.kit button small{display:block;font:400 8.5px var(--mono);letter-spacing:.06em;
+  text-transform:none;opacity:.72;margin-top:2px}
+#bwnote{margin-top:2px}
+/* How it works — collapsed to its heading, or open */
+.lbl.fold{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.lbl.fold .car{display:inline-block;margin-left:auto;font:600 11px/1 var(--mono);
+  color:var(--faint);transition:transform .15s}
+.lbl.fold:hover{color:var(--accent)}
+.lbl.fold:hover .car{color:var(--accent)}
+.lbl.fold[aria-expanded="false"] .car{transform:rotate(-90deg)}
+#hownotes[hidden]{display:none}
 .tog{display:flex;align-items:flex-start;gap:9px;margin:10px 0 9px;cursor:pointer;user-select:none}
 .tog input{position:absolute;opacity:0;width:1px;height:1px}
 .tog .box{flex:0 0 15px;height:15px;margin-top:2px;border:1.5px solid var(--faint);background:var(--panel);
@@ -221,6 +234,8 @@ table.mini td small{color:var(--muted);font-size:9.5px;margin-left:4px}
 table.sch{width:100%;border-collapse:collapse;margin:2px 0 4px}
 table.sch td{padding:3.5px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
 table.sch tr:last-child td{border-bottom:none}
+table.sch tr.sub td{font:600 9px var(--mono);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);padding-top:9px;border-bottom-color:var(--line2)}
 td.i{font:400 12px var(--sans)}
 td.i small{color:var(--muted);font-size:11px}
 td.q{font:600 12.5px var(--mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -366,7 +381,7 @@ footer span:last-child{text-align:right}
       <button id="aLink" title="Copies a link that rebuilds exactly what you see">🔗<span class="lb"> Copy share link</span></button>
       <button id="aSheet" title="Copies the count sheet as text">⧉<span class="lb"> Copy count sheet</span></button>
     </nav>
-    <div class="tb-meta"><b>STRUCTURE SKETCHPAD</b><span>8′×12′ BAYS · 42″ UPRIGHTS · NO CONCRETE</span></div>
+    <div class="tb-meta"><b>STRUCTURE SKETCHPAD</b><span>RACK BAYS · 42″ UPRIGHTS · NO CONCRETE</span></div>
     <!-- sun: Bombay Beach, CA · winter solstice · solar time -->
 
   </header>
@@ -376,6 +391,25 @@ footer span:last-child{text-align:right}
       <div id="buildpanel">
         <h3 class="lbl">Structure</h3>
         <input id="nameip" placeholder="name your build" maxlength="28" autocomplete="off" spellcheck="false">
+        <h3 class="lbl">Row spread · bay width</h3>
+        <div class="tpls kit" id="bwpick" role="group" aria-label="How far apart the two rack rows stand">
+          <button data-bw="8">8′ <small>1′ aisle</small></button>
+          <button data-bw="12" class="on">12′ <small>cube</small></button>
+          <button data-bw="16">16′ <small>9′ aisle</small></button>
+        </div>
+        <h3 class="lbl">Upright height · one lift</h3>
+        <div class="tpls kit" id="ltpick" role="group" aria-label="How tall one upright frame is">
+          <button data-lift="8">8′ <small>3 lifts</small></button>
+          <button data-lift="12" class="on">12′ <small>3 lifts</small></button>
+          <button data-lift="16">16′ <small>2 lifts</small></button>
+        </div>
+        <div class="note" id="bwnote"></div>
+        <div class="note" id="kitnote"><b>These set the next piece.</b> Everything already on
+          the ground keeps the row spread and the frame height it was drawn on, so a 16′ shed can
+          stand against a 12′ room. <b>Stacking</b> inherits the column's height — a stack of
+          frames is one line of steel. Two pieces meeting <b>end to end</b> share the frame between
+          them and you buy the <b>taller</b> of the two; a different <b>row spread</b> puts the rows
+          somewhere else, so that join stands its own frame line.</div>
         <h3 class="lbl">Start from</h3>
         <div class="tpls one" id="tpls">
           <button data-t="blank">Blank slab</button>
@@ -399,37 +433,65 @@ footer span:last-child{text-align:right}
           <small>42″ rail on every open deck edge · the <b>RAILS</b> tool switches one
           structure off without touching the rest</small></span></label>
 
-        <h3 class="lbl">How it works</h3>
+        <h3 class="lbl fold" id="howtog" role="button" tabindex="0"
+            aria-expanded="true" aria-controls="hownotes">How it works<span class="car">▾</span></h3>
+        <div id="hownotes">
         <div class="note"><b>1 · Raise bays.</b> <span class="k">BUILD</span>, then click the ground.
-          One click = one <b>8′ × 12′ × 12′</b> bay: four upright frames, two rack rows, a deck on
-          top. Click a bay's <b>side</b> to grow sideways, its <b>top</b> to stack a second lift.
+          One click = one <b><span class="bwft">12′</span> × 12′ × <span class="ltft">12′</span></b> bay:
+          four upright frames, two rack rows, a deck on top — a <b>cube</b> on 12′ rows and 12′
+          frames, and whatever the <span class="k">ROW SPREAD</span> and
+          <span class="k">UPRIGHT HEIGHT</span> strips are set to otherwise.
+          Click a bay's <b>side</b> to grow sideways, its <b>top</b> to stack a second lift.
           The <span class="k">12′ N–S / 12′ E–W</span> strip over the view sets which way the
           <b>next</b> bay's long side runs — every bay keeps its own, so you can turn one piece
           without turning the rest. Set the other direction and click a bay's top to
           <b>turn that bay in place</b>. <span class="k">ERASE</span>, or right-click anything, to
           take it back down.</div>
-        <div class="note"><b>2 · What a bay is made of.</b> Two <b>rack rows</b> with a <b>1′ aisle</b>
-          between them — each row is a pair of <b>12′ × 42″ upright frames</b> with beams strung
-          between them, <b>high</b> at deck level and <b>low</b> near the base. 42″ + 1′ + 42″ is the
-          bay's <b>8′ exactly</b>, so the outer posts land right on the bay line and the deck runs out
+        <div class="note"><b>2 · What a bay is made of.</b> Two <b>rack rows</b> with an aisle
+          between them — each row is a pair of <b><span class="ltft">12′</span> × 42″ upright
+          frames</b> with beams strung
+          between them, <b>high</b> at deck level and <b>low</b> near the base. 42″ + aisle + 42″ is
+          the bay's whole width, so the outer posts land right on the bay line and the deck runs out
           <b>flush</b> with them — nothing over, nothing short. Ten 2×8 joists cross the rows,
-          bearing on all four beam lines, and <b>three sheets of 4×8 ply</b> floor it with no cuts,
-          every seam landing on a joist. Bays end to end along a row
+          bearing on all four beam lines, and 4×8 ply floors it in 4′ courses with every seam
+          landing on a joist. Bays end to end along a row
           <b>share the frame between them</b>; bays back to back each keep their own, the way rack
           really goes together.</div>
+        <div class="note"><b>2b · The kit — how wide, how tall.</b> Two strips up top set the only
+          two numbers in here that aren't per-bay, because together they <b>are</b> the bay.
+          <span class="k">ROW SPREAD</span> is its width: <b>8′</b> puts the two 42″ racks a foot
+          apart, <b>12′</b> opens a 5′ aisle, <b>16′</b> opens 9′. Only the joist length and the
+          sheet count move with it — a 2×8 at 16″ o.c. carries the widest of the three under the
+          sheet's <b>60 + 10 psf</b>, so one joist size covers all of them.
+          <span class="k">UPRIGHT HEIGHT</span> is one lift, floor to floor: <b>8′</b>, <b>12′</b> or
+          <b>16′</b>, all real rack frame heights. Everything hung on a frame follows it — the high
+          beam, a girt row every 4′ of ply course (<b>3 / 4 / 5</b> rows), the wall height, the pitch
+          of a slope, and the stair, which regrows its flights so the tread stays walkable
+          (<b>7 / 11 / 15</b> steps, <b>34° / 31° / 30°</b>). <b>36′ stays the ceiling</b>, so 16′
+          frames buy two lifts where 12′ buy three. Both at <b>12′</b> is the <b>12′ cube</b>, and
+          the default. Changing either changes every bay at once, so it <b>starts the sketch
+          again</b> on the new kit — <span class="k">⌘Z</span> puts the old one back.</div>
         <div class="note"><b>3 · Long span.</b> <span class="k">SPAN 20′</span> lays a bay whose long
           side is <b>20′ instead of 12′</b> — same four uprights, just further apart, with the steel
           beams swapped for lumber. The two heights are <b>not the same stick</b>: the four
-          <b>high</b> lines carry the whole deck across 20′ and take a built-up <b>(4) 2×12</b>, while
+          <b>high</b> lines carry the whole deck across 20′ and take a built-up <b>2×12</b>, while
           the four <b>low</b> ones only brace the base and stay a <b>doubled 2×6</b>. Click an existing
-          bay with it to stretch that bay, click again to pull it back to 12′. Five sheets of ply,
-          still no cuts. Crown the plies up and glue-nail them into one beam, or buy a doubled LVL
+          bay with it to stretch that bay, click again to pull it back to 12′.
+          <b>How many plies depends on the row spread</b>, because spreading the rows widens what
+          each deck line carries: <b>(4)</b> at 8′, <b>(7)</b> at 12′, <b>(10)</b> at 16′ — and past
+          four the sheet stops pretending and tells you to put an <b>LVL or a steel beam</b> up
+          there instead. Crown the plies up and glue-nail them into one beam, or buy a doubled LVL
           and carry half the weight up there — lumber doing a rack beam's job is the one thing in
           here that really wants an engineer's eyes.</div>
         <div class="note"><b>4 · Skin it.</b> <span class="k">WALL</span> covers a face — pick
           <b>solid</b>, <b>door</b> or <b>window</b> from the strip that appears. Click a bay's
           <b>top</b> and the wall drops on the nearest edge, which is how you get <b>partitions
-          between bays</b> and turn four bays into rooms. <span class="k">DECK</span> floors or unfloors
+          between bays</b> and turn four bays into rooms.
+          <b>Openings go in one 4′ plywood course at a time</b>, so a face carries as many doors
+          and windows as it has sheets: click the wall itself and the ghost lands on the single
+          sheet you are about to change. Click a course with what it already has and it goes back
+          — an opening reverts to ply, and a <b>solid</b> click on solid takes the whole face down.
+          <span class="k">DECK</span> floors or unfloors
           a bay — its strip picks <b>ROOF</b>, the walkable deck on top, or <b>FLOOR</b>, a floor
           <b>at the base</b> of the bay — the same deck kit as the roof, only landing on the
           <b>low beams</b> that are already standing there, so it costs joists and ply and nothing
@@ -439,6 +501,22 @@ footer span:last-child{text-align:right}
           <span class="k">SLOPE</span> leans a panel off a face or crowns a bay,
           <span class="k">SHADE</span> throws cloth <b>8′ over the deck</b> so you can stand up under
           it, and <span class="k">RISER</span> drops an 18″ platform on bare ground.</div>
+        <div class="note"><b>4b · The star shade.</b> <span class="k">STAR SHADE</span> is the one
+          thing in here that <b>isn't rack</b>. Click open ground and it drops a whole
+          <b>StarShade</b> — Sam Smith's folding solar canopy from Bombay Beach, built off its own
+          guide: <b>37.9′ point to point</b>, <b>8.1′ tall</b>, eight scissor legs in 2×4 and
+          half-inch bolts, <b>18 panels</b> for <b>3.96 kW</b>, about <b>$1,192</b> and 1,790 lb. The
+          plan is an <b>octagram</b> — two squares crossed at 45° — because the top ring
+          counter-rotates against the bottom one as the linkage opens, and it goes from folded to
+          standing in two minutes out of a pickup. It owns its <b>40′ square</b> of ground outright:
+          no bay, riser or stair may share it, and it shares nothing back. Its whole bill of
+          materials lands in the count sheet <b>on top of</b> whatever rack you drew. The panels lie
+          <b>flat</b> and <b>butted up</b> in a 3 × 6 block, 15′7″ × 16′3″, so the legs and the star
+          tips stand clear of the glass all the way round; the sun table scores them flat rather
+          than crediting a tilt they haven't got. Two <b>275-gal IBC totes</b> stand stacked at the
+          hub with the <b>batteries and the inverter</b> in them — 7′8″ of cage standing inside the
+          4′6″ hub, clear of the radials overhead and in the shade of the whole deck all day. Click
+          it again, or <span class="k">ERASE</span>, to take it away.</div>
         <div class="note"><b>5 · Get up there.</b> <span class="k">STAIRS</span> off any face, all
           four sides, running down whichever way there's room. Two strips appear. The first is what
           happens at the <b>head</b>: <b>OUT</b> walks straight off the deck edge, <b>LEFT</b> /
@@ -447,9 +525,13 @@ footer span:last-child{text-align:right}
           street. The second is what happens at the <b>mid flat</b>: straight on, or
           <b>WRAP</b> left / right, which sends the bottom flight off the side of the landing — that's
           how a run gets <b>around a corner</b>, or folds into a short patch of ground. Every flight
-          is <b>10′ for 6′ of rise</b> and takes it in eleven steps — a 6⁹⁄₁₆″ riser on a 10²⁹⁄₃₂″
-          tread, which is about <b>31°</b> and comfortable to walk. A straight shot is 24′ of ground;
-          a turn <b>adds a 4′ flat</b> rather than steepening the stair, so it wants that much more
+          takes <b>half the lift</b>, and how much ground that wants comes off the frame height:
+          <b>7 steps in 6′</b> at an 8′ lift, <b>11 in 10′</b> at 12′, <b>15 in 14′</b> at 16′. The
+          step count is picked to land the riser near <b>6½″</b> and the tread is then set so
+          <b>2R + T = 24″</b> — the middle of the band a stair is comfortable to walk — which puts
+          all three in the low thirties of degrees and every riser inside the 7¾″ limit. A straight
+          shot is two flights plus the 4′ mid flat: <b>16′ / 24′ / 32′</b> of ground.
+          A turn <b>adds a 4′ flat</b> rather than steepening the stair, so it wants that much more
           room. Ask for a run that hasn't got the ground for it and it turns the one that has, and
           tells you it did.</div>
         <div class="note"><b>6 · Sun.</b> The slider walks the real sun for <b>Bombay Beach in
@@ -463,10 +545,15 @@ footer span:last-child{text-align:right}
           laid flat at grade just outside it and a full water barrel strapped to each end — weight out
           on an arm, not piled at the foot of a frame. Turn <span class="k">BALLAST</span> on under
           the view to see it; the sheet totals the pounds and the gallons you'd have to haul either
-          way.</div>
+          way. <b>Height is what moves this</b>: a gust pushes on the middle of a wall, so the moment
+          that tips you goes as the <b>square</b> of the frame height while the weight holding you
+          down doesn't go up at all. Two barrels an arm carries a 12′ face with about 1.5 to spare
+          and an 8′ one with 3.4 — but a 16′ face on the same two would sit near <b>0.8</b>, so at
+          16′ the sheet doubles them to four.</div>
         <div class="note"><b>8 · Send it.</b> The whole sketch lives in the link. Copy it, send it to
           your crew, and it rebuilds on their screen. Then switch to <span class="k">MARS-WIDE</span>
           and paste in what your neighbors send back to see the block.</div>
+        </div>
       </div>
       <div id="sitepanel" hidden></div>
     </aside>
@@ -481,6 +568,7 @@ footer span:last-child{text-align:right}
         <button data-t="solar">Solar<kbd>P</kbd></button>
         <button data-t="shade">Shade<kbd>S</kbd></button>
         <button data-t="riser">Riser<kbd>R</kbd></button>
+        <button data-t="star" title="A star shade — a folding solar canopy that isn't rack at all. 37.9′ across, 8.1′ up, 18 panels.">Star shade<kbd>Y</kbd></button>
         <button data-t="rails">Rails<kbd>X</kbd></button>
         <button data-t="erase">Erase<kbd>E</kbd></button>
       </div>
@@ -518,7 +606,7 @@ footer span:last-child{text-align:right}
         <button data-v="ballast">Ballast</button>
         <button class="act" id="vfit" title="Frame everything">⌖ Fit</button>
       </div>
-      <div class="hint" id="hinttxt">1 unit = 1 ft · grid = 4′ · bay = 8′×12′<br>drag orbit · scroll zoom · right-drag pan</div>
+      <div class="hint" id="hinttxt">1 unit = 1 ft · grid = 4′ · bay = 12′×12′<br>drag orbit · scroll zoom · right-drag pan</div>
       <div id="hintov" hidden><div id="hintmsg">Click the ground to raise a bay<small>pick a tool · drag to orbit</small></div></div>
       <div id="dimlabels"></div>
       <div id="toast" role="status"></div>
@@ -1598,15 +1686,24 @@ footer span:last-child{text-align:right}
 </script>
 <script>
 /* Rack Lab · Sheet M-5s — free-build pallet-rack sketchpad + live count sheet.
-   Real rack sizes: a bay is 8' wide × 12' long and stands on FOUR upright
-   frames, 12' tall and 42" deep, arranged as two rack ROWS — a row being two
-   frames with beams strung between them, high at deck level and low near the
-   base. 42" + a 1' aisle + 42" is the bay's 8' exactly, so the outer posts land
-   on the bay line and the deck runs out flush. Rows of 2×4 girts run along every
-   outside face to lace the racks together and give the plywood something to
-   bite. 1 deck kit = 8 beams + 10 joists + 3 sheets = one 8'×12' bay, 96 ft².
+   Real rack sizes: a bay is 12' long and stands on FOUR upright frames, 42"
+   deep, arranged as two rack ROWS — a row being two frames with beams strung
+   between them, high at deck level and low near the base.
+   TWO numbers are global, because together they are the bay:
+     ROW SPREAD  — how far apart the rows stand, i.e. the bay's width.
+                   8' = a 1' aisle · 12' = 5' · 16' = 9'.
+     UPRIGHT     — one lift, floor to floor. 8' · 12' · 16', all stock frame
+                   heights. 36' is the ceiling, so a taller frame buys fewer
+                   lifts. Girts, wall height, slope pitch, stair geometry,
+                   ballast and steel price all follow it.
+   Both at 12' is a 12' CUBE, and the default. Whatever the spread, the outer
+   posts land on the bay line and the deck runs out flush. Rows of 2×4 girts run
+   along every outside face to lace the racks together and give the plywood
+   something to bite. 1 deck kit = 8 beams + 10 joists + the sheets for one bay.
    The SPAN tool stretches a bay's long side to 20' and swaps its steel beams
-   for doubled 20' 2×6 — 5 sheets, still no cuts.
+   for doubled 20' 2×6.
+   Walls are skinned in 4' plywood courses and every course carries its own
+   opening, so a face takes as many doors and windows as it has sheets.
    All scene units are FEET. The field is a 4' module grid, so every bay is a
    PIECE that turns E–W or N–S on its own. North = -Z.
    Two modes: STRUCTURE (build one camp) and MARS-WIDE (place camps together).
@@ -1621,22 +1718,84 @@ footer span:last-child{text-align:right}
    because on the ground they do. The 8' and the 12' are the bay's whole
    footprint — the steel lives inside it, not proud of it.                 */
 const MOD = 4;                                // the module everything snaps to
-const G = 36, MAXL = 3;                       // 144' of field · 3 lifts -> 36'
-const BW = 8, BL = 12, SPANL = 20;            // bay: 8' wide · 12' long · 20' on a long span
+const G = 36;                                 // 144' of field
+const BL = 12, SPANL = 20;                    // bay: 12' long · 20' on a long span
 const SPANM = 5;                              // 20' is five 4' modules
-const LIFT = 12;                              // one upright, floor to floor
+/* UPRIGHT HEIGHT — one lift, floor to floor. Rack frames come in stock heights
+   and these are three real ones, so a camp can buy what it finds:
+
+     8'  — a low deck you can hand things up onto, and a shed you duck into
+     12' — stand-up head height under the deck. The default, and the cube at 12' rows
+     16' — two storeys of head height, or one very tall room
+
+   Everything hung off a frame follows it: the high beam sits a deck kit under
+   the top whatever that is, the girts add a row every 4' of ply course, the
+   walls get taller, a slope off a face gets steeper, and the stair regrows its
+   flights so the pitch stays walkable. 36' stays the sketch ceiling, so a taller
+   frame buys fewer lifts.                                                    */
+const LIFT_OPTS = [8, 12, 16];
+let nextLift = 12;                            // the STRIP — what the next piece lands as
+let LIFT = 12;                                // …and the kit of the piece being read
+const CEIL_FT = 36;                           // …and the ceiling over all of them
+const LIFTS_MAX = 3;                          // no column ever goes past three, whatever the frame
+const maxLifts = () => clamp(Math.floor(CEIL_FT/LIFT), 1, LIFTS_MAX);
 const DEPTH = 3.5;                            // 42" upright frame, post to post
 const POST = DEPTH/2;
-/* Two 42" racks with a 1' aisle between them is 3'6" + 1' + 3'6" = the bay's 8'
-   exactly. So the outer posts land right on the bay line and the deck sheet runs
-   out flush with them — nothing over, nothing short. Two bays back to back stand
-   their outer frames on the line between them, the way double-deep rack does. */
-const ROW_GAP = BW - 2*DEPTH;                 // 1' — what's left between two 42" racks
+/* ROW SPREAD — how far apart the two rack rows stand, which IS the bay's width.
+   Each row is a 42" frame, so the spread is 3'6" + aisle + 3'6". It has to land
+   on the 4' module grid, which gives three honest widths:
+
+     8'  — 1' aisle.  The tightest rack goes: the two rows almost touching.
+     12' — 5' aisle.  A 12' × 12' × 12' bay: a cube, and the default.
+     16' — 9' aisle.  A wide room on the same steel, at the cost of longer joists.
+
+   The outer posts land right on the bay line whatever the spread, so the deck
+   sheet always runs out flush with them — nothing over, nothing short. Two bays
+   back to back stand their outer frames on the line between them, the way
+   double-deep rack does.
+
+   Joists cross the rows and bear on all four beam lines, at 0, 3'6", BW-3'6"
+   and BW. The clear span that matters is the aisle: 1', 5' or 9'. A 2×8 at 16"
+   o.c. under the sheet's 60+10 psf takes 9' at 863 psi bending (SPF #2 allows
+   1207 with the repetitive and size factors) and deflects L/610 — so ONE joist
+   size covers all three widths, and the deck build-up below never changes. */
+const BW_OPTS = [8, 12, 16];
+let nextBW = 12;                              // the STRIP — what the next piece lands as
+let BW = 12;                                  // …and the kit of the piece being read
+/* ── the kit a PIECE was drawn on ─────────────────────────────────────────
+   ROW SPREAD and UPRIGHT HEIGHT used to be one setting over the whole sketch,
+   and changing either re-laid everything on it. They are per PIECE now, the
+   same way the bay grain always was: the strips say what the NEXT piece lands
+   as, and every piece already on the ground keeps what it was drawn on. So a
+   16' shed can stand against a 12' room, and the sheet counts both.
+
+   BW and LIFT are scratch. Every read of a piece sets them to that piece's kit
+   first — useKit(v) — and anything asking about the piece that has not landed
+   yet reads the strips through useNext(). One rule holds it together: a COLUMN
+   is one height all the way up. The piece on the ground sets it and anything
+   stacked on it inherits it, because a stack of frames is one line of steel and
+   you do not splice a 12' frame onto a 16' one halfway. The column next door is
+   free to be something else. Height is therefore still y × THIS column's lift,
+   which is why level y still means what it always meant.                   */
+const cellBW   = v => (v && v.bw)   || nextBW;
+const cellLift = v => (v && v.lift) || nextLift;
+const useKit  = v => { BW = cellBW(v); LIFT = cellLift(v); };
+const useNext = () => { BW = nextBW; LIFT = nextLift; };
+/* Whatever the ground piece of this column was drawn on — what a piece stacked
+   on it has to be, and what level y measures in. */
+const colLift = (m,i,j) => {
+  for (let y=0;y<LIFTS_MAX;y++){ const c = m.cells.get(k3(i,j,y)); if (c) return cellLift(c); }
+  return nextLift;
+};
+const colBW = (m,i,j) => {
+  for (let y=0;y<LIFTS_MAX;y++){ const c = m.cells.get(k3(i,j,y)); if (c) return cellBW(c); }
+  return nextBW;
+};
+const BWM = () => BW/MOD;                     // …in 4' modules: 2, 3 or 4
+const ROW_GAP = () => BW - 2*DEPTH;           // the aisle left between two 42" racks
 const ROW_IN = POST;                          // row line, in from the bay edge
-const ROWSP = DEPTH + ROW_GAP;                // 4'6" row line to row line
 const SKIN_IN = ROW_IN - POST;                // 0 — the deck lands flush with the steel
-const BAYA = BW*BL;                           // 96 ft² — three sheets, no cuts
-const SPANA = BW*SPANL;                       // 160 ft² — five sheets, still no cuts
+const JOIST_SPAN = () => Math.max(DEPTH, BW-2*DEPTH);   // worst clear span a joist sees
 /* Deck build-up. A 2×8 joist on edge plus ¾" ply is 8" of structure, and the
    beam it lands on is another 2" of steel below that. So the beam sits 10⅓"
    under the walking surface and the deck comes out at a clean 12' — joists
@@ -1644,9 +1803,16 @@ const SPANA = BW*SPANL;                       // 160 ft² — five sheets, still
 const DECK_T = .86;                           // beam centre up to deck top, in feet
 /* Girts are the nailer, so they go where the plywood breaks, not at a pretty
    even spacing: 4' ply courses land on the 4' and 8' rows with backing top and
-   bottom, instead of a sheet edge hanging in space a foot past the last girt. */
-const GIRTH = [.6, 4, 8, 11.4];               // 2×4 girt rows up an outside face
-const BEAM_HI = LIFT - DECK_T;                // beam at deck height…
+   bottom, instead of a sheet edge hanging in space a foot past the last girt.
+   A taller frame is more ply courses, so it grows a row: three rows up an 8'
+   face, four up a 12', five up a 16'.                                       */
+const girtRows = () => {                      // 2×4 girt rows up an outside face
+  const out = [.6];
+  for (let h = MOD; h < LIFT - 1; h += MOD) out.push(h);
+  out.push(LIFT - .6);
+  return out;
+};
+const beamHi = () => LIFT - DECK_T;           // beam at deck height…
 const BEAM_LO = .65;                          // …and one down low. This one carries the
                                               //    FLOOR when a bay gets one, so it sits
                                               //    a deck kit's depth under 18"
@@ -1662,6 +1828,22 @@ const FLOOR_H = 1.55;                         // riser on cribbing, out in the o
    standing, sitting, moving about. A packed dance floor is 100 and wants an
    engineer, which the sheet says out loud rather than leaving you to guess.  */
 const DES_LL = 60, DES_DL = 10;               // psf live · psf dead
+/* A 20' long-span bay carries its deck on lumber, and how much lumber depends on
+   the row spread — because spreading the rows widens what each deck line has to
+   carry. The four lines sit at 0, 3'6", BW-3'6" and BW, so an INNER line takes
+   half the aisle plus half the 3'6" beside it:
+
+     8'  rows -> 2'3" tributary -> (4) 2×12   the number this sheet has always used
+     12' rows -> 4'3"           -> (7) 2×12
+     16' rows -> 6'3"           -> (10) 2×12
+
+   which is lumber telling you it has run out. Past four plies the sheet says so
+   and points at an LVL or a steel beam instead of printing a silly count.
+   S of one 2×12 ply is 31.6 in³ and SPF #2 bends at 875 psi; bending governs
+   here, not deflection — four plies at 2'3" run L/492.                      */
+const SPAN_TRIB = () => (BW - DEPTH)/2;       // what one inner deck line carries
+const spanPlies = () =>
+  Math.max(2, ceil(((DES_LL+DES_DL)*SPAN_TRIB() * SPANL*SPANL/8 * 12) / (875*31.64)));
 const FT = v => `${v}′`;
 const rnd = Math.round, ceil = Math.ceil;
 const money = n => '$'+n.toLocaleString('en-US');
@@ -1674,11 +1856,16 @@ const isLong = r => r >= 2;                   // 20' bay on 2×6 beams
 const bayLen = r => isLong(r) ? SPANL : BL;   // 12' or 20'
 const bayMod = r => isLong(r) ? SPANM : 3;    // …in modules
 const bfX = r => isEW(r) ? bayLen(r) : BW, bfZ = r => isEW(r) ? BW : bayLen(r);
-const bmX = r => isEW(r) ? bayMod(r) : 2,     bmZ = r => isEW(r) ? 2 : bayMod(r);
-const bayArea = r => isLong(r) ? SPANA : BAYA;
-const joistsOf = r => rnd(bayLen(r)/1.333)+1; // 2×8 × 8' at 16" o.c. — 10, or 16 long
-const PLYB = 3;                               // 4×8 sheets that floor one 12' bay
-const sheetsOf = r => isLong(r) ? 5 : PLYB;
+const bmX = r => isEW(r) ? bayMod(r) : BWM(), bmZ = r => isEW(r) ? BWM() : bayMod(r);
+const bayArea = r => BW*bayLen(r);
+const joistsOf = r => rnd(bayLen(r)/1.333)+1; // 2×8 at 16" o.c. — 10 down a 12' bay, 16 long
+/* Ply. A 4×8 sheet is 32 ft², and the joists run the width, so sheets lay in 4'
+   courses down the length with every seam landing on a joist. 8' and 16' widths
+   come out whole; a 12' width leaves a half sheet on the last course, which the
+   sheet counts and the next bay eats. */
+const sheetsOf = r => ceil(bayArea(r)/32);
+const plyClean = r => (bayArea(r) % 32) === 0;
+const PLYB = () => sheetsOf(0);               // sheets that floor one ordinary bay
 const mX = i => (i-G/2)*MOD, mZ = j => (j-G/2)*MOD;      // module line -> feet
 const bcX = (i,r) => mX(i)+bfX(r)/2, bcZ = (j,r) => mZ(j)+bfZ(r)/2;
 const k3 = (i,j,y)=>i+','+j+','+y, kp=(i,j)=>i+','+j;
@@ -1695,8 +1882,104 @@ const roofGrid  = r => ({nc:Math.max(1,Math.floor(bfX(r)/PW)), na:Math.max(1,Mat
 /* Ballast — a single upright has no base at all, so the weight goes out on an
    arm: a spare beam laid flat at grade just outside each perimeter face, a
    full water barrel strapped down at each end of it. */
+/* ══ STAR SHADE ═══════════════════════════════════════════════════════════
+   Not rack. Nothing in this block touches an upright frame, a beam or a lift —
+   a star shade stands on its own on bare ground, and the sheet counts it as its
+   own kit of lumber and bolts on top of whatever rack you drew.
+
+   It is Sam Smith's (Disruptively Useful) folding StarShade at Bombay Beach,
+   off its own build guide: a HOBERMAN RING of eight scissor legs, 37.9' point to
+   point, 8.1' tall, 18 panels, 3.96 kW, 1,530 lb, about $992 in 2×4 and half-inch
+   bolts. Folded to standing in two minutes out of the back of a pickup.
+
+   The plan is an OCTAGRAM — two squares crossed at 45°, which is the top ring
+   and the bottom ring counter-rotated by the fold. Where their edges cross, at
+   0.765 of the star radius, is exactly where the eight scissor legs stand: a
+   square of circumradius R has its edge on the line x+z = R, and the point at
+   22.5° and 0.765R sits at (0.293R, 0.707R), which sums to R. So both rings run
+   through all eight leg feet, and the geometry closes on itself.
+
+   Under the deck is a reciprocal roof: eight 10' radials from a 4'6" hub out to
+   the 14'6" ring — which is where the 10' stick comes from, 14.5 − 4.5 — and
+   sixteen 8' beams woven as two octagons at 10'5", one turned 22.5° against the
+   other. A chord 45° apart at that radius measures 8' on the nose.
+
+   The panels lie FLAT, so the sheet scores them flat: at this latitude in
+   December that is a long way off the best you could aim for, and it says so
+   rather than quietly crediting them a tilt they haven't got.              */
+const SS_D = 37.9, SS_H = 8.1;                // point to point · overall height
+const SS_M = 10;                              // 40' of module grid it stands in
+const SS_R = SS_D/2;                          // 18.95 — the star tips
+const SS_RIN = SS_R*0.765;                    // 14.5 — where the rings cross and the legs stand
+const SS_HUB = 4.5, SS_RECIP = 10.45;         // radial hub · the woven reciprocal ring
+const SS_N = 8;                               // modules · scissor legs · ring corners ×2
+/* The 8.1' is the top of the GLASS, and four things stack under it: the top
+   ring, the radials, the woven reciprocals, then the panels. Work down from 8.1
+   and the top ring lands at 7'4", which leaves a 7'2" rise for an 8' scissor bar
+   — so each X splays 3'6" along the ring, which is about what the guide's own
+   elevation draws.                                                          */
+const SS_Y0 = .15, SS_Y1 = 7.35;              // bottom ring · top ring
+const SS_HW = 1.74;                           // half the spread of one scissor X
+const SS_PN = 18, SS_PW = 220;                // panels · watts each -> 3.96 kW
+const SS_PL = 61.4/12, SS_PD = 31.3/12;       // one panel, lying flat
+const SS_PCOLS = 3, SS_PROWS = 6;             // …butted up in a block, 3 × 6 = the 18
+const SS_PGAP = .125;                         // 1½″ frame to frame, the way they clamp
+const SS_LB = 1529.8;                         // the guide's own figure — frame and glass
+/* ── the power room ───────────────────────────────────────────────────────
+   Two 275-gallon IBC totes stacked at the hub — the standard caged tote every
+   camp already has a few of, 48 × 40 × 46″ each. Batteries in the bottom one,
+   inverter and controllers in the top. The stack is 7′8″, and it stands inside
+   the 4′6″ hub, so it clears the radials overhead and nothing up there has to
+   move to make room for it — and it is in the shade of the whole deck all day,
+   which is the one place on this thing that is. The sheet counts the totes,
+   because they are structure you have to have; it does not guess at what you
+   put in them.                                                             */
+const IBC_L = 4, IBC_W = 40/12, IBC_H = 46/12;// 48 × 40 × 46″ — one 275-gal tote
+const IBC_N = 2;                              // stacked, 7′8″ to the top of the cage
+const IBC_LB = 130;                           // one empty tote, cage and pallet
+/* Straight off the build guide's bill of materials. Two groups because the
+   sheet buys them as two things: the frame you cut and bolt, and the glass. */
+const SS_BOM = [
+  ['Frame · brackets · bolts', [
+    [32, 'H-beams — 8′ 2×4 flat <small>(rings, 2-ply)</small>', 3.70],
+    [24, 'V-beams — 8′ 2×4 on edge <small>(scissor legs, 3-ply)</small>', 3.70],
+    [32, 'U-brackets — 2.17 × 1.6 × 3.82″, 0.18″ wall', 5.38],
+    [16, 'Inner bolts — ½″ × 3″', 1.25],
+    [16, 'Outer bolts — ½″ × 3″', 1.00],
+    [ 8, 'Centre bolts — ½″ × 6.4″', 1.25],
+    [16, 'H-centre bolts — ½″ × 3″', 1.25],
+    [32, 'H-pivot bolts — ½″ × 3″', 1.25],
+    [80, 'V-stack washers — ID ½″ OD 1½″ × 0.45″', 0.50],
+    [48, 'H-stack washers — ID ½″ OD 1½″ × 0.1″', 0.50],
+    [ 8, 'Radial support beams — 10′ 2×4', 3.70],
+    [16, 'Reciprocal support beams — 8′ 2½×1½', 3.70],
+    [32, 'Radial support bolts <small>(top ring / outer pivot)</small>', 1.25],
+    [16, 'Radial through-bolts <small>(through-beam tie)</small>', 1.25],
+    [48, 'Radial support washers', 0.50],
+  ]],
+  ['Power', [
+    [SS_PN, `Solar panels — ${SS_PW} W, 31.3 × 61.4″`, 15.00],
+  ]],
+  ['Power room', [
+    [IBC_N, 'IBC totes — 275 gal, 48 × 40 × 46″ <small>(batteries · inverter)</small>', 100.00],
+  ]],
+];
+const ssGroupCost = g => g[1].reduce((t,[n,,p])=>t + n*p, 0);
+const SS_STRUCT = ssGroupCost(SS_BOM[0]);     // $722.16
+const SS_POWER  = ssGroupCost(SS_BOM[1]);     // $270.00
+const SS_ROOM   = ssGroupCost(SS_BOM[2]);     // $200.00 — the two totes, empty
+const SS_COST   = SS_STRUCT + SS_POWER + SS_ROOM;
+const SS_ALL_LB = SS_LB + IBC_N*IBC_LB;       // 1,789.8 — the guide's kit plus the totes
+const starRect = (i,j)=>({i, j, w:SS_M, d:SS_M});
 const BAR_GAL = 55, BAR_LB = 459;             // a 55-gal drum of water, full
-const BAR_PER = 2;                            // barrels on each ballast beam
+/* Barrels on each ballast beam. A gust pushes on a wall of height H at H/2, so
+   the moment that wants to tip the thing goes as H² while the weight holding it
+   down does not go up at all. Two barrels an outrigger — one strapped at each
+   end — carries a 12' face with about 1.5 to spare, which means the SAME two
+   barrels on a 16' face carry about 0.85, and 0.85 is a structure lying on its
+   side. So 16' frames get four: doubled at each end of the arm.             */
+const barPer = () => LIFT >= 16 ? 4 : 2;
+const windMargin = () => rnd(15 * Math.pow(12/LIFT,2) * (barPer()/2))/10;
 const BAL_OUT = 2.2;                          // how far the ballast beam sits off the posts
 const GIRT_OUT = .21, PLY_OUT = .32;          // girts lag to the outside of the posts, ply to them
 const watts = n => n*PANEL_W;
@@ -1769,22 +2052,57 @@ const COMPASS16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW
 const bearing = a => COMPASS16[(rnd((a*180/Math.PI)/22.5)%16+16)%16];
 let sunHour = 14;                              // mid-afternoon: the shadows that matter
 
-const blank = ()=>({ name:'', cells:new Map(), skins:new Map(), pads:new Map(),
-                     slopes:new Map(), arrays:new Set(), stairs:new Map() });
+const blank = ()=>({ name:'', bw:BW, lift:LIFT, cells:new Map(), skins:new Map(), pads:new Map(),
+                     slopes:new Map(), arrays:new Set(), stairs:new Map(), stars:new Set() });
 let model = blank();
+/* A sketch carries its own KIT — the row spread and the upright height — so a
+   link drawn on 8' rows and 12' frames still rebuilds that way on a screen set
+   to something else. Anything that reads a model that ISN'T the one being
+   edited — a neighbour's lot out on MARS-WIDE — swaps the kit in for the length
+   of the read and puts it back. */
+const bwOf   = m => (m && m.bw) || 8;
+const liftOf = m => (m && m.lift) || 12;
+function atKit(w, h, fn){
+  const sw=BW, sh=LIFT, nw=nextBW, nh=nextLift;
+  BW=w; LIFT=h; nextBW=w; nextLift=h;
+  try { return fn(); } finally { BW=sw; LIFT=sh; nextBW=nw; nextLift=nh; }
+}
+const atModel = (m, fn)=>atKit(bwOf(m), liftOf(m), fn);
 // cells:  "i,j,y" bay anchored at module (i,j), level y -> {r, deck, canopy, rail, floor}
 //                 deck = the walkable roof on top · floor = a floor at its base
 // pads:   "i,j"   18" riser, one bay footprint      -> {r, canopy}
 // skins:  "D,a,b,len,y"  D='Z' wall along X at z-line b, modules a..a+len
 //                        D='X' wall along Z at x-line a, modules b..b+len
-//                        len 2 = an 8' face · 3 = 12' · 5 = 20'  -> {op} 0 solid 1 door 2 window
+//                        len 2 = an 8' face · 3 = 12' · 5 = 20'
+//                 -> {ops:[…]} one opening per 4' module: 0 solid 1 door 2 window
 // slopes: "i,j,y" -> {d, solar, r} angled panel filling that bay footprint
 // arrays: "i,j"    flat-ish solar riding the top of the column anchored there
+// stars:  "i,j"    a star shade standing on its own, 10 modules square. Not rack —
+//                  it shares nothing with a bay but the ground it stands on.
 // stairs: "i,j,y" -> {d, t, w, r} two flights off face d.
 //                   t=0 walks straight out · t=±1 turns at the head onto a top
 //                   flat and comes down along the face.  w=0 runs straight
 //                   through the mid flat · w=±1 turns there too, which is how a
 //                   run wraps around a corner of the building.
+/* ── openings, one per 4' module ──────────────────────────────
+   A wall is skinned in 4' plywood courses, so an opening lives in a course:
+   one 4' module carries one door or one window, and a face can carry as many as
+   it has modules. A 3'2" door or a 3'6" window centred in a 4' sheet leaves a
+   5" or a 3" leg of ply each side, which is what actually gets built — you rip
+   the sheet, you don't frame a header across three of them.
+
+   ops[] runs along the wall in module order: ops[0] is the module at the wall's
+   own anchor (a..a+1 for a Z wall, b..b+1 for an X wall).                    */
+const opsOf = (v, len) => {
+  if (!v) return new Array(len).fill(0);
+  if (v.ops && v.ops.length === len) return v.ops;
+  const a = new Array(len).fill(0);            // an old single-op wall: one opening, centred
+  if (v.ops) for (let n=0;n<Math.min(len,v.ops.length);n++) a[n] = v.ops[n];
+  else if (v.op) a[(len-1)>>1] = v.op;
+  return a;
+};
+const opsSolid = ops => ops.every(o=>!o);
+const OPNAME = ['solid','door','window'];
 const DIRV = [[0,-1],[1,0],[0,1],[-1,0]];     // N E S W in grid steps
 const DIRA = [0, Math.PI/2, Math.PI, 3*Math.PI/2];   // …as a compass bearing
 const COMPASS = ['N','E','S','W'];
@@ -1807,34 +2125,54 @@ const stairWidth = (n, cross=BW) => (n-1)*cross + BW - 3;
 /* Which way a run travels after a turn of t — the head turn works off the face
    direction, the mid-flat turn works off whatever the upper flight was doing. */
 const runDir = (d,t) => t ? (d+t+4)&3 : d;
+/* A stairway is always two flights with a flat between them, and each flight
+   takes half the lift. How many steps that is, and how much ground it wants,
+   both come off the frame height — a flight is NOT a fixed 10' any more.
+
+   Pick the step count to land the riser near 6½", then set the tread so that
+   2R + T = 24", the middle of the band a stair is comfortable to walk. Do that
+   and the run falls out as 2n − LIFT, which is a whole number of feet every
+   time:
+
+     8'  lift ->  7 steps · 6⅞" rise · 10¼" tread ·  6' run · 34°
+     12'      -> 11 steps · 6%9/16" · 10%29/32"   · 10' run · 31°
+     16'      -> 15 steps · 6⅖"     · 11⅕"        · 14' run · 30°
+
+   Every riser clears the 7¾" limit and every flight sits in the low thirties.
+   A turn does NOT get to buy its flat out of the run — squeezing the same rise
+   into less ground gave an 8" riser, over the limit and horrible underfoot. A
+   turned run simply needs 4' more ground, and the tool says so when it hasn't
+   got it.                                                                    */
 const STAIR_FLAT = 4;                         // every landing, at the head or the middle
-/* Every flight is 10' for 6' of rise, turned or not, and takes it in eleven
-   steps: a 6%9/16" riser on a 10%29/32" tread. That is 2R+T = 24", right in the
-   middle of the band a stair is comfortable to walk, it clears the 7¾" riser
-   limit, and it puts the flight at the 31° the sheet has always claimed. A turn
-   does NOT get to buy its flat out of the run — squeezing the same 6' of rise
-   into 8' gave an 8" riser, over the limit and horrible underfoot. A turned run
-   simply needs 4' more ground, and the tool now says so when it hasn't got it. */
-const FLIGHT = 10;                            // run of one flight, always
-const STAIR_NT = 11;                          // …taken in this many steps
+const stairSteps = () => rnd(LIFT*6/6.55);    // 7 · 11 · 15 — a riser near 6½"
+const flightRun  = () => 2*stairSteps() - LIFT;   // 6' · 10' · 14', and 2R+T = 24" on the nose
+const stairRise  = () => LIFT*6/stairSteps();     // riser, inches
+const stairTread = () => flightRun()*12/stairSteps();
+const stairDeg   = () => rnd(Math.atan2(LIFT/2, flightRun())*180/Math.PI);
+const inch = v => {                           // 6.5625 -> 6%9/16", the way a tape reads
+  const w = Math.floor(v), s = rnd((v-w)*16);
+  if (!s) return w+'″';
+  const g = (a,b)=>b?g(b,a%b):a, d = g(s,16);
+  return `${w}${'-'}${s/d}/${16/d}″`;
+};
 /* How far leg one travels: to the foot on a straight run, to the far edge of
    the mid flat on one that turns there. */
-const stairLen1 = (t,w) => (t?STAIR_FLAT:0) + FLIGHT + STAIR_FLAT + (w?0:FLIGHT);
+const stairLen1 = (t,w) => (t?STAIR_FLAT:0) + flightRun() + STAIR_FLAT + (w?0:flightRun());
 
 function occMap(m){                            // module -> the bay key holding it
   const o = new Map();
-  for (const [k,v] of m.cells){ const [i,j,y]=nums(k);
+  for (const [k,v] of m.cells){ useKit(v); const [i,j,y]=nums(k);
     for (let a=0;a<bmX(v.r);a++) for (let b=0;b<bmZ(v.r);b++) o.set(k3(i+a,j+b,y), k); }
-  return o;
+  useNext(); return o;
 }
 function padOcc(m){
   const o = new Map();
-  for (const [k,v] of m.pads){ const [i,j]=nums(k);
+  for (const [k,v] of m.pads){ useKit(v); const [i,j]=nums(k);
     for (let a=0;a<bmX(v.r);a++) for (let b=0;b<bmZ(v.r);b++) o.set(kp(i+a,j+b), k); }
-  return o;
+  useNext(); return o;
 }
 function inField(i,j,r){ return i>=0 && j>=0 && i+bmX(r)<=G && j+bmZ(r)<=G; }
-const topOf = (m,i,j)=>{ for (let y=MAXL-1;y>=0;y--) if (m.cells.has(k3(i,j,y))) return y; return -1; };
+const topOf = (m,i,j)=>{ for (let y=LIFTS_MAX-1;y>=0;y--) if (m.cells.has(k3(i,j,y))) return y; return -1; };
 const topmost = (i,j)=>topOf(model,i,j);
 /* Every bay of ground a stairway lays claim to, starting from the one right off
    the face. Leg one walks away from the head and takes a bay each time it
@@ -1850,7 +2188,7 @@ function stairCells(i,j,d,r,t,w){
   for (let u=0;u<nu;u++) out.push([i+ax*u, j+az*u]);
   if (w){
     const [bx,bz] = stepOf(runDir(d1,w), r);
-    const reach = L2/2 + stairWidth(1)/2 + FLIGHT + .5;
+    const reach = L2/2 + stairWidth(1)/2 + flightRun() + .5;
     const nv = ceil(reach/L2 - 1e-6) - 1;
     for (let u=Math.floor((len1-STAIR_FLAT)/L1); u<nu; u++)
       for (let v=1;v<=nv;v++) out.push([i+ax*u+bx*v, j+az*u+bz*v]);
@@ -1859,43 +2197,97 @@ function stairCells(i,j,d,r,t,w){
 }
 
 /* ─────────────────── share encoding ──────────────────────
-   #R6.<name>.<cells>.<skins>.<pads>.<norail>.<slopes>.<arrays>.<stairs>.<flags>
-   every part dot-free base36. R5, R4, R3, R2 and R1 links still decode — old 24'
-   spans just come back as the two ordinary bays they were drawn on, and stairs
-   drawn before the mid flat could turn come back running straight through it. */
+   #R7.<name>.<cells>.<skins>.<pads>.<norail>.<slopes>.<arrays>.<stairs>.<flags>
+   every part dot-free base36. R6, R5, R4, R3, R2 and R1 links still decode — old
+   24' spans come back as the two ordinary bays they were drawn on, stairs drawn
+   before the mid flat could turn come back running straight through it, and
+   everything drawn before the rows could spread comes back at the 8' it was
+   drawn at, so an old link still rebuilds the building somebody actually built.
+
+   R7 changed two things. The flags carry the kit ('w' + row-spread modules, then
+   'l' + upright modules, both ahead of the clock so the old reader still finds
+   'h'), and a wall carries one opening per 4' module instead of one for the whole
+   face — packed base 3, low module first, into two chars. An R6 wall marked door
+   or window comes back as that one opening in its middle module, which is where
+   it was drawn.
+
+   R8 adds an eleventh token for STAR SHADES, two chars an anchor, slotted in
+   ahead of the flags. R7 reads at ten tokens with no stars, which is what it
+   had.
+
+   R9 puts the KIT on the PIECE. Every bay, riser, lean-to and stair carries one
+   more base36 char — the row spread and the frame height it was drawn on, packed
+   as bwIndex*3 + liftIndex, 0..8. The 'w' and 'l' flags on the tail stay, and
+   now say what the STRIPS were set to when the link was made, so opening one
+   puts you back where you left off. An R8 link has one kit for the whole sketch,
+   which is what its flags already said, so it comes back with every piece drawn
+   on that — which is what it was.                                            */
 const encName = encPart;
+const packOps = ops => { let v=0; for (let n=ops.length-1;n>=0;n--) v = v*3 + (ops[n]||0); return v; };
+const unpackOps = (v,len) => { const a=[]; for (let n=0;n<len;n++){ a.push(v%3); v=Math.floor(v/3); } return a; };
+/* the kit a piece was drawn on, in one char: which row spread, which frame */
+const encKit = v => {
+  const w = Math.max(0, BW_OPTS.indexOf(cellBW(v)));
+  const h = Math.max(0, LIFT_OPTS.indexOf(cellLift(v)));
+  return (w*3 + h).toString(36);
+};
+const decKit = ch => { const v = d36(ch);
+  return isNaN(v) || v > 8 ? null : {bw: BW_OPTS[Math.floor(v/3)], lift: LIFT_OPTS[v%3]}; };
 function encode(m=model, rails=railsOn){
   let c='',s='',p='',nr='',sl='',ar='',st='';
   for (const [k,v] of m.cells){ const [i,j,y]=nums(k);
     c += i.toString(36)+j.toString(36)+(y*4+(v.r&3)).toString(36)+
-         ((v.floor?4:0)+(v.deck?2:0)+(v.canopy?1:0)).toString(36);
+         ((v.floor?4:0)+(v.deck?2:0)+(v.canopy?1:0)).toString(36)+encKit(v);
     if (v.rail === false) nr += i.toString(36)+j.toString(36)+y.toString(36);
   }
-  for (const [k,v] of m.skins){ const a=k.split(',');
+  for (const [k,v] of m.skins){ const a=k.split(','), len=+a[3];
+    const w = packOps(opsOf(v, len));           // up to 3^5-1 = 242, so two chars
     s += (+a[1]).toString(36)+(+a[2]).toString(36)+
-         ((a[0]==='X'?1:0) + (+a[3]===3?2:0) + 4*(+a[4]) + 12*(v.op||0)).toString(36) +
-         (+a[3]).toString(36); }
+         ((a[0]==='X'?1:0) + 2*(+a[4])).toString(36) + len.toString(36) +
+         Math.floor(w/36).toString(36) + (w%36).toString(36); }
   for (const [k,v] of m.pads){ const [i,j]=nums(k);
-    p += i.toString(36)+j.toString(36)+((v.r&1)+(v.canopy?2:0)).toString(36); }
+    p += i.toString(36)+j.toString(36)+((v.r&1)+(v.canopy?2:0)).toString(36)+encKit(v); }
   for (const [k,v] of m.slopes){ const [i,j,y]=nums(k);
-    sl += i.toString(36)+j.toString(36)+(y+3*v.d+(v.solar?12:0)).toString(36); }
+    sl += i.toString(36)+j.toString(36)+(y+3*v.d+(v.solar?12:0)).toString(36)+encKit(v); }
   for (const k of m.arrays){ const [i,j]=nums(k);
     ar += i.toString(36)+j.toString(36); }
   for (const [k,v] of m.stairs){ const [i,j,y]=nums(k);
     st += i.toString(36)+j.toString(36)+(y+3*v.d+12*((v.t||0)+1)).toString(36)
-        + ((v.w||0)+1).toString(36); }
-  const flags = (rails?'r':'n') + 'h' + rnd(sunHour*4).toString(36);
-  return 'R6.'+encName(m.name)+'.'+c+'.'+s+'.'+p+'.'+nr+'.'+sl+'.'+ar+'.'+st+'.'+flags;
+        + ((v.w||0)+1).toString(36)+encKit(v); }
+  let ss=''; for (const k of m.stars){ const [i,j]=nums(k);
+    ss += i.toString(36)+j.toString(36); }
+  const flags = (rails?'r':'n') + 'w' + (bwOf(m)/MOD).toString(36)
+              + 'l' + (liftOf(m)/MOD).toString(36)
+              + 'h' + rnd(sunHour*4).toString(36);
+  return 'R9.'+encName(m.name)+'.'+c+'.'+s+'.'+p+'.'+nr+'.'+sl+'.'+ar+'.'+st+'.'+ss+'.'+flags;
 }
+/* Every decoder builds its model in the kit that link was drawn on, because
+   inField(), the bay footprints, the lift ceiling and the stair all read the
+   live one. Read the kit off the tail first, hold it for the parse, hand it
+   back. Anything without a 'w' was drawn on 8' rows and anything without an 'l'
+   on 12' frames, which is what they were when those links were made.        */
 function decode(str){
   if (!str) return null;
-  if (str.startsWith('R6.')) return decodeR5(str, 4);
-  if (str.startsWith('R5.')) return decodeR5(str, 3);
-  if (str.startsWith('R4.')) return decodeR4(str);
-  if (str.startsWith('R3.') || str.startsWith('R2.') || str.startsWith('R1.')) return decodeOld(str);
-  return null;
+  const r9 = str.startsWith('R9.');
+  const t7 = r9 || str.startsWith('R7.') || str.startsWith('R8.');
+  return atKit(t7 ? kitFromFlags(str,'w',BW_OPTS,8) : 8,
+               t7 ? kitFromFlags(str,'l',LIFT_OPTS,12) : 12, ()=>{
+    if (r9) return decodeR5(str, 5);
+    if (t7) return decodeR5(str, 4);
+    if (str.startsWith('R6.')) return decodeR5(str, 4);
+    if (str.startsWith('R5.')) return decodeR5(str, 3);
+    if (str.startsWith('R4.')) return decodeR4(str);
+    if (str.startsWith('R3.') || str.startsWith('R2.') || str.startsWith('R1.')) return decodeOld(str);
+    return null;
+  });
 }
 const d36 = ch => parseInt(ch,36);
+function kitFromFlags(str, mark, opts, fallback){
+  const t = str.split('.'), f = t[t.length-1] || '';
+  const i = f.indexOf(mark);
+  const v = i < 0 ? NaN : d36(f[i+1]) * MOD;
+  return opts.includes(v) ? v : fallback;
+}
 /* the clock and the rails master ride on the tail of every link */
 function readFlags(flags, m){
   const hi = (flags||'').indexOf('h');
@@ -1903,40 +2295,63 @@ function readFlags(flags, m){
   if (hi >= 0){ const h = parseInt(flags.slice(hi+1), 36); if (!isNaN(h)) hour = clamp(h/4, 5, 20); }
   return { model:m, rails: (flags||'')[0] !== 'n', hour };
 }
-function decodeR5(str, sw){                     // sw: chars per stair — 4 since R6
+function decodeR5(str, sw){                     // sw: chars per stair — 4 since R6, 5 since R9
   const t = str.split('.');
-  if (t.length !== 10) return null;
+  const r9 = str.startsWith('R9.');             // …and every piece carrying its own kit
+  const r8 = r9 || str.startsWith('R8.');       // …and one more token since R8
+  if (t.length !== (r8 ? 11 : 10)) return null;
+  const r7 = r8 || str.startsWith('R7.');
+  /* A piece's kit comes off its own char on R9, and off the sketch-wide flags
+     on anything older — which is what every piece on those links was drawn on. */
+  const KW = r9 ? 1 : 0;                        // the extra kit char, or nothing
+  const kitAt = ch => (r9 && decKit(ch)) || {bw:BW, lift:LIFT};
   const m = blank();
   try { m.name = decodeURIComponent(t[1]).slice(0,28); } catch(e){ m.name=''; }
-  for (let n=0;n+4<=t[2].length;n+=4){
+  const CW = 4+KW;
+  for (let n=0;n+CW<=t[2].length;n+=CW){
     const i=d36(t[2][n]), j=d36(t[2][n+1]), a=d36(t[2][n+2]), b=d36(t[2][n+3]);
     if (isNaN(i)||isNaN(j)||isNaN(a)||isNaN(b)||a>11) return null;
-    const y=Math.floor(a/4), r=a&3;
-    if (y>=MAXL || !inField(i,j,r)) continue;
-    m.cells.set(k3(i,j,y), {r, deck:!!(b&2), canopy:!!(b&1), floor:!!(b&4), rail:true});
+    const y=Math.floor(a/4), r=a&3, kit=kitAt(t[2][n+4]);
+    if (!atKit(kit.bw, kit.lift, ()=>y<maxLifts() && inField(i,j,r))) continue;
+    m.cells.set(k3(i,j,y), {r, bw:kit.bw, lift:kit.lift,
+                            deck:!!(b&2), canopy:!!(b&1), floor:!!(b&4), rail:true});
   }
-  for (let n=0;n+4<=t[3].length;n+=4){
+  const SKW = r7 ? 6 : 4;
+  for (let n=0;n+SKW<=t[3].length;n+=SKW){
     const a=d36(t[3][n]), b=d36(t[3][n+1]), v=d36(t[3][n+2]), L=d36(t[3][n+3]);
     if (isNaN(a)||isNaN(b)||isNaN(v)||isNaN(L)||v>35||L<2||L>5) continue;
-    const op=Math.floor(v/12), rest=v%12;
-    m.skins.set((rest&1?'X':'Z')+','+a+','+b+','+L+','+Math.floor(rest/4), {op});
+    let ops, y;
+    if (r7){
+      const w = d36(t[3][n+4])*36 + d36(t[3][n+5]);
+      if (isNaN(w) || w >= Math.pow(3,L)) continue;
+      y = Math.floor(v/2); ops = unpackOps(w, L);
+    } else {                                    // R6 and older: one opening, centred
+      const rest = v%12;
+      y = Math.floor(rest/4); ops = opsOf({op:Math.floor(v/12)}, L);
+    }
+    if (y >= maxLifts()) continue;
+    m.skins.set((v&1?'X':'Z')+','+a+','+b+','+L+','+y, {ops});
   }
-  for (let n=0;n+3<=t[4].length;n+=3){
+  const PDW = 3+KW;
+  for (let n=0;n+PDW<=t[4].length;n+=PDW){
     const i=d36(t[4][n]), j=d36(t[4][n+1]), v=d36(t[4][n+2]);
     if (isNaN(i)||isNaN(j)||isNaN(v)) continue;
-    const r=v&1;
-    if (!inField(i,j,r)) continue;
-    m.pads.set(kp(i,j), {r, canopy:!!(v&2)});
+    const r=v&1, kit=kitAt(t[4][n+3]);
+    if (!atKit(kit.bw, kit.lift, ()=>inField(i,j,r))) continue;
+    m.pads.set(kp(i,j), {r, bw:kit.bw, lift:kit.lift, canopy:!!(v&2)});
   }
   for (let n=0;n+3<=t[5].length;n+=3){          // the bays whose railings are switched off
     const i=d36(t[5][n]), j=d36(t[5][n+1]), y=d36(t[5][n+2]);
     if (isNaN(i)||isNaN(j)||isNaN(y)) continue;
     const c = m.cells.get(k3(i,j,y)); if (c) c.rail = false;
   }
-  for (let n=0;n+3<=t[6].length;n+=3){
+  const SLW = 3+KW;
+  for (let n=0;n+SLW<=t[6].length;n+=SLW){
     const i=d36(t[6][n]), j=d36(t[6][n+1]), v=d36(t[6][n+2]);
     if (isNaN(i)||isNaN(j)||isNaN(v)||v>23) continue;
-    m.slopes.set(k3(i,j,(v%12)%3), {d:Math.floor((v%12)/3), solar:v>=12, r:0});
+    const kit=kitAt(t[6][n+3]);
+    m.slopes.set(k3(i,j,(v%12)%3),
+      {d:Math.floor((v%12)/3), solar:v>=12, r:0, bw:kit.bw, lift:kit.lift});
   }
   for (let n=0;n+2<=t[7].length;n+=2){
     const i=d36(t[7][n]), j=d36(t[7][n+1]);
@@ -1948,11 +2363,18 @@ function decodeR5(str, sw){                     // sw: chars per stair — 4 sin
     if (isNaN(i)||isNaN(j)||isNaN(v)||v>35) continue;
     const wv = sw>3 ? d36(t[8][n+3]) : 1;
     const w = isNaN(wv) ? 0 : clamp(wv-1, -1, 1);
-    const t2=Math.floor(v/12)-1, rest=v%12;
-    m.stairs.set(k3(i,j,rest%3), {d:Math.floor(rest/3), t:t2, w, r:0});
+    const t2=Math.floor(v/12)-1, rest=v%12, kit=kitAt(t[8][n+4]);
+    m.stairs.set(k3(i,j,rest%3),
+      {d:Math.floor(rest/3), t:t2, w, r:0, bw:kit.bw, lift:kit.lift});
+  }
+  if (r8) for (let n=0;n+2<=t[9].length;n+=2){
+    const i=d36(t[9][n]), j=d36(t[9][n+1]);
+    if (isNaN(i)||isNaN(j)||i+SS_M>G||j+SS_M>G) continue;
+    m.stars.add(kp(i,j));
   }
   pruneModel(m);
-  return readFlags(t[9], m);
+  m.bw = BW; m.lift = LIFT;
+  return readFlags(t[t.length-1], m);
 }
 /* R4 — the same plan, drawn before 20' bays, stair turns and per-structure
    rails existed. Spans were two bays on an LVL; they come back as two bays. */
@@ -1965,14 +2387,14 @@ function decodeR4(str){
     const i=d36(t[2][n]), j=d36(t[2][n+1]), v=d36(t[2][n+2]);
     if (isNaN(i)||isNaN(j)||isNaN(v)) return null;
     const y=Math.floor(v/8), r=(v&4)?1:0;
-    if (y>=MAXL || !inField(i,j,r)) continue;
+    if (y>=maxLifts() || !inField(i,j,r)) continue;
     m.cells.set(k3(i,j,y), {r, deck:!!(v&2), canopy:!!(v&1), floor:false, rail:true});
   }
   for (let n=0;n+3<=t[3].length;n+=3){
     const a=d36(t[3][n]), b=d36(t[3][n+1]), v=d36(t[3][n+2]);
     if (isNaN(a)||isNaN(b)||isNaN(v)||v>35) continue;
-    const op=Math.floor(v/12), rest=v%12;
-    m.skins.set((rest&1?'X':'Z')+','+a+','+b+','+(rest&2?3:2)+','+Math.floor(rest/4), {op});
+    const op=Math.floor(v/12), rest=v%12, L=rest&2?3:2;
+    m.skins.set((rest&1?'X':'Z')+','+a+','+b+','+L+','+Math.floor(rest/4), {ops:opsOf({op},L)});
   }
   for (let n=0;n+3<=t[4].length;n+=3){
     const i=d36(t[4][n]), j=d36(t[4][n+1]), v=d36(t[4][n+2]);
@@ -1998,7 +2420,8 @@ function decodeR4(str){
     m.stairs.set(k3(i,j,v%3), {d:Math.floor(v/3), t:0, w:0, r:0});
   }
   pruneModel(m);
-  return readFlags(t[9], m);
+  m.bw = BW; m.lift = LIFT;
+  return readFlags(t[t.length-1], m);
 }
 /* Old links were drawn on a fictional square bay. Rebuild them on the real one:
    the plan keeps its shape, its walls, its stairs — every bay just becomes the
@@ -2015,7 +2438,7 @@ function decodeOld(str){
   for (let n=0;n+3<=t[2].length;n+=3){
     const i=d36(t[2][n]), j=d36(t[2][n+1]), v=d36(t[2][n+2]);
     if (isNaN(i)||isNaN(j)||isNaN(v)) return null;
-    const y=v>>2; if (i>=OG||j>=OG||y>=MAXL) continue;
+    const y=v>>2; if (i>=OG||j>=OG||y>=maxLifts()) continue;
     cells.push([i,j,y,!!(v&2),!!(v&1)]);
   }
   for (let n=0;n+3<=t[3].length;n+=3){
@@ -2066,8 +2489,8 @@ function decodeOld(str){
   }
   for (const [D,i,j,y,op] of skins){
     const a=A(i), b=B(j);
-    if (D==='Z') m.skins.set('Z,'+a+','+b+',2,'+y, {op});
-    else         m.skins.set('X,'+a+','+b+',3,'+y, {op});
+    if (D==='Z') m.skins.set('Z,'+a+','+b+',2,'+y, {ops:opsOf({op},2)});
+    else         m.skins.set('X,'+a+','+b+',3,'+y, {ops:opsOf({op},3)});
   }
   for (const [i,j,canopy] of pads){ const a=A(i), b=B(j);
     if (inField(a,b,0)) m.pads.set(kp(a,b), {r:0, canopy}); }
@@ -2082,6 +2505,7 @@ function decodeOld(str){
   const flags = t[want-1] || '';
   // an old 'z' grain meant the 12' beams ran north–south — turn the whole thing
   const out = flags.indexOf('z') >= 0 ? rotateModel(m) : m;
+  out.bw = BW; out.lift = LIFT;
   return { model: out, rails: flags[0] !== 'n', hour: null };
 }
 
@@ -2106,13 +2530,22 @@ function wallGeom(m, key, occ){
   for (let n=0;n<len && r===null;n++){
     const A = D==='Z' ? occ.get(k3(p+n,q,y))   : occ.get(k3(p,q+n,y));
     const B = D==='Z' ? occ.get(k3(p+n,q-1,y)) : occ.get(k3(p-1,q+n,y));
-    if (A && B){ r=m.cells.get(A).r; side=0; }
-    else if (A){ r=m.cells.get(A).r; side=1; }
-    else if (B){ r=m.cells.get(B).r; side=-1; }
+    let host = null;
+    if (A && B){ host=m.cells.get(A); side=0; }
+    else if (A){ host=m.cells.get(A); side=1; }
+    else if (B){ host=m.cells.get(B); side=-1; }
+    if (host){
+      r=host.r; useKit(host);
+      /* A partition between two bays of different heights closes the taller
+         opening — stand it at the shorter one's height and there is a gap over
+         it. Exterior faces have only one side, so this changes nothing there. */
+      if (side===0){ const other = m.cells.get(B);          // host is A; B is the far side
+        if (other && cellLift(other) > LIFT) LIFT = cellLift(other); }
+    }
   }
   if (r===null) return null;
   const outSign = side===0 ? -1 : -side;
-  return { ...faceGeom(r, D, p, q, len, outSign), out:outSign, side };
+  return { ...faceGeom(r, D, p, q, len, outSign), out:outSign, side, lift:LIFT, bw:BW };
 }
 
 /* ─────────────────── derived counts ─────────────────────── */
@@ -2121,7 +2554,11 @@ function screwCalc(studs, ply){
   const boxes = Math.max(1, ceil(n/350));
   return { n, boxes, cost: boxes*40 };
 }
-function derive(m=model, rails=railsOn){
+/* A model is always read in the width it was drawn at. For the sketch on the
+   bench that IS the live one; out on MARS-WIDE every lot is somebody else's, so
+   the width goes with the model and not with the screen. */
+function derive(m=model, rails=railsOn){ return atModel(m, ()=>deriveIn(m, rails)); }
+function deriveIn(m, rails){
   const cells = m.cells, pads = m.pads, skins = m.skins;
   const occ = occMap(m);
   const at = (i,j,y)=>occ.get(k3(i,j,y)) || null;
@@ -2141,34 +2578,50 @@ function derive(m=model, rails=railsOn){
      on the same point and share it outright — that's why building tight costs
      less steel per bay. Bays back to back keep their own rows, standing back to
      back on the line between them, which is how rack really goes together.  */
-  const frames = new Map();                    // "x|z|y" -> {x,z,y} + 42"-axis votes
-  const FKEY = (x,z,y)=>rnd(x*4)+'|'+rnd(z*4)+'|'+y;
+  /* A frame is keyed by where it STANDS — x, z and the elevation of its foot —
+     not by level number, because level 1 of a 12' column starts at 12' and level
+     1 of the 16' column beside it starts at 16', and those are not the same
+     stick. Two pieces meeting on a line at the same foot DO share, and the
+     frame you buy is the TALLER of them: rack frames are drilled the whole way
+     up, so the shorter bay's beams simply land partway up the tall one. That is
+     the whole reason building on costs one frame line instead of two.       */
+  const frames = new Map();                    // "x|z|base" -> {x,z,y,base,h} + 42"-axis votes
+  const FKEY = (x,z,base)=>rnd(x*4)+'|'+rnd(z*4)+'|'+rnd(base*4);
   const rowLines = (i,j,r)=> isEW(r)            // where the two rack rows stand
     ? [mZ(j)+ROW_IN, mZ(j+bmZ(r))-ROW_IN]
     : [mX(i)+ROW_IN, mX(i+bmX(r))-ROW_IN];
   const rowEnds = (i,j,r)=> isEW(r)             // …and where the frames sit along them
     ? [mX(i), mX(i+bmX(r))] : [mZ(j), mZ(j+bmZ(r))];
-  let decked=0, maxLvl=-1, walkable=0, longBays=0;
+  let decked=0, maxLvl=-1, walkable=0, longBays=0, tallest=0;
   let fx0=1e9,fx1=-1e9,fz0=1e9,fz1=-1e9;
   const growFt=(a,b,c,d)=>{ if(a<fx0)fx0=a; if(b>fx1)fx1=b; if(c<fz0)fz0=c; if(d>fz1)fz1=d; };
   const growBay=(i,j,r)=>growFt(mX(i), mX(i+bmX(r)), mZ(j), mZ(j+bmZ(r)));
-  for (const [k,v] of cells){ const [i,j,y]=nums(k);
-    const ew = isEW(v.r);
+  for (const [k,v] of cells){ useKit(v); const [i,j,y]=nums(k);
+    const ew = isEW(v.r), base = y*LIFT;
     for (const line of rowLines(i,j,v.r)) for (const e of rowEnds(i,j,v.r)){
       const x = ew ? e : line, z = ew ? line : e;
-      const kk = FKEY(x,z,y), f = frames.get(kk) || {x, z, y, X:0, Z:0};
+      const kk = FKEY(x,z,base), f = frames.get(kk) || {x, z, y, base, h:0, mixed:false, X:0, Z:0};
+      if (f.h && f.h !== LIFT) f.mixed = true;  // two bay heights on one line of steel
+      if (LIFT > f.h) f.h = LIFT;               // …and you buy the taller one
+      if (y < f.y) f.y = y;
       ew ? f.Z++ : f.X++;                      // the 42" runs across the bay's 8' way
       frames.set(kk, f);
     }
     if (v.deck) decked++;
     if (isLong(v.r)) longBays++;
     if (y>maxLvl) maxLvl=y;
+    if (base+LIFT > tallest) tallest = base+LIFT;
     growBay(i,j,v.r);
   }
-  for (const [k,v] of pads) growBay(...nums(k), v.r);
-  for (const [k,v] of m.slopes){ const [i,j]=nums(k); growBay(i,j,v.r); }
-  for (const [k,v] of m.stairs){ const [i,j,y]=nums(k);
+  useNext();
+  for (const [k,v] of pads){ useKit(v); growBay(...nums(k), v.r); }
+  for (const [k,v] of m.slopes){ useKit(v); const [i,j]=nums(k); growBay(i,j,v.r); }
+  for (const [k,v] of m.stairs){ useKit(v); const [i,j,y]=nums(k);
     for (const [a,b] of stairCells(i,j,v.d,v.r,v.t,v.w)) growBay(a,b,v.r); }
+  // a star shade is 37.9' of structure standing in a 40' square of grid
+  for (const k of m.stars){ const [i,j]=nums(k);
+    const cx = mX(i)+SS_M*MOD/2, cz = mZ(j)+SS_M*MOD/2;
+    growFt(cx-SS_R, cx+SS_R, cz-SS_R, cz+SS_R); }
   // nothing sticks out past the bay line any more, so the footprint is the bays
   const frameList = [...frames.values()].map(f=>({...f, ax: f.X>=f.Z ? 'X' : 'Z'}));
 
@@ -2185,9 +2638,9 @@ function derive(m=model, rails=railsOn){
     if (brSeen.has(kk)) return; brSeen.add(kk);
     beamRuns.push({x,y,z,dir,len,wood,hi});
     if (!wood) beamsN++; else hi ? spanHi++ : spanLo++; };
-  for (const [k,v] of cells){ const [i,j,y]=nums(k);
+  for (const [k,v] of cells){ useKit(v); const [i,j,y]=nums(k);
     const L = bayLen(v.r), wood = isLong(v.r), ew = isEW(v.r);
-    for (const [t,hi] of [[y*LIFT + BEAM_HI, true], [y*LIFT + BEAM_LO, false]])
+    for (const [t,hi] of [[y*LIFT + beamHi(), true], [y*LIFT + BEAM_LO, false]])
       for (const line of rowLines(i,j,v.r)) for (const s of [-1,1]){
         if (ew) BR(mX(i)+L/2, t, line+s*POST, 'X', L, wood, hi);
         else    BR(line+s*POST, t, mZ(j)+L/2, 'Z', L, wood, hi);
@@ -2201,7 +2654,7 @@ function derive(m=model, rails=railsOn){
   const TRIB_IN = 2.5634;
   const PSF = DES_LL + DES_DL;
   let beamLoad = 0, beamLoadL = 0;
-  for (const v of cells.values()){
+  for (const v of cells.values()){ useKit(v);
     if (!v.deck && !v.floor) continue;
     const L = bayLen(v.r), lb = rnd(TRIB_IN*L*PSF);
     if (lb > beamLoad){ beamLoad = lb; beamLoadL = L; }
@@ -2214,7 +2667,7 @@ function derive(m=model, rails=railsOn){
   const girtRuns=[], gSeen=new Set(), girtLens=new Map();
   let girts=0, openFaces=0;
   const faces=[];                              // every outside face, for ballast and walls
-  for (const [k,v] of cells){ const [i,j,y]=nums(k);
+  for (const [k,v] of cells){ useKit(v); const [i,j,y]=nums(k);
     const w=bmX(v.r), d=bmZ(v.r);
     const SIDES = [
       ['Z', i, j,     w, 0],                   // N — z-line j, modules i..i+w
@@ -2237,7 +2690,7 @@ function derive(m=model, rails=railsOn){
                   key:D+','+p+','+q+','+len+','+y});
       const gx = g.run==='Z' ? ((dir===0||dir===3)?-1:1)*GIRT_OUT : 0;
       const gz = g.run==='X' ? ((dir===0||dir===3)?-1:1)*GIRT_OUT : 0;
-      for (const h of GIRTH){
+      for (const h of girtRows()){
         girtRuns.push({x:g.cx+gx, z:g.cz+gz, y:y*LIFT+h, dir:g.run, len:g.ftL});
         girtLens.set(g.ftL, (girtLens.get(g.ftL)||0) + 1);
         girts++;
@@ -2247,10 +2700,10 @@ function derive(m=model, rails=railsOn){
 
   // floors at the base of a bay — the riser build, inside the steel
   const floorDraws=[]; let floors=0, floorArea=0;
-  for (const [k,v] of cells){
+  for (const [k,v] of cells){ useKit(v);
     if (!v.floor) continue;
     const [i,j,y]=nums(k);
-    floorDraws.push({i, j, y, r:v.r});
+    floorDraws.push({i, j, y, r:v.r, bw:cellBW(v), lift:cellLift(v)});
     floors++; floorArea += bayArea(v.r);
   }
 
@@ -2259,7 +2712,7 @@ function derive(m=model, rails=railsOn){
      place whether the flights run straight out or turn along the wall. Bays
      whose structure has had its railings switched off get none at all.     */
   const stairHead = new Set();
-  for (const [k,v] of m.stairs){ const [a,b,y]=nums(k);
+  for (const [k,v] of m.stairs){ useKit(v); const [a,b,y]=nums(k);
     const w=bmX(v.r), h=bmZ(v.r);
     if (v.d===0)      for (let n=0;n<w;n++) stairHead.add('0:'+(a+n)+':'+(b+h-1)+':'+y);
     else if (v.d===2) for (let n=0;n<w;n++) stairHead.add('2:'+(a+n)+':'+b+':'+y);
@@ -2267,7 +2720,7 @@ function derive(m=model, rails=railsOn){
     else              for (let n=0;n<h;n++) stairHead.add('1:'+a+':'+(b+n)+':'+y);
   }
   const rails_=[]; let stairEdges=0, railOffBays=0;
-  for (const [k,v] of cells){ const [i,j,y]=nums(k);
+  for (const [k,v] of cells){ useKit(v); const [i,j,y]=nums(k);
     if (!walk(i,j,y)) continue;
     walkable++;
     if (v.rail === false){ railOffBays++; continue; }
@@ -2303,7 +2756,7 @@ function derive(m=model, rails=railsOn){
     const [ox,oz] = f.D==='Z' ? [0, f.out*BAL_OUT] : [f.out*BAL_OUT, 0];
     ballast.push({x:f.cx+ox, z:f.cz+oz, dir:f.run, len:f.ftL, arm:f.ftL/2-1.6});
   }
-  for (const [k,v] of m.slopes){ const [i,j,y]=nums(k);   // ground lean-tos tip too
+  for (const [k,v] of m.slopes){ useKit(v); const [i,j,y]=nums(k);   // ground lean-tos tip too
     if (y!==0 || cells.has(k)) continue;
     const [dx,dz]=DIRV[v.d];
     ballast.push({x:bcX(i,v.r)+dx*bfX(v.r)*.4, z:bcZ(j,v.r)+dz*bfZ(v.r)*.4,
@@ -2314,19 +2767,21 @@ function derive(m=model, rails=railsOn){
   // stand on the roof and still be under it
   let canopies=0, canopyArea=0, canopyLegs=0;
   const canopyDraws=[];
-  for (const [k,v] of cells){ const [i,j,y]=nums(k);
+  for (const [k,v] of cells){ useKit(v); const [i,j,y]=nums(k);
     if (v.canopy && top(i,j)===y){ canopies++; canopyArea+=bayArea(v.r); canopyLegs+=4;
-      canopyDraws.push({x:bcX(i,v.r), z:bcZ(j,v.r), r:v.r, top:(y+1)*LIFT, post:SHADE_H}); } }
-  for (const [k,v] of pads){ if (v.canopy){ const [i,j]=nums(k);
+      canopyDraws.push({x:bcX(i,v.r), z:bcZ(j,v.r), r:v.r, bw:cellBW(v), lift:cellLift(v),
+        top:(y+1)*LIFT, post:SHADE_H}); } }
+  for (const [k,v] of pads){ useKit(v); if (v.canopy){ const [i,j]=nums(k);
     canopies++; canopyArea+=bayArea(v.r); canopyLegs+=4;
-    canopyDraws.push({x:bcX(i,v.r), z:bcZ(j,v.r), r:v.r, top:FLOOR_H, post:SHADE_H}); } }
+    canopyDraws.push({x:bcX(i,v.r), z:bcZ(j,v.r), r:v.r, bw:cellBW(v), lift:cellLift(v),
+      top:FLOOR_H, post:SHADE_H}); } }
 
   /* Solar. Every panelled face gets aimed and scored: what compass point it
      looks at, how far it's tipped, and the peak-sun-hours a panel on it
      actually collects in a day against an ideal south-facing one.         */
   const solarFaces=[], arrayDraws=[];
   const faceScore = (nx,ny,nz)=>{ const f=sunHours(nx,ny,nz); return {f, pct:rnd(100*f/F_IDEAL)}; };
-  for (const [k,v] of m.slopes){
+  for (const [k,v] of m.slopes){ useKit(v);
     if (!v.solar) continue;
     const [i,j,y]=nums(k);
     const run = runOf(v.d,v.r), cross = crossOf(v.d,v.r);
@@ -2339,15 +2794,25 @@ function derive(m=model, rails=railsOn){
   for (const k of m.arrays){ const [i,j]=nums(k);
     const y=top(i,j); if (y<0) continue;
     const v=cells.get(k3(i,j,y));
+    useKit(v);                                 // the array rides THAT column's roof
     const g = roofGrid(v.r), n = g.nc*g.na;
     const sc = faceScore(0, Math.cos(TILT_ROOF), Math.sin(TILT_ROOF));
     solarFaces.push({kind:'roof', n, face:'S', tilt:rnd(TILT_ROOF*180/Math.PI), ...sc});
     arrayDraws.push({i, j, r:v.r, n, g, x:bcX(i,v.r), z:bcZ(j,v.r),
-      top:(y+1)*LIFT + (v.deck ? .13 : .05)});
+      bw:cellBW(v), lift:cellLift(v), top:(y+1)*LIFT + (v.deck ? .13 : .05)});
   }
+  useNext();
+  /* A star shade's deck lies flat and carries its own 220 W panels, not the 300 W
+     used ones a camp racks — so a face carries its own wattage and the totals ask
+     the face rather than assuming.                                           */
+  for (const k of m.stars.keys()){
+    const sc = faceScore(0, 1, 0);              // straight up: no tilt at all
+    solarFaces.push({kind:'star', n:SS_PN, w:SS_PW, face:'flat', tilt:0, ...sc});
+  }
+  const faceW = f => f.n * (f.w || PANEL_W);
   const solarPanels = solarFaces.reduce((t,f)=>t+f.n, 0);
-  const solarWatts = watts(solarPanels);
-  const solarDay = solarFaces.reduce((t,f)=>t + watts(f.n)*f.f*DERATE/1000, 0);
+  const solarWatts = solarFaces.reduce((t,f)=>t+faceW(f), 0);
+  const solarDay = solarFaces.reduce((t,f)=>t + faceW(f)*f.f*DERATE/1000, 0);
   const solarBest = solarFaces.length ? Math.max(...solarFaces.map(f=>f.pct)) : 0;
   const solarWorst = solarFaces.length ? Math.min(...solarFaces.map(f=>f.pct)) : 0;
   const solarBlind = solarFaces.filter(f=>f.pct<60).reduce((t,f)=>t+f.n, 0);
@@ -2374,7 +2839,7 @@ function derive(m=model, rails=railsOn){
   }
   // an upright with no upright under it is standing on lumber
   let badStacks=0;
-  for (const f of frameList) if (f.y>0 && !frames.has(FKEY(f.x,f.z,f.y-1))) badStacks++;
+  for (const f of frameList) if (f.base>0 && ![...frames.values()].some(g=>g!==f && rnd(g.x*4)===rnd(f.x*4) && rnd(g.z*4)===rnd(f.z*4) && rnd((g.base+g.h)*4)===rnd(f.base*4))) badStacks++;
 
   /* Rooms: flood-fill the bays on each level, a wall closes the 4' edge it
      covers, so a partition only half across only half divides.            */
@@ -2413,7 +2878,7 @@ function derive(m=model, rails=railsOn){
 
   // stairs shoulder to shoulder, same face and same turns, read as one wide flight
   const stairRuns=[], sSeen=new Set();
-  for (const [k,v] of m.stairs){
+  for (const [k,v] of m.stairs){ useKit(v);
     if (sSeen.has(k)) continue;
     const [i,j,y]=nums(k), d=v.d, r=v.r, t=v.t||0, w=v.w||0;
     const [px,pz]=stepOf((runDir(d,t)+1)&3, r);      // shoulder to shoulder, across the run
@@ -2424,7 +2889,7 @@ function derive(m=model, rails=railsOn){
     for(;;){ const kk=k3(ci,cj,y), nv=m.stairs.get(kk);
       if (!same(nv)) break;
       sSeen.add(kk); n++; ci+=px; cj+=pz; }
-    stairRuns.push({i:si, j:sj, y, d, t, w, r, n});
+    stairRuns.push({i:si, j:sj, y, d, t, w, r, n, bw:BW, lift:LIFT});
   }
   let stairStock=0, stairPly=0, stairStuds=0, stairWide=0, stairTurned=0, stairWrapped=0;
   let stairFlats=0, stairPost6=0, stairPost12=0, stairBrace=0;
@@ -2434,7 +2899,7 @@ function derive(m=model, rails=railsOn){
     const ns = Math.max(3, rnd(W/2)+1);            // stringers, ~2' o.c., per flight
     const perStick = Math.max(1, Math.floor(14/Math.max(1,W)));
     // stringers one stick each · treads cut from 14' · a doubled rim round every flat
-    stairStock += 2*ns + ceil(2*STAIR_NT/perStick)
+    stairStock += 2*ns + ceil(2*stairSteps()/perStick)
                 + flats*ceil(4/Math.max(1, Math.floor(14/(W+.5))));
     stairPly   += flats*ceil(W*4/32);
     stairStuds += rnd(4*W) + 8*flats;              // rails + each flat's cross-bracing
@@ -2456,17 +2921,25 @@ function derive(m=model, rails=railsOn){
   let doors=0, wins=0, wallArea=0, wallStuds=0, wallPly=0;
   for (const [k,v] of skins){
     const g = skinGeom.get(k);
-    const ftL = g ? g.ftL : (+k.split(',')[3])*MOD;
-    if (v.op===1) doors++; else if (v.op===2) wins++;
-    wallArea += ftL*LIFT;
+    const len = +k.split(',')[3];
+    const ftL = g ? g.ftL : len*MOD;
+    const ops = opsOf(v, len);
+    const H = g && g.lift ? g.lift : LIFT;     // as tall as the bay it hangs on
+    let opened=0;
+    for (const o of ops){ if (o===1){ doors++; opened++; } else if (o===2){ wins++; opened++; } }
+    wallArea += ftL*H;
     /* The face is already girted, and the girts ARE the horizontal nailer, so a
        skin doesn't also want a full 16" o.c. stud wall behind it — that framed
        the same wall twice. What it wants is a stud on every vertical sheet
-       joint, which is 4' o.c., and a pair of jambs at any opening.          */
-    wallStuds += rnd(ftL/MOD) + 1 + (v.op ? 2 : 0);
-    wallPly += ftL*LIFT/32;
+       joint, which is 4' o.c., and a pair of jambs at every opening — openings
+       live one to a course now, so that is two studs each, however many there
+       are on the face.                                                       */
+    wallStuds += rnd(ftL/MOD) + 1 + 2*opened;
+    wallPly += ftL*H/32;
   }
 
+  const nStars = m.stars.size;
+  const starCost = nStars*SS_COST, starLb = nStars*SS_ALL_LB;
   const nCells=cells.size, nPads=pads.size, skinsN=skins.size;
   const nSlopes=m.slopes.size, nStairs=stairRuns.length;
   let solarSlopes=0; for (const v of m.slopes.values()) if (v.solar) solarSlopes++;
@@ -2474,7 +2947,7 @@ function derive(m=model, rails=railsOn){
   const railEdges = rails ? rails_.length : 0;
   const kits  = decked + nPads;                 // one deck kit floors one bay
   const ballastRuns = ballast.length;
-  const barrels = BAR_PER*ballastRuns;
+  const barrels = barPer()*ballastRuns;
   const ballastLb = barrels*BAR_LB, ballastGal = barrels*BAR_GAL;
   const ballastLens = new Map();                // outriggers take the length of their face
   for (const b of ballast) ballastLens.set(rnd(b.len), (ballastLens.get(rnd(b.len))||0)+1);
@@ -2483,14 +2956,15 @@ function derive(m=model, rails=railsOn){
      now. A riser out in the open still needs two rim beams, but a floor inside a
      bay lands on the low beams that are already standing there. */
   const beams = beamsN + 2*nPads;
-  const span212 = 4*spanHi;                     // (4)2×12 × 20' — these carry the deck
+  const plies = spanPlies();                    // …and how many plies the spread costs
+  const span212 = plies*spanHi;                 // 2×12 × 20' — these carry the deck
   const span26  = 2*spanLo;                     // doubled 2×6 — base bracing, carries itself
   const cribbing = 9*nPads;                     // nine pads on the dirt under every riser
   // 2×8 × 8' joists at 16" o.c. — ten across a 12' bay, sixteen across a 20'
   let joists = 0, deckSheets = 0, deckArea = 0;
   for (const v of pads.values()){               // a riser is a 20' bay as often as a 12'
     joists += joistsOf(v.r); deckSheets += sheetsOf(v.r); deckArea += bayArea(v.r); }
-  for (const [k,v] of cells){
+  for (const [k,v] of cells){ useKit(v);
     if (v.deck){ joists += joistsOf(v.r); deckSheets += sheetsOf(v.r); deckArea += bayArea(v.r); }
     if (v.floor){ joists += joistsOf(v.r); deckSheets += sheetsOf(v.r); }  // same kit, down low
   }
@@ -2502,7 +2976,7 @@ function derive(m=model, rails=railsOn){
      courses break on a rafter and a 2×8 still carries the short two.        */
   let rafters=0, slopePly=0;
   const rafterKit = new Map();                  // "2×8|18" -> how many
-  for (const [k,v] of m.slopes){
+  for (const [k,v] of m.slopes){ useKit(v);
     const run=runOf(v.d,v.r), cross=crossOf(v.d,v.r), L=Math.hypot(run,LIFT);
     const n = Math.max(3, rnd(cross/2)+1);
     const stock = L<=15.5 ? 16 : L<=17.5 ? 18 : L<=19.5 ? 20 : 24;
@@ -2520,17 +2994,34 @@ function derive(m=model, rails=railsOn){
   // girts are lagged to steel posts, not screwed, so they buy their own hardware
   const sc    = (studs||ply||joists) ? screwCalc(studs+joists+rafters+stairStock, ply)
                                      : {n:0,boxes:0,cost:0};
-  let stacked=0; for (const f of frameList) if (f.y >= 1) stacked++;
-  let slopeArea=0; for (const [k,v] of m.slopes)
-    slopeArea += crossOf(v.d,v.r)*Math.hypot(runOf(v.d,v.r), LIFT);
+  let stacked=0, mixedFrames=0;
+  for (const f of frameList){ if (f.base > 0) stacked++; if (f.mixed) mixedFrames++; }
+  /* Four frame positions to a bay. Anything under 4 × bays is a position two
+     pieces landed on together — the whole saving in building tight. */
+  const sharedFrames = Math.max(0, 4*cells.size - frameList.length);
+  let slopeArea=0;
+  for (const [k,v] of m.slopes){ useKit(v);
+    slopeArea += crossOf(v.d,v.r)*Math.hypot(runOf(v.d,v.r), LIFT); }
+  useNext();
   const sail = rnd(wallArea + slopeArea);
 
-  const any = nCells+nPads > 0;
+  const any = nCells+nPads+nStars > 0;
+  /* Which kits are actually on the ground — the sheet stops being able to say
+     "a 12' bay" the moment two pieces disagree, so it counts them instead. */
+  function kitSpread(cs){
+    const bw = new Map(), lf = new Map();
+    for (const v of cs.values()){
+      bw.set(cellBW(v), (bw.get(cellBW(v))||0)+1);
+      lf.set(cellLift(v), (lf.get(cellLift(v))||0)+1);
+    }
+    const srt = mp => [...mp.entries()].sort((a,b)=>a[0]-b[0]);
+    return { bw:srt(bw), lift:srt(lf) };
+  }
   const half = v => rnd(v*2)/2;
   const ft = !any ? null : {
     x0:fx0, x1:fx1, z0:fz0, z1:fz1,
     w:half(fx1-fx0), d:half(fz1-fz0),
-    h: nCells ? (maxLvl+1)*LIFT : 1.5 };
+    h: nCells ? tallest : (nStars ? SS_H : 1.5) };
 
   let ewBays=0, nsBays=0;
   for (const v of cells.values()) isEW(v.r) ? ewBays++ : nsBays++;
@@ -2542,9 +3033,11 @@ function derive(m=model, rails=railsOn){
     rails:rails_, ballast, canopyDraws, occ, floorDraws, floors, floorArea,
     nCells, nPads, decked, kits, beams, girts, girtLens, openFaces, cribbing,
     joists, studs, studs12, studs8, ply, sc, cutSheets, deckSheets,
-    framesN: frameList.length,
+    framesN: frameList.length, mixedFrames, sharedFrames, tallest,
+    kits2: kitSpread(cells),
     beamLoad, beamLoadL, psf:PSF,
-    longBays, span212, span26, nSlopes, plySlopes, solarSlopes, rafters, rafterKit,
+    longBays, span212, span26, plies, spanTrib:SPAN_TRIB(),
+    nSlopes, plySlopes, solarSlopes, rafters, rafterKit,
     solarPanels, solarWatts, solarDay, solarFaces, solarBest, solarWorst, solarBlind,
     nStairs, stairRuns, stairStock, stairEdges, stairWide, stairTurned, stairWrapped,
     stairFlats, stairPost6, stairPost12, stairBrace, doors, wins,
@@ -2552,6 +3045,7 @@ function derive(m=model, rails=railsOn){
     pierced: collars.length, badStacks,
     ewBays, nsBays,
     ballastRuns, barrels, ballastLb, ballastGal, ballastLens, straps: barrels, sail,
+    nStars, starCost, starLb,
     canopies, canopyArea, skinsN, railEdges, railOffBays, railOffGroups,
     groups: railGroups.length,
     stacked, maxLvl, any, ft,
@@ -2597,6 +3091,7 @@ const MATS = {
   cloth: M('#5A5F40', {transparent:true, opacity:.68, side:THREE.DoubleSide}),
   solar: M('#22384C', {roughness:.25, metalness:.6}),
   glass: M('#9DB7C6', {transparent:true, opacity:.34, roughness:.08, metalness:.1}),
+  tote:  M('#BFD3BC', {transparent:true, opacity:.55, roughness:.4}),
   // the man standing next to it for scale, in the clothes he actually wears
   fSkin: M('#B0805A'), fShirt:M('#D9CDB4'), fPant: M('#57573A'),
   fBeard:M('#B4AEA2'), fHair: M('#6D7A45'), fShoe: M('#3A342C'),
@@ -2644,21 +3139,109 @@ function upright(cx,cz,y0,h,ax){
 }
 /* A rack beam, or — on a 20' long-span bay — lumber doing the same job. The two
    heights are not the same stick and never were: a HIGH line carries the whole
-   deck across 20' and draws as a built-up (3)2×12, a LOW one only braces the
-   base and stays a doubled 2×6. Every beam hangs its top face where the joists
-   land, whatever it's made of, so the deck bears on steel and wood alike.   */
+   deck across 20' and draws as however many 2×12 plies the row spread costs it,
+   a LOW one only braces the base and stays a doubled 2×6. Every beam hangs its
+   top face where the joists land, whatever it's made of, so the deck bears on
+   steel and wood alike.                                                     */
 function beamDraw(b){
   if (!b.wood){
     if (b.dir==='X') box('beam', b.x, b.y, b.z, b.len-.3, .36, .22);
     else             box('beam', b.x, b.y, b.z, .22, .36, b.len-.3);
     return;
   }
-  const n = b.hi ? 4 : 2, d = b.hi ? .94 : .46, t = .125;
+  const n = b.hi ? spanPlies() : 2, d = b.hi ? .94 : .46, t = .125;
   const cy = b.y + .18 - d/2;                  // hang the top where the steel's top was
   for (let q=0;q<n;q++){
     const o = (q-(n-1)/2)*t;
     if (b.dir==='X') box('wood', b.x, cy, b.z+o, b.len, d, t);
     else             box('wood', b.x+o, cy, b.z, t, d, b.len);
+  }
+}
+/* ── the star shade, drawn ────────────────────────────────────────────────
+   A stick from a to b, at any angle in space. box() spins Y then X then Z, so
+   pointing local +Z down the run is ry = atan2(dx,dz) followed by rx = -asin(dy/L).
+   XF only ever turns about Y, so a lot out on MARS-WIDE carries these correctly. */
+function strut(mat, a, b, w, t){
+  const dx=b[0]-a[0], dy=b[1]-a[1], dz=b[2]-a[2];
+  const L = Math.hypot(dx,dy,dz); if (L < 1e-6) return;
+  box(mat, a[0]+dx/2, a[1]+dy/2, a[2]+dz/2, w, t, L,
+      Math.atan2(dx,dz), -Math.asin(clamp(dy/L,-1,1)), 0);
+}
+/* Eight scissor legs between two square rings crossed at 45°. Everything here
+   is 2× lumber and half-inch bolts — no steel, no deck, nothing shared with a
+   bay. See the block at the top of the file for where the numbers come from. */
+function starDraw(i, j){
+  const cx = mX(i) + SS_M*MOD/2, cz = mZ(j) + SS_M*MOD/2;
+  const P = (r,a,y)=>[cx + r*Math.sin(a), y, cz + r*Math.cos(a)];
+  const A = k => k*Math.PI/4;                  // the eight 45° stations
+  const HB = .29, HT = .13;                    // an 8' 2×4 laid flat
+  const VB = .13, VT = .29;                    // …and one on edge
+
+  /* Two square rings, corners at the star tips. The bottom one squares up N/E/S/W,
+     the top one lands 45° off it — which is the fold, and which is what makes the
+     plan an octagram instead of a box. */
+  for (const [phase, y] of [[0, SS_Y0], [Math.PI/4, SS_Y1]])
+    for (let k=0;k<4;k++)
+      strut('wood', P(SS_R, phase+A(2*k), y), P(SS_R, phase+A(2*k+2), y), HB, HT);
+
+  /* Where the two rings cross, a leg stands: two 8' sticks pinned mid-height and
+     splayed along the ring, so the elevation reads X X X the whole way round. */
+  for (let k=0;k<SS_N;k++){
+    const a = A(k) + Math.PI/8;
+    const tx = Math.cos(a)*SS_HW, tz = -Math.sin(a)*SS_HW;   // along the ring, not across it
+    const foot = P(SS_RIN, a, SS_Y0), head = P(SS_RIN, a, SS_Y1);
+    for (const s of [1,-1])
+      strut('wood', [foot[0]-s*tx, foot[1], foot[2]-s*tz],
+                    [head[0]+s*tx, head[1], head[2]+s*tz], VB, VT);
+    box('steel', foot[0], SS_Y0+.16, foot[2], .5, .32, .5);   // the U-bracket at the foot
+    box('steel', head[0], SS_Y1-.16, head[2], .5, .32, .5);   // …and one at the head
+  }
+
+  /* The roof under the glass: eight 10' radials off a hub, then sixteen 8'
+     sticks woven as two octagons turned against each other. */
+  const yr = SS_Y1 + .2;
+  for (let k=0;k<SS_N;k++)
+    strut('wood', P(SS_HUB, A(k), yr), P(SS_RIN, A(k), yr), .13, .27);
+  for (const phase of [0, Math.PI/8])
+    for (let k=0;k<SS_N;k++)
+      strut('wood', P(SS_RECIP, phase+A(k), yr+.23), P(SS_RECIP, phase+A(k+1), yr+.23), .11, .23);
+
+  /* 18 panels, flat, butted up 1½″ apart in a 3 × 6 block — the way they
+     actually clamp to a rail, frame against frame, and not spread out over the
+     whole ring. 18 at 31.3 × 61.4″ is 240 ft², which comes out 15′7″ × 16′3″:
+     near enough a square, sitting on the reciprocal ring with the legs and the
+     star tips standing clear of it the whole way round. Their top face is the
+     8.1' the guide calls the height. */
+  const yp = yr + .48, gx = SS_PL + SS_PGAP, gz = SS_PD + SS_PGAP;
+  for (let r=0;r<SS_PROWS;r++)
+    for (let q=0;q<SS_PCOLS;q++)
+      box('solar', cx + (q-(SS_PCOLS-1)/2)*gx, yp, cz + (r-(SS_PROWS-1)/2)*gz,
+          SS_PL, .14, SS_PD);
+
+  ibcDraw(cx, cz);
+}
+/* Two IBC totes stacked at the hub, cage and pallet. See the block up top for
+   what they are for and why they go here. Nothing about them is rack either. */
+function ibcDraw(cx, cz){
+  const bar = .09, wall = .17, base = .2;      // cage tube · tank inset · the moulded pallet
+  const px = (IBC_L-bar)/2, pz = (IBC_W-bar)/2;
+  for (let s=0;s<IBC_N;s++){
+    const y0 = s*IBC_H;
+    box('steel', cx, y0+base/2, cz, IBC_L, base, IBC_W);
+    box('tote', cx, y0+base+(IBC_H-base-.1)/2, cz,
+        IBC_L-wall, IBC_H-base-.1, IBC_W-wall);
+    for (const ox of [-1,1]) for (const oz of [-1,1])
+      box('steel', cx+ox*px, y0+IBC_H/2, cz+oz*pz, bar, IBC_H, bar);
+    for (let r=1;r<=6;r++){                    // the bands round it
+      const y = y0 + base + r*(IBC_H-base)/7;
+      for (const oz of [-1,1]) box('steel', cx, y, cz+oz*pz, IBC_L, bar, bar);
+      for (const ox of [-1,1]) box('steel', cx+ox*px, y, cz, bar, bar, IBC_W);
+    }
+    for (let q=1;q<=3;q++){                    // …and the verticals in the mesh
+      const h = IBC_H-base, yc = y0+base+h/2;
+      for (const oz of [-1,1]) box('steel', cx+(q/4-.5)*IBC_L, yc, cz+oz*pz, bar, h, bar);
+      for (const ox of [-1,1]) box('steel', cx+ox*px, yc, cz+(q/4-.5)*IBC_W, bar, h, bar);
+    }
   }
 }
 /* A 2×4 girt laid flat against the posts — four rows up every outside face.
@@ -2761,41 +3344,56 @@ function figureAt(x,z){
   for (const [dx,dy] of [[-.16,4.95],[0,4.88],[.16,4.95]])
     F('fInk2', dx, dy, .32, .10, .13, .05);
 }
-/* Wall skin — solid, doorway or window — screwed to the girts on one face.
-   An 8' face and a 12' face get the same treatment at different widths.    */
-function skinDraw(key, op, g){
+/* Wall skin — screwed to the girts on one face, and skinned the way it is really
+   skinned: in 4' plywood courses. Each course carries its own opening, so a face
+   can have as many doors and windows as it has sheets, and a run of solid
+   courses draws as one panel instead of a row of seams. A 3'2" door or a 3'6"
+   window centred in its 4' course leaves a 5" or a 3" leg of ply each side —
+   that is a ripped sheet, not a header spanning the whole wall.             */
+function skinDraw(key, ops, g){
   const a=key.split(','), D=a[0], p=+a[1], q=+a[2], len=+a[3], y=+a[4];
   const ftL = g ? g.ftL : len*MOD;
   const skin = (g ? g.off : 0) + (g ? g.out : 0)*PLY_OUT;   // ply lands outboard of the girts
   const cx = D==='Z' ? mX(p)+len*MOD/2 : mX(p)+skin;
   const cz = D==='Z' ? mZ(q)+skin : mZ(q)+len*MOD/2;
-  const base = y*LIFT+.1, H = LIFT-.4, W = ftL-.2;
+  const LF = g && g.lift ? g.lift : LIFT;      // the wall stands as tall as its own bay
+  const base = y*LF+.1, H = LF-.4, W = ftL-.2;
+  const CW = ftL/len;                          // one course — 4', the sheet's own width
+  const mid = n => -ftL/2 + (n+.5)*CW;         // centre of course n, off the wall's centre
   const put = (u,w,vc,h,mat)=>{
     if (w<=0||h<=0) return;
     if (D==='Z') box(mat||'ply', cx+u, vc, cz, w, h, .09);
     else         box(mat||'ply', cx, vc, cz+u, .09, h, w);
   };
-  if (op===1){                                 // door — 3'2" × 6'8", leaf swung open
-    const dw=3.2, dh=6.7, sw=(W-dw)/2, ang=1.1;
-    put(-(dw+sw)/2, sw, base+H/2, H);
-    put( (dw+sw)/2, sw, base+H/2, H);
-    put(0, dw, base+dh+(H-dh)/2, H-dh);
-    for (const s of [-1,1]) put(s*dw/2, .16, base+dh/2, dh, 'wood');   // jambs
-    put(0, dw, base+dh+.1, .22, 'wood');                               // header trim
-    if (D==='Z') box('wood', cx-dw/2+dw/2*Math.cos(ang), base+dh/2, cz+dw/2*Math.sin(ang),
+  const door = u => {                          // 3'2" × 6'8", leaf swung open
+    const dw=3.2, dh=6.7, sw=(CW-dw)/2, ang=1.1;
+    put(u-(dw+sw)/2, sw, base+H/2, H);
+    put(u+(dw+sw)/2, sw, base+H/2, H);
+    put(u, dw, base+dh+(H-dh)/2, H-dh);
+    for (const s of [-1,1]) put(u+s*dw/2, .16, base+dh/2, dh, 'wood');   // jambs
+    put(u, dw, base+dh+.1, .22, 'wood');                                 // header trim
+    if (D==='Z') box('wood', cx+u-dw/2+dw/2*Math.cos(ang), base+dh/2, cz+dw/2*Math.sin(ang),
                      dw, dh-.16, .13, ang);
-    else         box('wood', cx-dw/2*Math.sin(ang), base+dh/2, cz+dw/2-dw/2*Math.cos(ang),
+    else         box('wood', cx-dw/2*Math.sin(ang), base+dh/2, cz+u+dw/2-dw/2*Math.cos(ang),
                      dw, dh-.16, .13, Math.PI/2+ang);
-  } else if (op===2){                          // window — 3'6" × 4', sill at 3'
-    const ww=3.5, wh=4.0, sill=3.0, sw=(W-ww)/2, hdr=H-sill-wh;
-    put(-(ww+sw)/2, sw, base+H/2, H);
-    put( (ww+sw)/2, sw, base+H/2, H);
-    put(0, ww, base+sill/2, sill);
-    put(0, ww, base+sill+wh+hdr/2, hdr);
-    put(0, ww+.3, base+sill+.06, .22, 'wood');                         // sill board
-    put(0, ww-.15, base+sill+wh/2, wh-.15, 'glass');
-  } else {
-    put(0, W, base+H/2, H);
+  };
+  const window = u => {                        // 3'6" × 4', sill at 3'
+    const ww=3.5, wh=4.0, sill=3.0, sw=(CW-ww)/2, hdr=H-sill-wh;
+    put(u-(ww+sw)/2, sw, base+H/2, H);
+    put(u+(ww+sw)/2, sw, base+H/2, H);
+    put(u, ww, base+sill/2, sill);
+    put(u, ww, base+sill+wh+hdr/2, hdr);
+    put(u, ww+.3, base+sill+.06, .22, 'wood');                           // sill board
+    put(u, ww-.15, base+sill+wh/2, wh-.15, 'glass');
+  };
+  for (let n=0;n<len;){
+    if (ops[n]){ (ops[n]===1 ? door : window)(mid(n)); n++; continue; }
+    let e=n; while (e<len && !ops[e]) e++;      // run the solid courses together
+    let a = -ftL/2 + n*CW, b = -ftL/2 + e*CW;
+    if (n===0) a += .1;                         // the wall's own ends stay inset
+    if (e===len) b -= .1;
+    put((a+b)/2, b-a, base+H/2, H);
+    n=e;
   }
 }
 /* An angled panel filling one bay footprint: 12' of rise across whatever the
@@ -2854,7 +3452,7 @@ function stairDraw(s){
   const d1 = runDir(d,t), d2 = runDir(d1,w);
   const runL = runOf(d1,r), crossL = crossOf(d1,r);
   const W = stairWidth(n, crossL), half = W/2;
-  const F = FLIGHT;
+  const F = flightRun();
   const m0 = (t?STAIR_FLAT:0) + F, m1 = m0 + STAIR_FLAT;  // where the mid flat starts and ends
   const y0 = y*LIFT, DH = y0+LIFT, LH = y0+LIFT/2;        // deck head · landing, half way down
   const [hx,hz]=DIRV[d], [fx1,fz1]=DIRV[d1];
@@ -2898,7 +3496,7 @@ function stairDraw(s){
   };
   const flight=(g,fTop,fBot,hTop)=>{             // walks down from fTop(high) to fBot(low)
     const run=fBot-fTop, rise=LIFT/2, th=Math.atan2(rise,run);
-    const [rxs,rzs]=tilt(g,th), NT=STAIR_NT;
+    const [rxs,rzs]=tilt(g,th), NT=stairSteps();
     for (let q=1;q<=NT;q++)                      // treads
       acrossO(g, fTop+run*(q-.5)/NT, -half, half, hTop-rise*q/NT+.06, run/NT+.3, .14);
     const L=Math.hypot(run,rise), ns=Math.max(3, rnd(W/2)+1);
@@ -2956,18 +3554,24 @@ function stairDraw(s){
   }
 }
 function drawAll(D, m=model, rails=railsOn, withFigure=true){
-  for (const f of D.frames) upright(f.x, f.z, f.y*LIFT, LIFT, f.ax);
+  atModel(m, ()=>drawAllIn(D, m, rails, withFigure));
+}
+function drawAllIn(D, m, rails, withFigure){
+  for (const f of D.frames) upright(f.x, f.z, f.base, f.h, f.ax);
   for (const b of D.beamRuns) beamDraw(b);
   for (const g of D.girtRuns) girtDraw(g);
-  for (const [k,v] of m.cells){
+  for (const [k,v] of m.cells){ useKit(v);
     const [i,j,y]=nums(k), cx=bcX(i,v.r), cz=bcZ(j,v.r), topY=(y+1)*LIFT;
     if (v.deck) deck(cx,cz,bfX(v.r)-.1,bfZ(v.r)-.1,topY);
   }
-  for (const f of D.floorDraws)
-    bayFloor(bcX(f.i,f.r), bcZ(f.j,f.r), bfX(f.r), bfZ(f.r), f.y*LIFT);
-  for (const [k,v] of m.slopes){ const [i,j,y]=nums(k); slopeDraw(i,j,y,v); }
-  for (const s of D.stairRuns) stairDraw(s);
-  for (const a of D.arrayDraws){               // rooftop arrays, racked south at TILT_ROOF
+  useNext();
+  for (const f of D.floorDraws) atKit(f.bw||BW, f.lift||LIFT, ()=>
+    bayFloor(bcX(f.i,f.r), bcZ(f.j,f.r), bfX(f.r), bfZ(f.r), f.y*LIFT));
+  for (const [k,v] of m.slopes){ useKit(v); const [i,j,y]=nums(k); slopeDraw(i,j,y,v); }
+  useNext();
+  for (const s of D.stairRuns) atKit(s.bw||BW, s.lift||LIFT, ()=>stairDraw(s));
+  for (const a of D.arrayDraws) atKit(a.bw||BW, a.lift||LIFT, ()=>{
+    // rooftop arrays, racked south at TILT_ROOF
     const s = Math.sin(TILT_ROOF), c = Math.cos(TILT_ROOF);
     const hi = .35 + s*PL, mid = .35 + s*PL/2;
     for (let q=0;q<a.g.nc;q++) for (let p=0;p<a.g.na;p++){
@@ -2977,20 +3581,22 @@ function drawAll(D, m=model, rails=railsOn, withFigure=true){
       box('wood', a.x+gx, a.top+hi/2,  a.z+gz-PL*c/2+.2, .26, hi,  .26);   // back legs
       box('wood', a.x+gx, a.top+.18,   a.z+gz+PL*c/2-.2, .26, .35, .26);   // front feet
     }
-  }
+  });
   for (const c of D.collars)                   // posts that pierce a ply deck below
     box('steel', c.x, c.topY+.09, c.z, .62, .3, .62);
-  for (const [k,v] of m.pads){
+  for (const [k,v] of m.pads){ useKit(v);
     const [i,j]=nums(k);
     groundDeck(bcX(i,v.r), bcZ(j,v.r), bfX(v.r), bfZ(v.r), v.r, 0);
   }
-  for (const [s,v] of m.skins) skinDraw(s, v.op||0, D.skinGeom.get(s));
-  for (const c of D.canopyDraws){
+  useNext();
+  for (const [s,v] of m.skins) skinDraw(s, opsOf(v, +s.split(',')[3]), D.skinGeom.get(s));
+  for (const c of D.canopyDraws) atKit(c.bw||BW, c.lift||LIFT, ()=>{
     const p = c.post, w=bfX(c.r)/2-.5, d=bfZ(c.r)/2-.5;
     for (const [ox,oz] of [[-w,-d],[w,-d],[-w,d],[w,d]])
       box('wood',c.x+ox,c.top+p/2,c.z+oz,.17,p,.17);
     box('cloth',c.x,c.top+p+.12,c.z,bfX(c.r)+.7,.05,bfZ(c.r)+.7);
-  }
+  });
+  for (const k of m.stars){ const [i,j]=nums(k); starDraw(i,j); }
   if (rails) for (const r of D.rails) railEdge(r.x1,r.z1,r.x2,r.z2,r.topY);
   if (view.ballast) for (const b of D.ballast) ballastDraw(b);
   if (withFigure && view.figure && D.ft) figureAt(D.ft.x0-3.5, (D.ft.z0+D.ft.z1)/2);
@@ -3141,7 +3747,7 @@ function buildPicks(){
     scene.add(pickGroup);
     return;
   }
-  for (const [k,v] of model.cells){
+  for (const [k,v] of model.cells){ useKit(v);
     const [i,j,y]=nums(k);
     const m = new THREE.Mesh(pickBox, pickMat);
     m.position.set(bcX(i,v.r), y*LIFT+LIFT/2, bcZ(j,v.r));
@@ -3149,7 +3755,7 @@ function buildPicks(){
     m.userData = {t:'cell',i,j,y,r:v.r};
     pickGroup.add(m);
   }
-  for (const [k,v] of model.pads){
+  for (const [k,v] of model.pads){ useKit(v);
     const [i,j]=nums(k);
     const m = new THREE.Mesh(pickBox, pickMat);
     m.position.set(bcX(i,v.r), .85, bcZ(j,v.r));
@@ -3157,18 +3763,23 @@ function buildPicks(){
     m.userData = {t:'pad',i,j,r:v.r};
     pickGroup.add(m);
   }
+  /* One target per 4' course, not one per face — clicking a wall has to be able
+     to say WHICH sheet you meant before it can put an opening in it. */
   for (const s of model.skins.keys()){
     const a=s.split(','), D=a[0], p=+a[1], q=+a[2], len=+a[3], y=+a[4];
     const g = wallGeom(model, s);
     const ftL = g ? g.ftL : len*MOD, off = g ? g.off : 0;
-    const W=ftL-.2, H=LIFT-.4, yc=y*LIFT+LIFT/2-.1;
-    const m = new THREE.Mesh(pickBox, pickMat);
-    if (D==='Z'){ m.position.set(mX(p)+len*MOD/2, yc, mZ(q)+off); m.scale.set(W,H,.8); }
-    else        { m.position.set(mX(p)+off, yc, mZ(q)+len*MOD/2); m.scale.set(.8,H,W); }
-    m.userData = {t:'skin', key:s};
-    pickGroup.add(m);
+    const cw = ftL/len, H=LIFT-.4, yc=y*LIFT+LIFT/2-.1;
+    for (let n=0;n<len;n++){
+      const u = -ftL/2 + (n+.5)*cw;
+      const m = new THREE.Mesh(pickBox, pickMat);
+      if (D==='Z'){ m.position.set(mX(p)+len*MOD/2+u, yc, mZ(q)+off); m.scale.set(cw-.05,H,.8); }
+      else        { m.position.set(mX(p)+off, yc, mZ(q)+len*MOD/2+u); m.scale.set(.8,H,cw-.05); }
+      m.userData = {t:'skin', key:s, n};
+      pickGroup.add(m);
+    }
   }
-  for (const [k,v] of model.slopes){
+  for (const [k,v] of model.slopes){ useKit(v);
     const [i,j,y]=nums(k), NS=(v.d===0||v.d===2);
     const run=runOf(v.d,v.r), cross=crossOf(v.d,v.r);
     const L=Math.hypot(run,LIFT), tilt=Math.atan2(LIFT,run);
@@ -3179,7 +3790,7 @@ function buildPicks(){
     m.userData = {t:'slope', key:k};
     pickGroup.add(m);
   }
-  for (const [k,v] of model.stairs){
+  for (const [k,v] of model.stairs){ useKit(v);
     const [i,j,y]=nums(k);
     const cs = stairCells(i,j,v.d,v.r,v.t,v.w), N = cs.length;
     cs.forEach(([a,b],n)=>{                      // a box up to about where the run is by then
@@ -3190,6 +3801,14 @@ function buildPicks(){
       m.userData = {t:'stair', key:k};
       pickGroup.add(m);
     });
+  }
+  for (const k of model.stars){
+    const [i,j]=nums(k);
+    const m = new THREE.Mesh(pickBox, pickMat);
+    m.position.set(mX(i)+SS_M*MOD/2, SS_H/2, mZ(j)+SS_M*MOD/2);
+    m.scale.set(SS_D, SS_H, SS_D);
+    m.userData = {t:'star', key:k};
+    pickGroup.add(m);
   }
   for (const k of model.arrays){
     const [i,j]=nums(k), y=topmost(i,j); if (y<0) continue;
@@ -3261,7 +3880,7 @@ function showGhost(a){
   if (!a || a.msg) return;
   if (a.kind==='place'){
     tint(false);
-    a.list.slice(0,MAXL).forEach((c,n)=>ghostBay(ghostBoxes[n], c[0], c[1], c[2], c[3]));
+    a.list.slice(0,maxLifts()).forEach((c,n)=>ghostBay(ghostBoxes[n], c[0], c[1], c[2], c[3]));
   }
   if (a.kind==='flip'){
     tint(false);
@@ -3270,11 +3889,17 @@ function showGhost(a){
   if (a.kind==='eraseCol'){
     tint(true);
     let n=0;
-    for (let y=a.y;y<MAXL;y++){
+    for (let y=a.y;y<maxLifts();y++){
       const v=model.cells.get(k3(a.i,a.j,y)); if (!v) continue;
       const g=ghostBoxes[n++]; if(!g) break;
       ghostBay(g, a.i, a.j, y, v.r);
     }
+  }
+  if (a.kind==='starOn' || a.kind==='starOff'){
+    tint(a.kind==='starOff');
+    const [i,j]=nums(a.k);
+    ghostRiser.position.set(mX(i)+SS_M*MOD/2, SS_H/2, mZ(j)+SS_M*MOD/2);
+    ghostRiser.scale.set(SS_D, SS_H, SS_D); ghostRiser.visible=true;
   }
   if (a.kind==='padOff' || a.kind==='padOn'){
     tint(a.kind==='padOff');
@@ -3287,11 +3912,17 @@ function showGhost(a){
     const ex = model.skins.get(a.key);
     const g = wallGeom(model, a.key);
     const ftL = g ? g.ftL : len*MOD, off = g ? g.off : 0;
-    tint(a.kind==='skinOff' || (ex && ex.op===a.op));
+    /* On a wall that is already up, the ghost sits on the ONE 4' course you are
+       about to change, so it is obvious an opening lands in a sheet and not
+       across the whole face. Dropping a fresh wall still ghosts the lot. */
+    const one = a.kind==='wall' && ex && a.n != null;
+    const cw = ftL/len, half = one ? cw/2 : ftL/2;
+    const u = one ? -ftL/2 + (a.n+.5)*cw : 0;
+    tint(a.kind==='skinOff' || (ex && opsOf(ex,len)[a.n==null?(len-1)>>1:a.n] === a.op));
     ghostPlane.rotation.set(0, D==='X'?Math.PI/2:0, 0);
-    ghostPlane.position.set(D==='X'?mX(q)+off:mX(q)+len*MOD/2, y*LIFT+LIFT/2-.1,
-                            D==='X'?mZ(w)+len*MOD/2:mZ(w)+off);
-    ghostPlane.scale.set(ftL-.2,LIFT-.4,1); ghostPlane.visible=true;
+    ghostPlane.position.set(D==='X'?mX(q)+off:mX(q)+len*MOD/2+u, y*LIFT+LIFT/2-.1,
+                            D==='X'?mZ(w)+len*MOD/2+u:mZ(w)+off);
+    ghostPlane.scale.set(2*half-.2,LIFT-.4,1); ghostPlane.visible=true;
   }
   if (a.kind==='deck'){
     const [i,j,y]=nums(a.k), v=model.cells.get(a.k);
@@ -3370,6 +4001,7 @@ function showGhost(a){
 /* ─────────────────── tool actions ───────────────────────── */
 function clearFor(i,j,y,r,ignore){              // is that footprint free at this level?
   if (!inField(i,j,r)) return false;
+  if (y===0 && starAt(i,j,bmX(r),bmZ(r))) return false;   // a star owns its ground outright
   const occ = occMap(model);
   for (let a=0;a<bmX(r);a++) for (let b=0;b<bmZ(r);b++){
     const k = occ.get(k3(i+a,j+b,y));
@@ -3397,7 +4029,7 @@ function supported(i,j,y,r){                    // every module under it must be
   return true;
 }
 function stairAt(i,j,y,r){                      // does a stair footprint cover this one?
-  for (const [k,v] of model.stairs){
+  for (const [k,v] of model.stairs){ useKit(v);
     const [si,sj,sy]=nums(k); if (sy!==y) continue;
     for (const [a,b] of stairCells(si,sj,v.d,v.r,v.t,v.w))
       if (rectsHit(a,b,v.r,i,j,r)) return k;
@@ -3407,14 +4039,37 @@ function stairAt(i,j,y,r){                      // does a stair footprint cover 
 function rectsHit(i1,j1,r1,i2,j2,r2){
   return i1 < i2+bmX(r2) && i2 < i1+bmX(r1) && j1 < j2+bmZ(r2) && j2 < j1+bmZ(r1);
 }
+const boxHit = (a,b)=> a.i < b.i+b.w && b.i < a.i+a.w && a.j < b.j+b.d && b.j < a.j+a.d;
+/* A star shade owns its whole 40' square right down to the dirt, so nothing —
+   bay, riser, stair or another star — may share a module with it. */
+function starAt(i,j,w,d){
+  const r = {i,j,w,d};
+  for (const k of model.stars){ const [a,b]=nums(k); if (boxHit(r, starRect(a,b))) return k; }
+  return null;
+}
+function starGroundClear(i,j){
+  const r = starRect(i,j);
+  if (i<0 || j<0 || i+SS_M>G || j+SS_M>G) return 'a star shade wants 40′ square — that runs off the field';
+  for (const [k,v] of model.cells){ useKit(v); const [a,b]=nums(k);
+    if (boxHit(r, {i:a, j:b, w:bmX(v.r), d:bmZ(v.r)})) { useNext(); return 'a star shade stands on open ground — rack is in the way'; } }
+  for (const [k,v] of model.pads){ useKit(v); const [a,b]=nums(k);
+    if (boxHit(r, {i:a, j:b, w:bmX(v.r), d:bmZ(v.r)})) { useNext(); return 'clear the riser first'; } }
+  useNext();
+  for (const [k,v] of model.stairs){ useKit(v); const [a,b]=nums(k);
+    for (const [ci,cj] of stairCells(a,b,v.d,v.r,v.t,v.w))
+      if (boxHit(r, {i:ci, j:cj, w:bmX(v.r), d:bmZ(v.r)})) return 'a stair holds that ground'; }
+  return null;
+}
 /* the anchor for a bay of rotation nr laid against face `dir` of the bay at
    (i,j,r) — the far sides push off the host, the near sides pull back by the
    new footprint, which is what keeps mismatched bay lengths flush           */
-function faceAnchor(i,j,r,dir,nr){
-  if (dir===0) return [i, j-bmZ(nr)];
-  if (dir===2) return [i, j+bmZ(r)];
-  if (dir===3) return [i-bmX(nr), j];
-  return [i+bmX(r), j];
+function faceAnchor(i,j,r,dir,nr,hostBW,newBW){
+  const HX = ()=>atKit(hostBW||BW, LIFT, ()=>bmX(r)), HZ = ()=>atKit(hostBW||BW, LIFT, ()=>bmZ(r));
+  const NX = ()=>atKit(newBW||nextBW, LIFT, ()=>bmX(nr)), NZ = ()=>atKit(newBW||nextBW, LIFT, ()=>bmZ(nr));
+  if (dir===0) return [i, j-NZ()];
+  if (dir===2) return [i, j+HZ()];
+  if (dir===3) return [i-NX(), j];
+  return [i+HX(), j];
 }
 function stairFits(i,j,y,d,t,w,r){
   const cs = stairCells(i,j,d,r,t,w), N = cs.length;
@@ -3430,27 +4085,37 @@ function stairFits(i,j,y,d,t,w,r){
 }
 function resolveAction(hit, tl){
   if (!hit) return null;
+  useNext();                                    // the piece being placed lands on the STRIPS
   const u = hit.object.userData, n = hit.face ? hit.face.normal : null;
+  /* The piece you CLICKED, not the piece you are about to place. A wall, a
+     lean-to or a stair belongs to the bay under the cursor and has to be
+     measured in that bay's kit — read it off the strips and an 8' face gets a
+     16' wall hanging two modules off the end of it. */
+  const hitPiece = uu => uu.t==='pad' ? model.pads.get(kp(uu.i,uu.j))
+                                      : model.cells.get(k3(uu.i,uu.j,uu.y));
+  const atHost = (uu, fn) => { const v = hitPiece(uu);
+    return v ? atKit(cellBW(v), cellLift(v), fn) : fn(); };
+  const hostBW = uu => cellBW(hitPiece(uu));
   const anchorAt = (px,pz,r)=>{                 // ground point -> a bay anchored near it
     const i = rnd((px - bfX(r)/2)/MOD + G/2), j = rnd((pz - bfZ(r)/2)/MOD + G/2);
     return inField(i,j,r) ? [i,j] : null;
   };
   const sideOf = (uu)=>{                        // which face of a bay the click landed on
     if (!n) return null;
-    if (n.y > .5){
+    if (n.y > .5) return atHost(uu, ()=>{
       const dx = hit.point.x - bcX(uu.i,uu.r), dz = hit.point.z - bcZ(uu.j,uu.r);
       return Math.abs(dx)/bfX(uu.r) > Math.abs(dz)/bfZ(uu.r) ? (dx>0?1:3) : (dz>0?2:0);
-    }
+    });
     if (n.y < -.5) return null;
     return n.z<-.5?0 : n.z>.5?2 : n.x>.5?1 : 3;
   };
-  const skinKey = (uu,dir)=>{                   // the wall line on that face
+  const skinKey = (uu,dir)=>atHost(uu, ()=>{    // the wall line on that face, in ITS kit
     const w=bmX(uu.r), d=bmZ(uu.r);
     if (dir===0) return 'Z,'+uu.i+','+uu.j+','+w+','+uu.y;
     if (dir===2) return 'Z,'+uu.i+','+(uu.j+d)+','+w+','+uu.y;
     if (dir===3) return 'X,'+uu.i+','+uu.j+','+d+','+uu.y;
     return 'X,'+(uu.i+w)+','+uu.j+','+d+','+uu.y;
-  };
+  });
   /* BUILD lays a 12' bay, SPAN lays the same bay at 20'. Everything else about
      them is identical — which is the point: a long span isn't a special object,
      it's a bay whose beams happen to be lumber. */
@@ -3479,7 +4144,7 @@ function resolveAction(hit, tl){
     if (u.t==='stair') return {msg:'a stair holds that ground — erase it first'};
     if (u.t==='array'){
       const [i,j]=nums(u.key), y=topmost(i,j);
-      if (y+1 >= MAXL) return {msg:'36′ is the sketch ceiling'};
+      if (y+1 >= maxLifts()) return {msg:`${FT(maxLifts()*LIFT)} of ${FT(LIFT)} frames is the ceiling`};
       const v=model.cells.get(k3(i,j,y));
       if (!clearFor(i,j,y+1,v.r)) return null;
       return {kind:'place', list:[[i,j,y+1,v.r]]};
@@ -3498,14 +4163,14 @@ function resolveAction(hit, tl){
             return {msg:'it would hang off the bay below'};
           return {kind:'flip', i:u.i, j:u.j, y:u.y, r:want};
         }
-        if (u.y+1 >= MAXL) return {msg:'36′ is the sketch ceiling'};
+        if (u.y+1 >= maxLifts()) return {msg:`${FT(maxLifts()*LIFT)} of ${FT(LIFT)} frames is the ceiling`};
         if (!clearFor(u.i,u.j,u.y+1,u.r)) return null;
         return {kind:'place', list:[[u.i,u.j,u.y+1,u.r]]};
       }
       if (n.y < -.5) return null;
       // land the new bay against the face that was clicked, in the current direction
       const dir = sideOf(u);
-      const [ti,tj] = faceAnchor(u.i, u.j, u.r, dir, NR);
+      const [ti,tj] = faceAnchor(u.i, u.j, u.r, dir, NR, hostBW(u), nextBW);
       if (!inField(ti,tj,NR)) return {msg:'edge of the sketch field'};
       if (!clearFor(ti,tj,u.y,NR)) return null;
       if (stairAt(ti,tj,u.y,NR)) return {msg:'a stair is in the way — erase it first'};
@@ -3531,11 +4196,13 @@ function resolveAction(hit, tl){
                           : 'deck floors the top of a bay — click one'};
   }
   if (tl==='wall'){
-    if (u.t==='skin') return {kind:'wall', key:u.key, op:wallMode};
+    // n = which 4' course you hit. Null off a bay face: a fresh wall takes the
+    // opening in its middle course, and you click the others in after.
+    if (u.t==='skin') return {kind:'wall', key:u.key, op:wallMode, n:u.n};
     if (u.t==='cell' && n){
       const dir = sideOf(u);
       if (dir===null) return {msg:'walls hang on side faces or the top of a bay'};
-      return {kind:'wall', key:skinKey(u,dir), op:wallMode};
+      return {kind:'wall', key:skinKey(u,dir), op:wallMode, n:null};
     }
     return {msg:'walls hang on rack faces — build first'};
   }
@@ -3551,8 +4218,9 @@ function resolveAction(hit, tl){
         if (ex && ex.d===dir) return {kind:'slopeOff', k};
         return {kind:'slopeOn', k, d:dir, r:u.r, solar: ex ? ex.solar : false};
       }
-      const [ni,nj]=faceAnchor(u.i,u.j,u.r,dir,u.r);
-      if (!inField(ni,nj,u.r)) return {msg:'edge of the sketch field'};
+      const hb = hostBW(u);
+      const [ni,nj]=faceAnchor(u.i,u.j,u.r,dir,u.r,hb,hb);
+      if (!atKit(hb, LIFT, ()=>inField(ni,nj,u.r))) return {msg:'edge of the sketch field'};
       const nk=k3(ni,nj,u.y);
       if (!clearFor(ni,nj,u.y,u.r)) return {msg:'that side is framed — pick an open one'};
       if (stairAt(ni,nj,u.y,u.r)) return {msg:'a stair is there — erase it first'};
@@ -3576,8 +4244,9 @@ function resolveAction(hit, tl){
       const dir = sideOf(u);
       if (dir===null) return {msg:'stairs run down off a side or a deck edge'};
       const sr = u.r & 1;                        // stairs always land on a 12' footprint
-      const [ni,nj]=faceAnchor(u.i,u.j,u.r,dir,sr);
-      if (!inField(ni,nj,sr)) return {msg:'edge of the sketch field'};
+      const hb = hostBW(u);                      // a stair takes the bay's own row spread
+      const [ni,nj]=faceAnchor(u.i,u.j,u.r,dir,sr,hb,hb);
+      if (!atKit(hb, LIFT, ()=>inField(ni,nj,sr))) return {msg:'edge of the sketch field'};
       const k=k3(ni,nj,u.y), ex=model.stairs.get(k);
       if (ex && ex.d===dir) return {kind:'stairOff', k};
       const tries = [[stairTurn, stairWrap]];    // what you asked for, then the near misses
@@ -3617,6 +4286,20 @@ function resolveAction(hit, tl){
     if (u.t==='array') return {msg:'that rooftop is solar — erase it first'};
     return {msg:'shade crowns a bay or riser'};
   }
+  /* STAR is the one tool that builds something that isn't rack. It lands on the
+     4' grid like everything else and it owns its 40' square outright. */
+  if (tl==='star'){
+    if (u.t==='star') return {kind:'starOff', k:u.key};
+    if (u.t==='ground'){
+      const i = clamp(rnd((hit.point.x - SS_M*MOD/2)/MOD + G/2), 0, G-SS_M);
+      const j = clamp(rnd((hit.point.z - SS_M*MOD/2)/MOD + G/2), 0, G-SS_M);
+      const hitStar = starAt(i,j,SS_M,SS_M);
+      if (hitStar) return {kind:'starOff', k:hitStar};
+      const why = starGroundClear(i,j);
+      return why ? {msg:why} : {kind:'starOn', k:kp(i,j)};
+    }
+    return {msg:'a star shade stands on open ground — click the dirt'};
+  }
   if (tl==='riser'){
     if (u.t==='pad') return {kind:'padOff', i:u.i, j:u.j};
     if (u.t==='ground'){
@@ -3634,20 +4317,61 @@ function resolveAction(hit, tl){
     if (u.t==='slope') return {kind:'slopeOff', k:u.key};
     if (u.t==='stair') return {kind:'stairOff', k:u.key};
     if (u.t==='array') return {kind:'arrayOff', k:u.key};
+    if (u.t==='star')  return {kind:'starOff', k:u.key};
     if (u.t==='pad')   return {kind:'padOff', i:u.i, j:u.j};
     if (u.t==='cell')  return {kind:'eraseCol', i:u.i, j:u.j, y:u.y};
     return null;
   }
   return null;
 }
+/* Fill in the kit on anything that hasn't got one. Old links and anything
+   saved before the kit went per piece carry it once for the whole sketch, so
+   that is what every piece on them was drawn on. */
+function normalizeKit(m){
+  const bw = m.bw || nextBW, lift = m.lift || nextLift;
+  for (const set of [m.cells, m.pads, m.slopes, m.stairs])
+    for (const v of set.values()){ if (!v.bw) v.bw = bw; if (!v.lift) v.lift = lift; }
+  /* A column is one height. Anything that came in disagreeing — a hand-edited
+     link, a lot dropped in from somewhere else — gets the ground piece's. */
+  for (const [k,v] of m.cells){ const [i,j,y]=nums(k);
+    if (y > 0){ const g = m.cells.get(k3(i,j,0)); if (g) v.lift = g.lift; } }
+  return m;
+}
 function pruneModel(m){
+  normalizeKit(m);
+  /* Ceiling first. A taller frame buys fewer lifts, so a column that was legal
+     on 8' steel is not legal on 16' — anything over the top comes off before
+     the support rule runs, along with whatever was hanging on it. Per column
+     now: the 8' stack next door is not what caps the 16' one. */
+  /* A star shade owns its 40' square down to the dirt. The tools already refuse
+     to put rack there, but a link can carry anything, so the ground rule is
+     enforced here too — the star wins and whatever was standing in it goes. */
+  if (m.stars.size){
+    const on = (i,j,r)=>{
+      for (const k of m.stars){ const [a,b]=nums(k);
+        if (boxHit({i, j, w:bmX(r), d:bmZ(r)}, starRect(a,b))) return true; }
+      return false;
+    };
+    for (const [k,v] of [...m.cells]){ useKit(v); if (nums(k)[2]===0 && on(nums(k)[0], nums(k)[1], v.r)) m.cells.delete(k); }
+    for (const [k,v] of [...m.pads]){ useKit(v); if (on(nums(k)[0], nums(k)[1], v.r)) m.pads.delete(k); }
+    for (const [k,v] of [...m.stairs]){ useKit(v); const [i,j]=nums(k);
+      for (const [a,b] of stairCells(i,j,v.d,v.r,v.t,v.w))
+        if (on(a,b,v.r)){ m.stairs.delete(k); break; } }
+  }
+  const overCeil = (y, v) => (y+1)*cellLift(v) > CEIL_FT || y >= LIFTS_MAX;
+  for (const [k,v] of [...m.cells])  if (overCeil(nums(k)[2], v)) m.cells.delete(k);
+  for (const [k,v] of [...m.slopes]) if (overCeil(nums(k)[2], v)) m.slopes.delete(k);
+  for (const [k,v] of [...m.stairs]) if (overCeil(nums(k)[2], v)) m.stairs.delete(k);
+  for (const k of [...m.skins.keys()]){ const y = +k.split(',')[4];
+    if (y >= LIFTS_MAX) m.skins.delete(k); }
   // support rule: a bay needs built ground under every module it covers
-  for (let y=1;y<MAXL;y++){
+  for (let y=1;y<LIFTS_MAX;y++){
     for (;;){
       const occ = occMap(m);
       let cut = false;
       for (const [k,v] of [...m.cells]){
         const [i,j,yy]=nums(k); if (yy!==y) continue;
+        useKit(v);
         let ok = true;
         for (let a=0;a<bmX(v.r)&&ok;a++) for (let b=0;b<bmZ(v.r);b++)
           if (!occ.get(k3(i+a,j+b,y-1))){ ok=false; break; }
@@ -3672,8 +4396,9 @@ function pruneModel(m){
   // slopes fill a framed bay, or lean off a framed uphill neighbour
   for (const [k,v] of [...m.slopes]){
     const [i,j,y]=nums(k);
+    useKit(v);
     const host = m.cells.get(k);
-    if (host){ v.r = host.r; continue; }
+    if (host){ v.r = host.r; v.bw = host.bw; v.lift = host.lift; continue; }
     let ok=false;
     for (const r of [0,1,2,3]){
       const [dx,dz]=stepOf(v.d,r);
@@ -3706,10 +4431,12 @@ function pruneModel(m){
   };
   for (const [k,v] of [...m.stairs]){
     const [i,j,y]=nums(k);
+    useKit(v);
     v.t = clamp(v.t|0, -1, 1);
     v.w = clamp(v.w|0, -1, 1);
     let ok = false;
-    for (const rr of [v.r&1, (v.r&1)^1]) if (hostBehind(i,j,y,v.d,rr)){ v.r = rr; ok = true; break; }
+    for (const rr of [v.r&1, (v.r&1)^1]){ const hb = hostBehind(i,j,y,v.d,rr);
+      if (hb){ v.r = rr; v.bw = hb.bw; v.lift = hb.lift; useKit(v); ok = true; break; } }
     const w=bmX(v.r), h=bmZ(v.r);
     for (const [a,b] of stairCells(i,j,v.d,v.r,v.t,v.w)){
       if (!inField(a,b,v.r)) ok=false;
@@ -3731,11 +4458,13 @@ function pruneModel(m){
   const occ0 = occMap(m);
   for (const [k,v] of [...m.pads]){
     const [i,j]=nums(k);
+    useKit(v);
     let hit=false;
     for (let a=0;a<bmX(v.r)&&!hit;a++) for (let b=0;b<bmZ(v.r);b++)
       if (occ0.get(k3(i+a,j+b,0))){ hit=true; break; }
     if (hit) m.pads.delete(k);
   }
+  useNext();
 }
 /* A new bay inherits its neighbours' railing setting, so a structure you've
    switched off stays switched off as you grow it. Only what it actually
@@ -3757,9 +4486,15 @@ function apply(a){
   if (a.kind==='place'){
     if (a.removePads) for (const p of a.removePads) model.pads.delete(p);
     for (const [i,j,y,r] of a.list){
-      model.cells.set(k3(i,j,y), {r, deck:true, canopy:false, floor:false,
-                                  rail:neighbourRail(i,j,y,r)});
+      /* The kit this piece is drawn on. A ground piece takes the strips; a
+         piece stacked on one already standing takes the COLUMN's height,
+         because a stack of frames is one line of steel. Width is free either
+         way — the bay above only has to land on the footprint below.       */
       const below = model.cells.get(k3(i,j,y-1));
+      const lift = y > 0 ? colLift(model,i,j) : nextLift;
+      const bw = below ? cellBW(below) : nextBW;
+      model.cells.set(k3(i,j,y), {r, bw, lift, deck:true, canopy:false, floor:false,
+                                  rail:neighbourRail(i,j,y,r)});
       if (below) below.canopy = false;
     }
   }
@@ -3772,30 +4507,50 @@ function apply(a){
   }
   if (a.kind==='deck'){ const c=model.cells.get(a.k); c.deck=!c.deck; }
   if (a.kind==='floor'){ const c=model.cells.get(a.k); if (c) c.floor=!c.floor; }
+  /* A wall changes one 4' course at a time. Click a course with what it already
+     has and it goes back the other way: an opening reverts to plain ply, and a
+     solid course clicked solid takes the whole face down — same as it always
+     did, only now the rest of the face keeps its doors and windows.        */
   if (a.kind==='wall'){
+    const len = +a.key.split(',')[3];
+    const n = a.n == null ? (len-1)>>1 : clamp(a.n, 0, len-1);
     const ex = model.skins.get(a.key);
-    if (ex && (ex.op||0)===a.op) model.skins.delete(a.key);
-    else model.skins.set(a.key, {op:a.op});
+    if (!ex){
+      model.skins.set(a.key, {ops: a.op ? oneOp(len, n, a.op) : new Array(len).fill(0)});
+    } else {
+      const ops = opsOf(ex, len).slice();
+      if (ops[n] === a.op){
+        if (!a.op){ model.skins.delete(a.key); }
+        else { ops[n] = 0; model.skins.set(a.key, {ops}); }
+      } else { ops[n] = a.op; model.skins.set(a.key, {ops}); }
+    }
   }
   if (a.kind==='skinOff') model.skins.delete(a.key);
   if (a.kind==='canopyCell'){ const c=model.cells.get(a.k); if (c) c.canopy=!c.canopy; }
   if (a.kind==='canopyPad'){ const p=model.pads.get(a.k); if (p) p.canopy=!p.canopy; }
-  if (a.kind==='padOn')  model.pads.set(kp(a.i,a.j), {r:a.r, canopy:false});
+  if (a.kind==='padOn')  model.pads.set(kp(a.i,a.j), {r:a.r, bw:nextBW, lift:nextLift, canopy:false});
   if (a.kind==='padOff') model.pads.delete(kp(a.i,a.j));
-  if (a.kind==='slopeOn') model.slopes.set(a.k, {d:a.d, r:a.r, solar:!!a.solar});
+  if (a.kind==='slopeOn'){ const [si,sj]=nums(a.k);
+    model.slopes.set(a.k, {d:a.d, r:a.r, solar:!!a.solar,
+      bw:colBW(model,si,sj), lift:colLift(model,si,sj)}); }
   if (a.kind==='slopeOff') model.slopes.delete(a.k);
   if (a.kind==='solarSlope'){ const v=model.slopes.get(a.k); if (v) v.solar=a.on; }
   if (a.kind==='stairOn'){
     const [i,j,y]=nums(a.k);
     for (const [ci,cj] of stairCells(i,j,a.d,a.r,a.t,a.w)) model.slopes.delete(k3(ci,cj,y));
-    model.stairs.set(a.k, {d:a.d, t:a.t, w:a.w, r:a.r});
+    /* A stair's rise is the lift of the bay it comes off, so it carries that
+       bay's kit — regrow the flights and it stays walkable whatever the frame. */
+    model.stairs.set(a.k, {d:a.d, t:a.t, w:a.w, r:a.r,
+                           bw:colBW(model,i,j), lift:colLift(model,i,j)});
     if (a.note) toast(a.note);
   }
   if (a.kind==='stairOff') model.stairs.delete(a.k);
   if (a.kind==='arrayOn') model.arrays.add(a.k);
   if (a.kind==='arrayOff') model.arrays.delete(a.k);
+  if (a.kind==='starOn'){ model.stars.add(a.k); toast(`star shade — ${SS_D}′ across, ${SS_H}′ up, ${SS_PN} panels, ${money(rnd(SS_COST))}`); }
+  if (a.kind==='starOff') model.stars.delete(a.k);
   if (a.kind==='eraseCol'){
-    for (let y=a.y;y<MAXL;y++) model.cells.delete(k3(a.i,a.j,y));
+    for (let y=a.y;y<LIFTS_MAX;y++) model.cells.delete(k3(a.i,a.j,y));
   }
   pruneModel(model);
   hideGhost();
@@ -3909,7 +4664,7 @@ function applyEnc(enc){
     site = s; selLot = -1; setMode('site', true);
   } else {
     const d = decode(enc); if (!d) return;
-    model = d.model; railsOn = d.rails;
+    model = d.model; railsOn = d.rails; adoptBW(model);
     if (d.hour != null) sunHour = d.hour;
     setMode('build', true);
   }
@@ -3935,6 +4690,7 @@ function syncInputs(){
     b.classList.toggle('on', +b.dataset.r === bayRot));
   const sl = document.getElementById('sunslide');
   if (sl) sl.value = String(rnd(sunHour*4));
+  syncBW();
 }
 function setBayDir(r){
   if (bayRot === r) return;
@@ -3988,59 +4744,90 @@ function rotateModel(src){
   const m = blank();
   m.name = src.name;
   const turn = d=>(d+3)&3;
-  const RB = (i,j,r)=>[j, G-bmX(r)-i, r^1];      // bay anchor + its new rotation
-  for (const [k,v] of src.cells){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r);
-    m.cells.set(k3(a,b,y), {r, deck:v.deck, canopy:v.canopy, floor:!!v.floor,
-                            rail:v.rail!==false}); }
-  for (const [k,v] of src.pads){ const [i,j]=nums(k), [a,b,r]=RB(i,j,v.r);
-    m.pads.set(kp(a,b), {r, canopy:v.canopy}); }
+  const RB = (i,j,r,v)=>atKit(cellBW(v), cellLift(v), ()=>[j, G-bmX(r)-i, r^1]);   // anchor + its new rotation
+  for (const [k,v] of src.cells){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r,v);
+    m.cells.set(k3(a,b,y), {r, bw:v.bw, lift:v.lift, deck:v.deck, canopy:v.canopy,
+                            floor:!!v.floor, rail:v.rail!==false}); }
+  for (const [k,v] of src.pads){ const [i,j]=nums(k), [a,b,r]=RB(i,j,v.r,v);
+    m.pads.set(kp(a,b), {r, bw:v.bw, lift:v.lift, canopy:v.canopy}); }
   for (const k of src.arrays){ const [i,j]=nums(k);
     const v = src.cells.get(k3(i,j,topOf(src,i,j)));
-    const [a,b] = RB(i,j, v?v.r:0); m.arrays.add(kp(a,b)); }
-  for (const [k,v] of src.slopes){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r);
-    m.slopes.set(k3(a,b,y), {d:turn(v.d), r, solar:v.solar}); }
-  for (const [k,v] of src.stairs){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r);
-    m.stairs.set(k3(a,b,y), {d:turn(v.d), t:v.t||0, w:v.w||0, r}); }
+    const [a,b] = RB(i,j, v?v.r:0, v); m.arrays.add(kp(a,b)); }
+  // a star shade is square and eight-fold, so a quarter turn only moves it
+  for (const k of src.stars){ const [i,j]=nums(k); m.stars.add(kp(j, G-SS_M-i)); }
+  for (const [k,v] of src.slopes){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r,v);
+    m.slopes.set(k3(a,b,y), {d:turn(v.d), r, bw:v.bw, lift:v.lift, solar:v.solar}); }
+  for (const [k,v] of src.stairs){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r,v);
+    m.stairs.set(k3(a,b,y), {d:turn(v.d), t:v.t||0, w:v.w||0, r, bw:v.bw, lift:v.lift}); }
   for (const [s,v] of src.skins){
     const p=s.split(','), D=p[0], a=+p[1], b=+p[2], len=+p[3], y=+p[4];
-    // a Z line at z=b spanning x a..a+len becomes an X line at x=b spanning z G-a-len..G-a
+    /* a Z line at z=b spanning x a..a+len becomes an X line at x=b spanning z
+       G-a-len..G-a — and its modules come out back to front, so the openings
+       have to turn with them. An X line going the other way keeps its order. */
+    const ops = opsOf(v, len);
     m.skins.set(D==='Z' ? 'X,'+b+','+(G-a-len)+','+len+','+y
-                        : 'Z,'+b+','+(G-a)+','+len+','+y, {op:v.op});
+                        : 'Z,'+b+','+(G-a)+','+len+','+y,
+                {ops: D==='Z' ? ops.slice().reverse() : ops.slice()});
   }
   pruneModel(m);
+  m.bw = src.bw || BW; m.lift = src.lift || LIFT;
   return m;
 }
-function mk(cellArr, skinArr, padArr, slopeArr, arrArr, stairArr){
+/* Templates hand skins their openings as an op per 4' module. A bare number is
+   still taken as one opening in the middle of that face, which is what most of
+   them want. */
+function mk(cellArr, skinArr, padArr, slopeArr, arrArr, stairArr, starArr){
   const m = blank();
   m.name = model.name;
   for (const [i,j,y,r,d,c,fl,nr] of cellArr)
-    m.cells.set(k3(i,j,y), {r, deck:!!d, canopy:!!c, floor:!!fl, rail:nr!==false});
-  for (const s of skinArr||[]) m.skins.set(s.slice(0,5).join(','), {op:s[5]||0});
-  for (const [i,j,r,c] of padArr||[]) m.pads.set(kp(i,j), {r, canopy:!!c});
-  for (const [i,j,y,d,r,sol] of slopeArr||[]) m.slopes.set(k3(i,j,y), {d, r, solar:!!sol});
+    m.cells.set(k3(i,j,y), {r, bw:nextBW, lift:nextLift,
+                            deck:!!d, canopy:!!c, floor:!!fl, rail:nr!==false});
+  for (const s of skinArr||[]) m.skins.set(s.slice(0,5).join(','),
+    {ops: Array.isArray(s[5]) ? s[5].slice() : opsOf({op:s[5]||0}, s[3])});
+  for (const [i,j,r,c] of padArr||[]) m.pads.set(kp(i,j), {r, bw:nextBW, lift:nextLift, canopy:!!c});
+  for (const [i,j,y,d,r,sol] of slopeArr||[]) m.slopes.set(k3(i,j,y), {d, r, bw:nextBW, lift:nextLift, solar:!!sol});
   for (const [i,j] of arrArr||[]) m.arrays.add(kp(i,j));
-  for (const [i,j,y,d,t,w] of stairArr||[]) m.stairs.set(k3(i,j,y), {d, t:t||0, w:w||0, r:0});
+  for (const [i,j,y,d,t,w] of stairArr||[]) m.stairs.set(k3(i,j,y), {d, t:t||0, w:w||0, r:0, bw:nextBW, lift:nextLift});
+  for (const [i,j] of starArr||[]) m.stars.add(kp(i,j));
   pruneModel(m);
   return m;
 }
-/* Three starts. Blank, the thing most camps actually build, and the thing most
-   camps wish they had built. Everything is whole bays on real beam lengths, so
-   the counts read true the moment one lands — then reshape it bay by bay.  */
+/* Four starts. Blank, the thing most camps actually build, the thing most camps
+   wish they had built, and the thing somebody on the block already built. Every
+   one of them is laid out in MODULES off the live row spread, not in fixed
+   numbers, so the same template lands square whether the rows stand 8', 12' or
+   16' apart — and the counts read true the moment it drops.                  */
+const tplW = ()=>BWM();                       // a bay's width, in modules
+const tplL = 3;                               // …and its 12' length
+const ctr = n => rnd((G-n)/2);                // n modules, centred on the field
+/* one op per module, everything else solid */
+const oneOp = (len, k, op)=>{ const a=new Array(len).fill(0); a[k]=op; return a; };
 const TPL = {
   blank: ()=>mk([],[],[]),
-  /* 32' × 12' of enclosed room on the ground with a roof deck over it: four bays
-     end to end, walls all round, a door and a window on the long south side, a
-     window at each end. No stair and no railings — decide for yourself which face
-     you want to come down and what you want held, then add them. */
+  /* A run of enclosed room on the ground with a roof deck over it: bays end to
+     end, walls all round, a door and windows worked into the long south side one
+     4' course at a time, a window at each end. The bay count backs off as the
+     rows spread, so the room stays about 32' long instead of running to 64'.
+     No stair and no railings — decide for yourself which face you want to come
+     down and what you want held, then add them. */
   room: ()=>{
-    const c=[[16,16,0,0,1,0,0,false],[18,16,0,0,1,0,0,false],
-             [20,16,0,0,1,0,0,false],[22,16,0,0,1,0,0,false]];
-    const s=[['Z',16,16,2,0,0],['Z',18,16,2,0,0],          // north wall, solid all the way
-             ['Z',20,16,2,0,0],['Z',22,16,2,0,0],
-             ['X',16,16,3,0,2],                            // west — window
-             ['X',24,16,3,0,2],                            // east — window
-             ['Z',16,19,2,0,0],['Z',18,19,2,0,1],          // south — solid, then the door…
-             ['Z',20,19,2,0,2],['Z',22,19,2,0,0]];         // …a window, and solid on the end
+    const w=tplW(), n = BW>=16 ? 2 : (BW>=12 ? 3 : 4), nm = n*w;
+    const i0=ctr(nm), j0=ctr(tplL);
+    const c=[], s=[];
+    /* the south face, module by module: a door in the middle course and windows
+       on alternate courses either side — which is what per-sheet openings buy
+       you, and it beats one 3' hole in a 32' wall. */
+    const south = new Array(nm).fill(0);
+    south[Math.floor(nm/2)] = 1;
+    for (let mI=1; mI<nm; mI+=2) if (!south[mI]) south[mI] = 2;
+    for (let b=0;b<n;b++){
+      const i = i0+b*w;
+      c.push([i, j0, 0, 0, 1, 0, 0, false]);
+      s.push(['Z', i, j0,       w, 0, 0]);              // north wall, solid all the way
+      s.push(['Z', i, j0+tplL,  w, 0, south.slice(b*w,(b+1)*w)]);
+    }
+    s.push(['X', i0,    j0, tplL, 0, oneOp(tplL,1,2)]); // west — window
+    s.push(['X', i0+nm, j0, tplL, 0, oneOp(tplL,1,2)]); // east — window
     return mk(c,s,[],[],[],[]);
   },
   /* A shed with its back to the north wind and a 45° face of panels leaning off
@@ -4048,14 +4835,102 @@ const TPL = {
      sun as glass gets. No stair and no railings: the panels are the point, and
      you can decide later how you want to get up to them. */
   solar: ()=>{
-    const c=[[16,16,0,0,1,0,0,false],[18,16,0,0,1,0,0,false]];
-    const s=[['Z',16,16,2,0,0],['Z',18,16,2,0,0],          // north — solid, it's the cold side
-             ['X',16,16,3,0,1],                            // west — the door
-             ['X',20,16,3,0,0]];                           // east — solid
-    const sl=[[16,19,0,2,0,1],[18,19,0,2,0,1]];            // south-facing solar lean-to
+    const w=tplW(), n = BW>=16 ? 1 : 2, nm = n*w;
+    const i0=ctr(nm), j0=ctr(tplL);
+    const c=[], s=[], sl=[];
+    for (let b=0;b<n;b++){
+      const i = i0+b*w;
+      c.push([i, j0, 0, 0, 1, 0, 0, false]);
+      s.push(['Z', i, j0, w, 0, 0]);                    // north — solid, it's the cold side
+      sl.push([i, j0+tplL, 0, 2, 0, 1]);                // south-facing solar lean-to
+    }
+    s.push(['X', i0,    j0, tplL, 0, oneOp(tplL,1,1)]); // west — the door
+    s.push(['X', i0+nm, j0, tplL, 0, 0]);               // east — solid
     return mk(c,s,[],sl,[],[]);
   },
 };
+
+/* ─────────────── the kit: row spread · upright height ────────
+   These two used to be one setting over the whole sketch, and touching either
+   re-laid everything — honest about one thing (four 8' bays end to end are not
+   the same 32' of wall as four 12' ones) and wrong about the thing camps
+   actually do, which is add a piece that isn't the same as the last one.
+
+   They are PER PIECE now. The strips say what the NEXT piece lands as, exactly
+   the way the N–S / E–W strip has always said which way it runs, and everything
+   already on the ground keeps what it was drawn on. Nothing is re-laid and
+   nothing is dropped.
+
+   One rule: a COLUMN is one height. Stack onto a piece and the new one inherits
+   the height of the ground piece under it, because a stack of frames is one line
+   of steel — you don't splice a 12' frame onto a 16' one halfway up. Width is
+   free: the bay above only has to land on the footprint below.
+
+   Two pieces meeting end to end on a line SHARE the frame between them, and the
+   frame you buy is the TALLER of the two — rack frames are drilled the whole way
+   up, so a 12' bay's beams land partway up a 16' frame and that join costs one
+   frame line, not two. That is what building on is supposed to cost.        */
+let lastTpl = 'room';
+function bwLine(){
+  useNext();
+  const aisle = ROW_GAP(), cube = BW===LIFT && BL===LIFT;
+  const g = girtRows().length, L = maxLifts();
+  const mix = cur && cur.kits2 ? cur.kits2 : null;
+  const many = mix && (mix.bw.length > 1 || mix.lift.length > 1);
+  const spread = many
+    ? `<br><b>Already up:</b> ${mix.bw.map(([w,n])=>`${n}×${FT(w)}`).join(' · ')} rows,
+       ${mix.lift.map(([h,n])=>`${n}×${FT(h)}`).join(' · ')} frames — every piece keeps what it
+       was drawn on.`
+    : `<br>Every piece keeps what it was drawn on, so a ${FT(BW)} piece can go up against
+       something else entirely.`;
+  return `<b>The next piece: ${FT(BW)} rows on ${FT(LIFT)} frames.</b> Two 42″ racks with a
+    <b>${FT(aisle)} aisle</b> between them, so it lands <b>${FT(BW)} × ${FT(BL)} × ${FT(LIFT)}</b>${cube?' — a <b>cube</b>':''},
+    ${sheetsOf(0)} sheet${sheetsOf(0)===1?'':'s'} of ply${plyClean(0)?' with no cuts':' with one ripped in half'},
+    on ${joistsOf(0)} 2×8 joists ${FT(BW)} long over a <b>${FT(JOIST_SPAN())}</b> worst clear span,
+    <b>${g} girt rows</b> up an outside face, <b>${L} lift${L===1?'':'s'}</b> under the
+    ${FT(CEIL_FT)} ceiling, and a stair of <b>${stairSteps()} steps a flight</b> —
+    ${inch(stairRise())} on ${inch(stairTread())}, <b>${stairDeg()}°</b>, ${FT(flightRun())} of ground a flight.
+    ${spread}`;
+}
+function syncBW(){
+  useNext();                                    // the strips describe the next piece
+  document.querySelectorAll('#bwpick button').forEach(b=>b.classList.toggle('on', +b.dataset.bw===nextBW));
+  document.querySelectorAll('#ltpick button').forEach(b=>{
+    b.classList.toggle('on', +b.dataset.lift===nextLift);
+    const s = b.querySelector('small');
+    const n = clamp(Math.floor(CEIL_FT/+b.dataset.lift), 1, 3);
+    if (s) s.textContent = `${n} lift${n===1?'':'s'}`;
+  });
+  const n = document.getElementById('bwnote'); if (n) n.innerHTML = bwLine();
+  document.querySelectorAll('.bwft').forEach(e=>e.textContent = FT(BW));
+  document.querySelectorAll('.ltft').forEach(e=>e.textContent = FT(LIFT));
+  const h = document.getElementById('hinttxt');
+  if (h) h.innerHTML = window.matchMedia('(pointer:coarse)').matches
+    ? `1 unit = 1 ft · bay = ${FT(BW)}×${FT(BL)}×${FT(LIFT)}<br>one finger orbit · pinch zoom · tap = tool`
+    : `1 unit = 1 ft · grid = 4′ · bay = ${FT(BW)}×${FT(BL)}×${FT(LIFT)}<br>drag orbit · scroll zoom · right-drag pan`;
+}
+/* Set what the NEXT piece lands as. Nothing already on the ground moves. */
+function setKit(w, h, say){
+  if (!BW_OPTS.includes(w) || !LIFT_OPTS.includes(h)) return;
+  if (w===nextBW && h===nextLift) return;
+  const wasW = nextBW;
+  nextBW = w; nextLift = h; useNext();
+  model.bw = w; model.lift = h;
+  if (say){
+    const what = w!==wasW ? `rows ${FT(w)} apart` : `${FT(h)} uprights`;
+    toast(model.cells.size ? `${what} — for the next piece. What's up stays as drawn.` : what);
+  }
+  rebuild(false); persist(); syncBW();
+}
+const setBW   = (w, say)=>setKit(w, nextLift, say);
+const setLift = (h, say)=>setKit(nextBW, h, say);
+/* Whatever model lands on the bench — a link, a restore, an undo — brings its
+   own kit with it, and the strips follow the sketch rather than the other way
+   round. */
+function adoptBW(m){
+  nextBW = bwOf(m); nextLift = liftOf(m); useNext();
+  m.bw = nextBW; m.lift = nextLift; normalizeKit(m); syncBW();
+}
 
 /* ─────────── dims, camera, theme, loop ─────────── */
 function isDark(){
@@ -4243,7 +5118,7 @@ function byLen(m, name, note, waste){
   return rows.map(([len,n],i) =>
     needRow(`${name}, ${FT(len)}${i===0&&note?` <small>(${note})</small>`:''}`, n, waste)).join('');
 }
-/* Slope rafters are the hypotenuse of the run and the 12′ lift, so they come in
+/* Slope rafters are the hypotenuse of the run and the lift, so they come in
    whatever length that works out to — and past a 14′ run, in a deeper section. */
 function rafterRows(kit){
   if (!kit || !kit.size) return '';
@@ -4252,13 +5127,20 @@ function rafterRows(kit){
     return needRow(`${size} × ${stock}′ <small>(slope rafters, 24″ o.c.)</small>`, n, true);
   }).join('');
 }
+/* "a 12' bay" is a true sentence right up until somebody stands a 16' one next
+   to it. These read the spread off the sketch and say what is actually there. */
+const kitList = (rows, unit) => rows.length === 1 ? FT(rows[0][0])
+  : rows.map(([v,n])=>`${FT(v)}<small>×${n}</small>`).join(' · ');
+const kitPlain = rows => rows.length === 1 ? FT(rows[0][0])
+  : rows.map(([v,n])=>`${FT(v)}×${n}`).join(' / ');
+const oneKit = D => !D.kits2 || (D.kits2.bw.length <= 1 && D.kits2.lift.length <= 1);
 function renderSchedule(D){
   const host = document.getElementById('schedbody');
   if (mode==='site'){ host.innerHTML = siteSheetHTML(); return; }
   if (!D.any){
     host.innerHTML = `
       <div class="kitcall"><b>0</b><div>deck kits
-        <small>8 beams + 10 joists + ${PLYB} sheets each — one 8′×12′ bay</small></div></div>
+        <small>8 beams + ${joistsOf(0)} joists + ${PLYB()} sheets each — one ${FT(BW)}×${FT(BL)} bay</small></div></div>
       <div class="spec"><b>Sized for ${DES_LL} psf</b> of people plus ${DES_DL} psf of deck — standing,
         sitting, moving about. A packed dance floor is 100 and wants an engineer.</div>
       <h3 class="lbl">Count sheet</h3>
@@ -4266,25 +5148,30 @@ function renderSchedule(D){
         panel turns into a live materials count — upright frames, beams, 2×4 girts, joists,
         ply, screws, ballast, solar — for whatever you sketch.</div>
       <div class="spec"><b>Try a start:</b> the templates on the left drop in a standard room or a
-        solar shed — then reshape them bay by bay.</div>
+        solar shed — then reshape them bay by bay. <b>ROW SPREAD</b> above them
+        sets how far apart the two rack rows stand, which is the bay's width.</div>
       <div class="gate"><b>The ethos</b><br>
-        Real rack sizes — an 8′×12′ bay on four 12′ × 42″ upright frames, two rack rows with a 1′ aisle
-        inside it, 12′ beams high and low, 2×4 girts up every outside face. Count your camp's rack
+        Real rack sizes — the next piece a ${FT(BW)}×${FT(BL)}×${FT(LIFT)} bay on four ${FT(LIFT)} × 42″ upright frames,
+        two rack rows with a
+        ${FT(ROW_GAP())} aisle inside it, 12′ beams high and low, ${girtRows().length} rows of 2×4 girts up every outside face. Count your camp's rack
         stock before you order anything.</div>`;
     return;
   }
   const chips = [];
   if (D.maxLvl >= 2) chips.push(`<span class="chip bad">${FT(D.ft.h)} of rack — that's a permitted structure, get an engineer</span>`);
   else if (D.maxLvl === 1) chips.push(`<span class="chip warn">two lifts — ${FT(D.ft.h)} on splice pins, engineer eyes before you skin it</span>`);
+  else if (LIFT >= 16) chips.push(`<span class="chip warn">${FT(LIFT)} uprights — one lift already stands ${FT(LIFT)}, and a walled face that tall wants ${barPer()} barrels an arm, not two</span>`);
   if (D.badStacks) chips.push(`<span class="chip bad">${D.badStacks} upright${D.badStacks===1?'':'s'} land${D.badStacks===1?'s':''} on lumber, not on steel — put steel over steel</span>`);
   if (D.pierced) chips.push(`<span class="chip warn">${D.pierced} uprights pierce ply decks — notch around posts</span>`);
-  if (D.longBays) chips.push(`<span class="chip warn">${D.longBays} bay${D.longBays===1?'':'s'} at 20′ — deck lines on built-up (4)2×12, base lines on doubled 2×6. Lumber doing a rack beam's job: crown the plies up and glue-nail them into one beam, or buy a doubled LVL and carry half the weight</span>`);
+  if (D.longBays) chips.push(D.plies > 4
+    ? `<span class="chip bad">${D.longBays} bay${D.longBays===1?'':'s'} at 20′ on ${FT(BW)} rows — each inner deck line carries ${FT(D.spanTrib)} of deck across 20′, which is <b>(${D.plies})2×12</b> in solid lumber. That is lumber telling you it has run out: put an <b>LVL or a steel beam</b> on the deck lines, or bring the spread back to 8′ where four plies do it</span>`
+    : `<span class="chip warn">${D.longBays} bay${D.longBays===1?'':'s'} at 20′ — deck lines on built-up (${D.plies})2×12, base lines on doubled 2×6. Lumber doing a rack beam's job: crown the plies up and glue-nail them into one beam, or buy a doubled LVL and carry half the weight</span>`);
   if (D.stacked > 0) chips.push(`<span class="chip warn">${D.stacked} frames on a second lift — splice pin and a footplate at every joint</span>`);
   if (D.ewBays && D.nsBays) chips.push(`<span class="chip info">${D.ewBays} bay${D.ewBays===1?'':'s'} run long E–W · ${D.nsBays} run long N–S — mixed grain, so watch which beam length lands where</span>`);
   if (D.plySlopes) chips.push(`<span class="chip warn">angled panels are cut sheets — plan the waste</span>`);
   if (D.doors+D.wins) chips.push(`<span class="chip good">${D.doors} door${D.doors===1?'':'s'} · ${D.wins} window${D.wins===1?'':'s'} — they land between uprights, clear of the steel</span>`);
   if (D.floors) chips.push(`<span class="chip good">${D.floors} floor${D.floors===1?'':'s'} · ${D.floorArea.toLocaleString()} ft² — a deck kit landing on the low beams, 18″ up, nothing on the dirt</span>`);
-  if (D.nStairs) chips.push(`<span class="chip good">${D.nStairs} stairway${D.nStairs===1?'':'s'} · ${D.stairFlats} framed flat${D.stairFlats===1?'':'s'} — 10′ flights, ${STAIR_NT} steps each, 6½″ rise on an 11″ tread</span>`);
+  if (D.nStairs) chips.push(`<span class="chip good">${D.nStairs} stairway${D.nStairs===1?'':'s'} · ${D.stairFlats} framed flat${D.stairFlats===1?'':'s'} — ${FT(flightRun())} flights, ${stairSteps()} steps each, ${inch(stairRise())} rise on ${inch(stairTread())}, ${stairDeg()}°</span>`);
   else if (D.walkable > 0) chips.push(`<span class="chip warn">no stair sketched — walkable decks need a way up</span>`);
   if (D.stairTurned) chips.push(`<span class="chip info">${D.stairTurned} stairway${D.stairTurned===1?'':'s'} turned at the head onto a top flat — the run comes down along the wall, out of the street</span>`);
   if (D.stairWrapped) chips.push(`<span class="chip info">${D.stairWrapped} stairway${D.stairWrapped===1?'':'s'} wrapped at the mid flat — the bottom flight turns off the side of the landing</span>`);
@@ -4292,12 +5179,27 @@ function renderSchedule(D){
   if (D.railOffGroups) chips.push(`<span class="chip bad">railings off on ${D.railOffGroups} of ${D.groups} structure${D.groups===1?'':'s'} — ${D.railOffBays} open deck${D.railOffBays===1?'':'s'} with nothing at the edge</span>`);
   if (D.sail && !D.ballastRuns) chips.push(`<span class="chip bad">${D.sail.toLocaleString()} ft² of sail and nothing ballasted</span>`);
   else if (D.sail) chips.push(`<span class="chip warn">${D.sail.toLocaleString()} ft² of sail against ${D.ballastLb.toLocaleString()} lb — walk that ratio past someone who does wind loads</span>`);
+  if (D.nStars) chips.push(`<span class="chip good">${D.nStars} star shade${D.nStars===1?'':'s'} — ${SS_D}′ across, ${SS_H}′ up, ${D.nStars*SS_PN} panels, ${(D.nStars*SS_PN*SS_PW/1000).toFixed(2)} kW, ${D.nStars*IBC_N} IBC totes at the hub. Folding 2×4 linkage, no rack in it at all</span>`);
+  if (D.nCells && !oneKit(D)) chips.push(`<span class="chip info">mixed kit —
+    ${kitList(D.kits2.bw)} row spreads on ${kitList(D.kits2.lift)} frames. Every piece keeps
+    what it was drawn on${D.mixedFrames?`, and <b>${D.mixedFrames} frame${D.mixedFrames===1?'':'s'}</b>
+    carr${D.mixedFrames===1?'ies':'y'} two bay heights — you buy the taller one and the shorter
+    bay's beams land partway up it`:''}</span>`);
+  if (D.sharedFrames) chips.push(`<span class="chip good">${D.sharedFrames} frame${D.sharedFrames===1?'':'s'}
+    saved by building tight — pieces meeting end to end on a line stand on the same steel.
+    Two pieces only share when their <b>rows line up</b>, so a different row spread against a
+    face buys its own frame line</span>`);
   if (D.solarBlind) chips.push(`<span class="chip bad">${D.solarBlind} panel${D.solarBlind===1?'':'s'} on a face the sun barely reaches — turn them south</span>`);
   else if (D.solarPanels) chips.push(`<span class="chip info">solar ${kW(D.solarWatts)} · ≈${D.solarDay.toFixed(1)} kWh/day — panels only, no batteries or wire</span>`);
   const steelBeams = D.beams + D.ballastRuns;
-  const steelLo = D.framesN*90 + steelBeams*25, steelHi = D.framesN*140 + steelBeams*40;
+  // a frame is priced by the foot on the used market — $90–140 is what a 12' goes for
+  const frameLo = rnd(LIFT*7.5), frameHi = rnd(LIFT*11.7);
+  const steelLo = D.framesN*frameLo + steelBeams*25, steelHi = D.framesN*frameHi + steelBeams*40;
+  /* Panels a star shade brought with it are already on its own bill, so the
+     generic rack-panel line only counts what you racked yourself. */
+  const rackPanels = D.solarPanels - D.nStars*SS_PN;
   const buys = [];
-  buys.push({n:`Screws ~${D.sc.n.toLocaleString()} (${D.sc.boxes} boxes)`, c:D.sc.cost});
+  if (D.sc.n) buys.push({n:`Screws ~${D.sc.n.toLocaleString()} (${D.sc.boxes} boxes)`, c:D.sc.cost});
   if (D.barrels) buys.push({n:`Water barrels ×${D.barrels} (55 gal, ballast)`, c:D.barrels*25});
   if (D.straps) buys.push({n:`Ratchet straps ×${D.straps} (one per barrel)`, c:D.straps*12});
   if (D.girts) buys.push({n:`Girt hardware — post clamps / structural lags ×${2*D.girts}`, c:rnd(D.girts*10)});
@@ -4305,24 +5207,31 @@ function renderSchedule(D){
   if (D.doors) buys.push({n:`Door slab + hinges + latch ×${D.doors}`, c:D.doors*60});
   if (D.wins) buys.push({n:`Window glazing (polycarb) + trim ×${D.wins}`, c:D.wins*40});
   if (D.nStairs) buys.push({n:`Stair hardware — stringer hangers · post bases · rail brackets`, c:rnd(D.stairStock*4 + (D.stairPost6+D.stairPost12)*9)});
-  if (D.solarPanels) buys.push({n:`Solar panels ×${D.solarPanels} — ${kW(D.solarWatts)} (used ballpark)`, c:D.solarPanels*80});
+  /* A star shade brings its own kit, so it goes on the bill whole — the lumber,
+     the brackets and the bolts on one line, the glass on another. */
+  if (D.nStars){
+    buys.push({n:`Star shade frame ×${D.nStars} — 2×4, U-brackets, ½″ bolts`, c:rnd(D.nStars*SS_STRUCT)});
+    buys.push({n:`Star shade panels ×${D.nStars*SS_PN} (${SS_PW} W each)`, c:rnd(D.nStars*SS_POWER)});
+    buys.push({n:`IBC totes ×${D.nStars*IBC_N} — batteries and inverter, stacked at the hub`, c:rnd(D.nStars*SS_ROOM)});
+  }
+  if (rackPanels > 0) buys.push({n:`Solar panels ×${rackPanels} — ${kW(watts(rackPanels))} (used ballpark)`, c:rackPanels*80});
   const buyTot = buys.reduce((t,x)=>t+x.c,0);
   const rms = D.rooms.filter(r=>r.cells>0);
   const sunNow = sunAt(sunHour);
   host.innerHTML = `
     <div class="kitcall"><b>${D.kits}</b><div>deck kits
-      <small>10 joists + ${PLYB} sheets on the beams already standing — one 8′×12′ bay, ${BAYA} ft²${
-        D.longBays?` · ${D.longBays} at 20′ take 16 joists and 5 sheets`:''}</small></div></div>
+      <small>${joistsOf(0)} joists + ${PLYB()} sheets on the beams already standing — ${oneKit(D)?'one':'the next'} ${FT(BW)}×${FT(BL)} bay, ${bayArea(0)} ft²${
+        D.longBays?` · ${D.longBays} at 20′ take ${joistsOf(2)} joists and ${sheetsOf(2)} sheets`:''}</small></div></div>
     ${chips.length?`<div class="chipline">${chips.join('')}</div>`:''}
     <h3 class="lbl">From stock — count, then order the gap</h3>
     <table class="sch">
-      ${needRow('Upright frames <small>12′ × 42″, four to a bay</small>'+(D.stacked?` <small>(${D.stacked} on a second lift)</small>`:''), D.framesN)}
+      ${needRow(`Upright frames <small>${oneKit(D)?`${FT(LIFT)} × 42″`:`42″ deep · ${kitList(D.kits2.lift)}`}, four to a bay</small>`+(D.stacked?` <small>(${D.stacked} on a second lift)</small>`:'')+(D.mixedFrames?` <small>(${D.mixedFrames} on a join of two heights — the taller)</small>`:''), D.framesN)}
       ${D.beams?needRow('Beams, 12′ <small>(high and low, both post lines)</small>', D.beams):''}
-      ${D.span212?needRow('2×12 × 20′ <small>(long-span deck beams — four plies to a line)</small>', D.span212):''}
+      ${D.span212?needRow(`2×12 × 20′ <small>(long-span deck beams — ${D.plies} plies to a line, ${FT(D.spanTrib)} tributary)</small>`, D.span212):''}
       ${D.span26?needRow('2×6 × 20′ <small>(long-span base bracing — two plies to a line)</small>', D.span26):''}
       ${byLen(D.ballastLens, 'Beams laid flat', 'ballast outriggers, one per perimeter face', false)}
-      ${needRow('2×8 × 8′ <small>(deck joists, 16″ o.c.)</small>', D.joists, true)}
-      ${byLen(D.girtLens, '2×4 girts', '4 rows up every outside face', true)}
+      ${needRow(`2×8 × ${FT(BW)} <small>(deck joists, 16″ o.c. · ${FT(JOIST_SPAN())} worst clear span)</small>`, D.joists, true)}
+      ${byLen(D.girtLens, '2×4 girts', `${girtRows().length} rows up every outside face`, true)}
       ${rafterRows(D.rafterKit)}
       ${D.nStairs?needRow('2×12 × 14′ <small>(stringers · treads · landing rims)</small>', D.stairStock, true):''}
       ${D.stairPost6?needRow('4×4 × 6′ <small>(mid-landing posts to grade)</small>', D.stairPost6):''}
@@ -4340,17 +5249,50 @@ function renderSchedule(D){
       <b>${D.beamLoad.toLocaleString()} lb</b> — ${(2*D.beamLoad).toLocaleString()} lb the pair.
       Used rack beams are stamped with a capacity; check yours clears it before you deck anything,
       because 12′ beams are a good deal weaker than the 8′ ones most camps have.`:''}</div>
-    <div class="spec"><b>The girts are the glue.</b> Four rows of 2×4 run along every outside
-      face, frame to frame — ${D.girts} runs on ${D.openFaces} open face${D.openFaces===1?'':'s'}.
+    <div class="spec"><b>The girts are the glue.</b> ${girtRows().length} rows of 2×4 run along every
+      outside face, frame to frame — ${D.girts} runs on ${D.openFaces} open face${D.openFaces===1?'':'s'}.
       They lace one rack row to the next and they're what the plywood screws into; skip them and
-      you have a line of independent racks and nothing to nail to. The rows sit at 0.6′, 4′, 8′ and
-      11.4′ rather than at an even spacing, so a 4′ ply course breaks <b>on</b> a girt instead of
-      hanging in space a foot past the last one. Girts come in the length of the face they run —
+      you have a line of independent racks and nothing to nail to. The rows sit at
+      ${girtRows().map(h=>h.toFixed(1).replace(/\.0$/,'')+'′').join(', ')} rather than at an even
+      spacing, so a 4′ ply course breaks <b>on</b> a girt instead of
+      hanging in space a foot past the last one — a taller frame is more courses, so it grows a row.
+      Girts come in the length of the face they run —
       the count above is split by stick, because a single total is a number you can't order.</div>
-    <div class="spec"><b>The racks fill the bay exactly.</b> 42″ + a 1′ aisle + 42″ is 8′ on the nose,
-      so the outer posts land on the bay line and the ${PLYB}-sheet roof runs out flush with them —
-      nothing over to trip on, nothing short to fall through. Nothing here pokes out past the footprint — what you stake
+    <div class="spec"><b>The racks fill the bay exactly.</b> 42″ + a ${FT(ROW_GAP())} aisle + 42″ is
+      ${FT(BW)} on the nose, so the outer posts land on the bay line and the ${PLYB()}-sheet roof runs out
+      flush with them — nothing over to trip on, nothing short to fall through.
+      ${plyClean(0) ? 'Every sheet lands whole.'
+        : `A ${FT(BW)} width leaves a half sheet on the last 4′ course, so the count carries the rip —
+           two bays eat one spare between them.`}
+      Nothing here pokes out past the footprint — what you stake
       out is what you build.</div>
+    ${D.nStars?`
+    <h3 class="lbl">Star shade${D.nStars===1?'':`s — ×${D.nStars}`}</h3>
+    <div class="kitcall"><b>${money(rnd(D.starCost))}</b><div>the whole kit${D.nStars===1?'':`, ×${D.nStars}`}
+      <small>${SS_D}′ point to point · ${SS_H}′ up · ${SS_N} scissor legs · ${D.nStars*SS_PN} panels
+      · ${(D.nStars*SS_PN*SS_PW/1000).toFixed(2)} kW · ${(D.starLb).toLocaleString()} lb</small></div></div>
+    <div class="spec"><b>This one is not rack.</b> It is Sam Smith's folding <b>StarShade</b> —
+      a Hoberman ring of eight scissor legs in 2×4 and half-inch bolts, an octagram in plan because
+      the top ring counter-rotates 45° against the bottom one as it opens. Folded to standing in
+      about two minutes out of the back of a pickup. It shares nothing with a bay but the ground it
+      stands on, so everything below is its own kit, on top of whatever rack you drew.</div>
+    <div class="spec"><b>The power room</b> is ${IBC_N} stacked <b>275-gal IBC totes</b> at the hub —
+      batteries in the bottom one, inverter and controllers in the top. 48 × 40 × 46″ each, so the
+      stack is <b>7′8″</b> and it stands inside the <b>4′6″ hub</b>, clear of the radials overhead
+      and in the shade of the whole deck all day. The totes are counted below; what you put in them
+      is your own kit and this sheet does not guess at it.</div>
+    <table class="sch">
+      ${SS_BOM.map(([grp,rows])=>`
+        <tr class="sub"><td class="i" colspan="2">${grp}</td></tr>
+        ${rows.map(([n,item,p])=>`<tr><td class="i">${n*D.nStars}× ${item}</td>
+          <td class="c">${money(rnd(n*D.nStars*p))}</td></tr>`).join('')}`).join('')}
+      <tr class="tot"><td class="i">Star shade subtotal</td><td class="c">${money(rnd(D.starCost))}</td></tr>
+    </table>
+    <div class="spec"><b>The deck lies flat</b>, so the sun table scores it flat — no tilt at all.
+      At ${SITE} in December that is a long way off the ${rnd(TILT_BEST*180/Math.PI)}° a panel here
+      really wants, and the sheet would rather say so than quietly credit it an angle it hasn't got.
+      The real one is a spring-and-summer machine: its own best day on the ground was
+      <b>14.6 kWh</b>.</div>`:''}
     <h3 class="lbl">To buy</h3>
     <table class="sch">
       ${buys.map(x=>`<tr><td class="i">${x.n}</td><td class="c">${money(x.c)}</td></tr>`).join('')}
@@ -4399,7 +5341,7 @@ function renderSchedule(D){
     ${D.ballastRuns?`
     <div class="kitcall"><b>${D.ballastLb.toLocaleString()} lb</b><div>on the ground
       <small>${D.barrels} barrels × ${BAR_GAL} gal · ${D.ballastGal.toLocaleString()} gal of water
-      · ${BAR_PER*BAR_LB} lb per face</small></div></div>
+      · ${barPer()*BAR_LB} lb per face</small></div></div>
     <table class="mini">
       <tr><td>Ballast beams <small>laid flat at grade</small></td><td>${D.ballastRuns}</td></tr>
       <tr><td>Barrels <small>${BAR_LB} lb each, full</small></td><td>${D.barrels}</td></tr>
@@ -4414,11 +5356,20 @@ function renderSchedule(D){
       are held by the bay behind them and get nothing.</div>
     <div class="spec"><b>This is a count, not a wind calculation.</b> ${D.sail?`${D.sail.toLocaleString()} ft²
       of wall and panel is what a gust pushes on`:'Nothing here is skinned yet — the moment you add walls, this number stops being enough'}.
-      For scale: on a single bay with one 12′ face walled, ${BAR_PER*BAR_LB} lb an outrigger plus the
-      weight of the steel itself holds a <b>70 mph</b> gust with about 1.5 to spare — which is the
-      margin you'd want, and no more than that. Longer walls, taller stacks and rows of bays all
-      change the sum. Anyone building tall or skinning a face should put the real numbers past
-      someone who does them for a living.</div>`:`
+      For scale: on a single bay with one ${FT(BL)} × ${FT(LIFT)} face walled, ${barPer()*BAR_LB} lb an
+      outrigger plus the weight of the steel itself holds a <b>70 mph</b> gust with about
+      <b>${windMargin()}</b> to spare. <b>Height is what moves that number</b>, and it moves it fast: a
+      gust pushes on the middle of the wall, so the moment that wants to tip you goes as the
+      <b>square</b> of the frame height while the weight holding you down doesn't go up at all.
+      ${LIFT>=16
+        ? `That is why ${FT(LIFT)} frames get <b>${barPer()} barrels</b> an arm rather than two —
+           two would leave this at about 0.8, and 0.8 is a structure lying on its side.`
+        : LIFT<=8
+        ? `Short frames get that cheaply: the same two barrels that a 12′ face needs outright.`
+        : `Go to 16′ frames and the same two barrels would leave you at about 0.8, which is why
+           the sheet doubles them up there.`}
+      Longer walls, taller stacks and rows of bays all change the sum again. Anyone building tall or
+      skinning a face should put the real numbers past someone who does them for a living.</div>`:`
     <div class="spec">Nothing needs ballast yet — ballast lands on every perimeter face the
       moment you raise one.</div>`}
     ${D.partitions?`
@@ -4432,19 +5383,24 @@ function renderSchedule(D){
       floor plan. Doorways still read as a wall here — count a room by what it's fenced by,
       not by how you get in.</div>`:''}
     <div class="spec">No rack stock yet? Used-market ballpark for the steel:
-      <b>${money(steelLo)}–${money(steelHi)}</b> (12′ × 42″ frames ~$90–140 · 12′ beams ~$25–40).
+      <b>${money(steelLo)}–${money(steelHi)}</b> (${FT(LIFT)} × 42″ frames ~$${frameLo}–${frameHi} ·
+      12′ beams ~$25–40). Frames go by the foot, so height costs money before it costs anything else.
       Prices swing hard by region — count what you have before you order.</div>
     <h3 class="lbl">This sketch</h3>
     <table class="mini">
       <tr><td>Footprint</td><td>${FT(D.ft.w)} × ${FT(D.ft.d)}</td></tr>
-      <tr><td>Rack bays <small>8′ × 12′</small></td><td>${D.nCells}</td></tr>
+      <tr><td>Rack bays <small>${oneKit(D)?`${FT(BW)} × ${FT(BL)}`:'mixed kit'}</small></td><td>${D.nCells}</td></tr>
+      <tr><td>Row spread <small>aisle between the racks</small></td><td>${D.kits2&&D.kits2.bw.length?kitList(D.kits2.bw):FT(BW)} ${oneKit(D)?`<small>${FT(ROW_GAP())}</small>`:''}</td></tr>
       <tr><td>Bay grain</td><td>${D.ewBays} <small>long E–W</small> · ${D.nsBays} <small>long N–S</small></td></tr>
-      <tr><td>Upright frames <small>12′ × 42″</small></td><td>${D.framesN}</td></tr>
+      <tr><td>Upright frames <small>42″ deep${D.sharedFrames?` · ${D.sharedFrames} shared`:''}</small></td><td>${D.framesN}</td></tr>
+      <tr><td>Lift height <small>floor to floor${oneKit(D)?` · ${girtRows().length} girt rows`:' · per piece'}</small></td><td>${D.kits2&&D.kits2.lift.length?kitList(D.kits2.lift):FT(LIFT)}</td></tr>
+      <tr><td>Tallest column <small>ground to the top deck</small></td><td>${FT(D.tallest||0)}</td></tr>
       <tr><td>Beams, 12′</td><td>${D.beams}</td></tr>
       <tr><td>Open faces <small>girted</small></td><td>${D.openFaces}</td></tr>
       <tr><td>20′ long-span bays</td><td>${D.longBays||'—'}</td></tr>
       <tr><td>Structures</td><td>${D.groups}${D.railOffGroups?` <small>${D.railOffGroups} without rails</small>`:''}</td></tr>
       <tr><td>Risers (18″)</td><td>${D.nPads||'—'}</td></tr>
+      <tr><td>Star shades <small>${SS_D}′ × ${SS_H}′, not rack</small></td><td>${D.nStars||'—'}</td></tr>
       <tr><td>Deck area, all levels</td><td>${D.deckArea.toLocaleString()} ft²</td></tr>
       <tr><td>Floors at grade <small>18″ up, on cribbing</small></td><td>${D.floors?D.floors+` <small>${D.floorArea.toLocaleString()} ft²</small>`:'—'}</td></tr>
       <tr><td>Top deck</td><td>${D.ft.h>=LIFT?FT(D.ft.h):'18″'}</td></tr>
@@ -4560,18 +5516,27 @@ function sheetText(){
   L.push('RACK LAB COUNT SHEET — '+name.toUpperCase());
   if (D.any){
     L.push(`${D.ft.w}' x ${D.ft.d}' footprint · top deck ${D.ft.h>=LIFT?D.ft.h+"'":'18"'} · ${D.nCells} bays · ${D.kits} deck kits`);
-    L.push(`bay 8' x 12' on four 12' x 42" upright frames — 42" + 1' aisle + 42" = the 8' exactly`);
+    L.push(oneKit(D)
+      ? `bay ${BW}' x ${BL}' x ${LIFT}' on four ${LIFT}' x 42" upright frames - 42" + ${ROW_GAP()}' aisle + 42" = the ${BW}' exactly`
+      : `bays on 42" upright frames, kit per piece - see the two lines below. Next piece: ${BW}' x ${BL}' x ${LIFT}'`);
     L.push(`${D.ewBays} bays run long E-W, ${D.nsBays} run long N-S`+(D.longBays?`   (${D.longBays} stretched to 20')`:''));
     L.push(`sized for ${DES_LL} psf live + ${DES_DL} psf dead — an occupied deck, not a dance floor`);
     L.push('');
     L.push('FROM STOCK (count first, order the gap)');
-    L.push('  '+pad('upright frames 12\' x 42"')+' '+D.framesN+(D.stacked?`   (${D.stacked} on a second lift)`:''));
+    L.push('  '+pad('upright frames 42" deep')+' '+D.framesN
+      + (D.stacked?`   (${D.stacked} on a second lift)`:'')
+      + (D.sharedFrames?`   (${D.sharedFrames} shared on a join)`:''));
+    if (!oneKit(D)){
+      L.push('  '+pad('row spreads on the pad')+' '+kitPlain(D.kits2.bw));
+      L.push('  '+pad('frame heights on the pad')+' '+kitPlain(D.kits2.lift)
+        + (D.mixedFrames?`   (${D.mixedFrames} frames carry two heights - buy the taller)`:''));
+    }
     if (D.beams) L.push('  '+pad("beams, 12'")+' '+D.beams+'   (high and low, both post lines)');
-    if (D.span212) L.push('  '+pad("2x12 x 20'")+' '+D.span212+'   (long-span deck beams, 4 plies a line)');
+    if (D.span212) L.push('  '+pad("2x12 x 20'")+' '+D.span212+`   (long-span deck beams, ${D.plies} plies a line)`);
     if (D.span26) L.push('  '+pad("2x6 x 20'")+' '+D.span26+'   (long-span base bracing, 2 plies a line)');
     for (const [len,n] of [...D.ballastLens].sort((a,b)=>a[0]-b[0]))
       L.push('  '+pad(`beams laid flat, ${len}'`)+' '+n+'   (ballast outriggers)');
-    L.push('  '+pad("2x8 x 8' deck joists")+' '+ceil(D.joists*1.1)+'   (16" o.c., incl +10%)');
+    L.push('  '+pad(`2x8 x ${BW}' deck joists`)+' '+ceil(D.joists*1.1)+'   (16" o.c., incl +10%)');
     for (const [len,n] of [...D.girtLens].sort((a,b)=>a[0]-b[0]))
       L.push('  '+pad(`2x4 girts, ${len}'`)+' '+ceil(n*1.1)+'   (4 rows per outside face, incl +10%)');
     for (const [k,n] of [...D.rafterKit].sort((a,b)=>a[0].localeCompare(b[0]))){
@@ -4601,18 +5566,22 @@ function sheetText(){
     if (D.doors) L.push('  '+pad(`door slab + hardware x ${D.doors}`)+' $'+D.doors*60);
     if (D.wins) L.push('  '+pad(`window glazing x ${D.wins}`)+' $'+D.wins*40);
     if (D.nStairs) L.push('  '+pad(`stair hardware x ${D.nStairs}`)+' $'+D.nStairs*35);
-    if (D.solarPanels) L.push('  '+pad(`solar panels x ${D.solarPanels}`)+' $'+D.solarPanels*80+'   (used ballpark)');
+    const rackPan = D.solarPanels - D.nStars*SS_PN;   // a star's glass is on its own bill
+    if (rackPan > 0) L.push('  '+pad(`solar panels x ${rackPan}`)+' $'+rackPan*80+'   (used ballpark)');
+    if (D.nStars) L.push('  '+pad(`star shade kit x ${D.nStars}`)+' $'+rnd(D.starCost)+'   (frame + glass + totes, its own bill)');
     L.push('');
     L.push('BALLAST');
     if (D.ballastRuns){
       L.push('  '+pad('perimeter faces')+' '+D.ballastRuns+'   (interior faces need none)');
-      L.push('  '+pad('ballast beams at grade')+' '+D.ballastRuns+`   (one per face, ${BAR_PER} barrels each)`);
+      L.push('  '+pad('ballast beams at grade')+' '+D.ballastRuns+`   (one per face, ${barPer()} barrels each)`);
       L.push('  '+pad('barrels')+' '+D.barrels+`   (${BAR_GAL} gal / ${BAR_LB} lb each)`);
       L.push('  '+pad('ratchet straps')+' '+D.straps);
       L.push('  '+pad('total ballast')+' '+D.ballastLb+' lb   ('+D.ballastGal+' gal of water to haul)');
       L.push('  '+pad('sail area')+' '+D.sail+' ft2   (walls + angled panels)');
       L.push('  a count, not a wind calculation - get real eyes before you skin it');
-      L.push("  for scale: one bay, one 12' face walled, holds a 70 mph gust with ~1.5 to spare");
+      L.push(`  ${barPer()} barrels an arm (${barPer()*BAR_LB} lb a face) - ${LIFT}' frames need that many`);
+      L.push(`  for scale: one bay, one ${BL}'x${LIFT}' face walled, holds a 70 mph gust with ~${windMargin()} to spare`);
+      L.push('  tipping moment goes as the SQUARE of the frame height - the weight holding it down does not');
     } else L.push('  nothing raised yet');
     L.push('');
     L.push('SUN ('+SITE+', winter solstice, solar time)');
@@ -4649,18 +5618,32 @@ function sheetText(){
   L.push('  42" rails on open deck edges - leave the stair head open');
   if (D.railOffGroups) L.push(`  RAILINGS ARE OFF on ${D.railOffGroups} structure(s) - ${D.railOffBays} open deck(s)`);
   if (D.nStairs){
-    L.push("  stairs: 10' flights, "+STAIR_NT+" steps each - 6-9/16\" rise on a 10-29/32\" tread, 31 deg");
-    L.push("  a straight run is 24' of ground; every turn adds a 4' flat rather than steepening it");
+    L.push(`  stairs: ${flightRun()}' flights, ${stairSteps()} steps each - ${stairRise().toFixed(2)}" rise on a ${stairTread().toFixed(2)}" tread, ${stairDeg()} deg`);
+    L.push(`  a straight run is ${2*flightRun()+STAIR_FLAT}' of ground; every turn adds a 4' flat rather than steepening it`);
     if (D.stairTurned) L.push('  '+D.stairTurned+" stairway(s) turn at the head onto a 4' top flat and come down along the wall");
     if (D.stairWrapped) L.push('  '+D.stairWrapped+' stairway(s) wrap at the mid flat - the lower flight leaves off its side');
   }
   else if (D.walkable) L.push('  no stair sketched yet - walkable decks need a way up');
   if (D.floors) L.push('  floors land on the low beams already standing in the bay, deck 18" up');
-  if (D.longBays) L.push("  20' long spans: (4)2x12 on the deck lines, doubled 2x6 on the base lines");
-  if (D.longBays) L.push("  crown the plies up and glue-nail them into one beam - this is the one to check");
+  if (D.nStars){
+    L.push('');
+    L.push(`STAR SHADE x${D.nStars}  (NOT RACK - its own kit)`);
+    L.push(`  ${SS_D}' point to point, ${SS_H}' tall, ${SS_N} scissor legs, ${D.nStars*SS_PN} panels, ${(D.nStars*SS_PN*SS_PW/1000).toFixed(2)} kW, ${D.starLb.toLocaleString()} lb`);
+    for (const [grp,rows] of SS_BOM){
+      L.push('  '+grp.replace(/·/g,'/').toUpperCase());
+      for (const [n,item,p] of rows)
+        L.push('    '+pad(item.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(), 46)+' '+(n*D.nStars)+'   $'+rnd(n*D.nStars*p));
+    }
+    L.push('  '+pad('star shade subtotal',46)+'     $'+rnd(D.starCost));
+    L.push('  the deck lies flat - scored flat, no tilt credited');
+  }
+  if (D.longBays) L.push(`  20' long spans: (${D.plies})2x12 on the deck lines, doubled 2x6 on the base lines`);
+  if (D.longBays) L.push(D.plies > 4
+    ? `  ${BW}' rows put ${D.spanTrib}' of deck on each inner line over 20' - go to an LVL or a steel beam`
+    : "  crown the plies up and glue-nail them into one beam - this is the one to check");
   if (D.pierced) L.push(`  ${D.pierced} uprights land on ply decks - notch sheets around posts`);
   L.push('  read the capacity stamped on your beams and check it against the load above');
-  L.push("  above one 12' lift get an engineer's eyes - no concrete, leave no trace");
+  L.push(`  above one ${LIFT}' lift get an engineer's eyes - no concrete, leave no trace`);
   L.push('');
   L.push('sketch: '+location.href.split('#')[0]+'#'+encode());
   return L.join('\n');
@@ -4738,9 +5721,9 @@ function setMode(m, quiet){
   document.querySelectorAll('#vopts button[data-v]').forEach(b=>{
     b.hidden = b.dataset.v==='lanes' ? m!=='site' : (b.dataset.v==='dims' && m==='site');
   });
-  document.getElementById('hinttxt').innerHTML = m==='site'
-    ? 'drag a camp to move it · tap to select<br>4′ snap · dashed = 10′ fire lane'
-    : '1 unit = 1 ft · grid = 4′ · bay = 8′×12′<br>drag orbit · scroll zoom · right-drag pan';
+  if (m==='site') document.getElementById('hinttxt').innerHTML =
+    'drag a camp to move it · tap to select<br>4′ snap · dashed = 10′ fire lane';
+  else syncBW();                                 // the bay line follows the row spread
   document.getElementById('hintmsg').innerHTML = m==='site'
     ? 'Paste a camp‘s link to drop it on the block<small>then drag it where it goes</small>'
     : 'Click the ground to raise a bay<small>pick a tool · drag to orbit</small>';
@@ -4798,10 +5781,39 @@ function wireUI(){
   document.getElementById('tpls').addEventListener('click', e=>{
     const b = e.target.closest('button'); if (!b || !b.dataset.t) return;
     pushUndo();
-    model = TPL[b.dataset.t]();
-    rebuild(true); persist(); openSheet('');
-    toast(b.dataset.t==='blank' ? 'clean slab' : 'template down — make it yours');
+    lastTpl = b.dataset.t;
+    model = TPL[lastTpl]();
+    syncBW(); rebuild(true); persist(); openSheet('');
+    toast(b.dataset.t==='blank' ? 'clean slab'
+        : b.dataset.t==='star'  ? `a star shade and a bay of rack, side by side — ${SS_D}′ against ${FT(BW)}×${FT(BL)}`
+        : 'template down — make it yours');
   });
+  document.getElementById('bwpick').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (!b || !b.dataset.bw) return;
+    setBW(+b.dataset.bw, true);
+  });
+  document.getElementById('ltpick').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (!b || !b.dataset.lift) return;
+    setLift(+b.dataset.lift, true);
+  });
+  /* How it works folds away once you've read it — the panel is long, and the
+     setup you actually reach for lives above it. */
+  (function(){
+    const t = document.getElementById('howtog'), n = document.getElementById('hownotes');
+    if (!t || !n) return;
+    const set = open =>{
+      n.hidden = !open;
+      t.setAttribute('aria-expanded', open ? 'true' : 'false');
+      try{ localStorage.setItem('racklab-how', open ? '1' : '0'); }catch(e){}
+    };
+    let start = '1';
+    try{ start = localStorage.getItem('racklab-how') ?? '1'; }catch(e){}
+    set(start !== '0');
+    t.addEventListener('click', ()=>set(n.hidden));
+    t.addEventListener('keydown', e=>{
+      if (e.key===' ' || e.key==='Enter'){ e.preventDefault(); set(n.hidden); }
+    });
+  })();
   document.getElementById('vopts').addEventListener('click', e=>{
     const b = e.target.closest('button'); if (!b) return;
     if (b.id==='vfit'){ fitCamera(); return; }
@@ -4977,7 +5989,7 @@ function wireUI(){
     if (k==='g'){ setBayDir(bayRot?0:1); return; }
     if (k==='o'){ rotateSketch(); return; }
     const map = {b:'build', l:'span', d:'deck', w:'wall', a:'slope', p:'solar',
-                 t:'stairs', s:'shade', r:'riser', x:'rails', e:'erase'};
+                 t:'stairs', s:'shade', r:'riser', y:'star', x:'rails', e:'erase'};
     if (map[k]) setTool(map[k]);
     if (tool==='wall' && '123'.includes(k)){
       wallMode = +k-1;
@@ -4997,7 +6009,7 @@ function wireUI(){
       return;
     }
     const d = decode(h);
-    if (d){ pushUndo(); model=d.model; railsOn=d.rails;
+    if (d){ pushUndo(); model=d.model; railsOn=d.rails; adoptBW(model);
       if (d.hour != null) sunHour = d.hour;
       setMode('build',true); syncInputs(); rebuild(true); }
   });
@@ -5007,7 +6019,7 @@ function wireUI(){
 
   if (window.matchMedia('(pointer:coarse)').matches)
     document.getElementById('hinttxt').innerHTML =
-      '1 unit = 1 ft · bay = 8′×12′<br>one finger orbit · pinch zoom · tap = tool';
+      `1 unit = 1 ft · bay = ${FT(BW)}×${FT(BL)}<br>one finger orbit · pinch zoom · tap = tool`;
 
   // phones background the GL context freely — recover instead of going black
   cv.addEventListener('webglcontextlost', e=>e.preventDefault());
@@ -5051,8 +6063,9 @@ wireUI();
   else if (h) d = decode(h);
   if (!d){ try{ const v = localStorage.getItem('racklab-v1'); if (v) d = decode(v); }catch(e){} }
   if (!s){ try{ const v = localStorage.getItem('racklab-site-v1'); if (v) s = decodeSite(v); }catch(e){} }
-  if (d){ model = d.model; railsOn = d.rails; if (d.hour != null) sunHour = d.hour; }
-  else  { model = TPL.room(); }
+  if (d){ model = d.model; railsOn = d.rails; adoptBW(model);
+          if (d.hour != null) sunHour = d.hour; }
+  else  { model = TPL.room(); }                  // a fresh screen starts on 12' cubes
   if (s) site = s;
   if (h.startsWith('P1*')) mode = 'site';
   syncInputs();
@@ -5071,5 +6084,3 @@ window.RACKLAB = { model:()=>model, site:()=>site, encode, decode, encodeSite, d
                    rebuild, fitCamera, setMode, sun:()=>({hour:sunHour, ...sunAt(sunHour)}) };
 </script>
 
-
-</html>
