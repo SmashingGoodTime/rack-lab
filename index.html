@@ -111,7 +111,7 @@ aside{overflow-y:auto;background:var(--panel);min-height:0}
 .lbl.fold:hover .car{color:var(--accent)}
 .lbl.fold[aria-expanded="false"] .car{transform:rotate(-90deg)}
 #hownotes[hidden]{display:none}
-.tog{display:flex;align-items:flex-start;gap:9px;margin:10px 0 9px;cursor:pointer;user-select:none}
+.tog{position:relative;display:flex;align-items:flex-start;gap:9px;margin:10px 0 9px;cursor:pointer;user-select:none}
 .tog input{position:absolute;opacity:0;width:1px;height:1px}
 .tog .box{flex:0 0 15px;height:15px;margin-top:2px;border:1.5px solid var(--faint);background:var(--panel);
   display:grid;place-items:center;font:600 11px/1 var(--mono);color:var(--on-accent)}
@@ -219,6 +219,14 @@ button,canvas{-webkit-tap-highlight-color:transparent}
   background:var(--rule);color:var(--paper);font:600 10.5px var(--mono);letter-spacing:.1em;
   padding:5px 12px;pointer-events:none;transition:opacity .18s,transform .18s;text-transform:uppercase}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+#linknote{position:absolute;left:50%;bottom:80px;transform:translateX(-50%);z-index:6;display:flex;
+  align-items:center;gap:8px;max-width:calc(100% - 32px);background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule);font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 6px 5px 12px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+#linknote[hidden]{display:none}
+#linknote button{font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;
+  background:var(--accent);color:var(--on-accent);border:0;padding:4px 9px;white-space:nowrap}
+#linknote #lnX{background:none;color:var(--muted);padding:4px 6px}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}.compass .rose{transition:none}}
 
 /* ── count sheet (right) ── */
@@ -338,6 +346,7 @@ footer span:last-child{text-align:right}
   .hint{display:none}
   .compass{top:10px;right:10px}
   #toast{bottom:152px}
+  #linknote{bottom:186px}
   #hintov{inset:0 0 150px}
   #hintov div{padding:0 24px}
   .dim.lot{font-size:9.5px;padding:2px 6px}
@@ -368,7 +377,7 @@ footer span:last-child{text-align:right}
   border-radius:50%;background:var(--straw);box-shadow:0 0 0 2px var(--paper)}
 
 /* A quieter drafting workspace. */
-html,body{overflow:hidden}
+html,body{overflow:hidden;overflow:clip}   /* clip: focus can't scroll the page away either */
 
 #print-preview{width:min(1100px,94vw);height:90vh;max-width:none;border:1px solid var(--line2);background:var(--panel);color:var(--ink);padding:12px;border-radius:8px}
 #print-preview::backdrop{background:#101820bb}.print-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px}.print-toolbar b{margin-right:auto}.print-toolbar button{padding:8px;cursor:pointer}#print-frame{width:100%;height:calc(100% - 50px);border:0;background:white}.technical-notes{margin-top:12px;color:var(--muted)}.technical-notes summary{font-size:11px}.technical-notes .spec{line-height:1.6}
@@ -392,7 +401,7 @@ html,body{overflow:hidden}
 .inventory{width:100%;border-collapse:collapse;font-size:10px}.inventory th,.inventory td{padding:6px 3px;text-align:left;border-bottom:1px solid var(--line)}.inventory input{width:52px;border:1px solid var(--line2);border-radius:4px;background:var(--panel);color:var(--ink);padding:6px 3px}.inventory td:first-child{max-width:115px}.inventory .shortfall{font-weight:600;color:var(--accent)}
 #campus-reference summary{cursor:pointer}.tb-meta{display:none!important}.tools button{border-radius:4px}.vopts{gap:5px;flex-wrap:wrap;max-width:calc(100% - 20px)}
 @media(min-width:941px){main{grid-template-columns:265px 1fr 325px}.hint{bottom:36px;font-size:9px}}
-@media(max-width:940px){#projectbar{padding:5px 8px;gap:5px;overflow-x:auto;flex-shrink:0}#projectbar span{display:none}#projectbar button{white-space:nowrap;font-size:10px}#camera-presets{top:72px;left:10px;right:10px;max-width:none;justify-content:flex-start}.subs{top:114px}.vopts{max-width:calc(100% - 50px)}#inspector{margin-bottom:16px}.inventory input{min-height:38px}#camera-presets button{padding:7px;font-size:10px}}
+@media(max-width:940px){#projectbar{padding:5px 8px;gap:5px;overflow-x:auto;flex-shrink:0}#projectbar span{display:none}#projectbar button{white-space:nowrap;font-size:10px}#camera-presets{top:72px;left:10px;right:10px;max-width:none;justify-content:flex-start}.subs{top:114px}.vopts{max-width:calc(100% - 50px)}#inspector{margin-bottom:16px}.inventory input{min-height:38px}#camera-presets button{padding:7px;font-size:10px}.vopts{max-width:calc(100% - 62px)}}
 
 #tpls .template-card{display:grid;grid-template-columns:42px 1fr;gap:10px;text-align:left;padding:11px;align-items:center;white-space:normal}
 .template-card strong{display:block;font-size:12px}.template-card small{display:block;font-size:10px;color:var(--accent);margin:4px 0}.template-description{display:block;font-size:11px;line-height:1.4;color:var(--muted);font-weight:normal;text-transform:none;letter-spacing:0}
@@ -451,7 +460,7 @@ html,body{overflow:hidden}
           <p>The 19′ frame is not a supported lift. Confirm frame depth, beam connections and available quantities before matching a sketch to stock. Different depths cannot automatically share an end frame.</p>
           <p><b>Layout precedent:</b> the photo notes describe Chiba's central aisle, side galleries and tiered seating, plus the café's sloped transparent wall. Use these to study circulation and sightlines; room locations and furnishing dimensions remain provisional.</p>
           <p><a href="https://mars-campus-2026.gene-8dc.workers.dev/studio" target="_blank" rel="noopener noreferrer">Campus recreation ↗</a> ·
-            <a href="https://mars-campus-2026.gene-8dc.workers.dev/modular/README" target="_blank" rel="noopener noreferrer">Evidence &amp; accuracy ↗</a></p>
+            <a href="https://mars-campus-2026.gene-8dc.workers.dev/history/README.html#year-2026" target="_blank" rel="noopener noreferrer">Evidence &amp; accuracy ↗</a></p>
           <p>Reviewed 7 Sep 2026. CAD layout and photo evidence are useful precedents; dimensions remain unverified and modeled pieces are not stock on hand.</p>
         </details>
         <details class="note" id="kitnote"><summary>How bays share frames</summary><b>These set the next piece.</b> Everything already on
@@ -670,6 +679,8 @@ html,body{overflow:hidden}
       <div id="hintov" hidden><div id="hintmsg">Click the ground to raise a bay<small>pick a tool · drag to orbit</small></div></div>
       <div id="dimlabels"></div>
       <div id="toast" role="status"></div>
+      <div id="linknote" role="status" hidden>Opened a shared link · yours is saved
+        <button id="lnMine">Back to mine</button><button id="lnX" aria-label="Keep this one">✕</button></div>
     </div>
     <aside id="schedule" aria-label="Count sheet">
       <div class="shhead"><span class="grab"></span><b id="schedttl">Count sheet</b><button class="shx" aria-label="Close">✕</button></div>
@@ -2297,10 +2308,18 @@ const encKit = v => {
 };
 const decKit = ch => { const v = d36(ch);
   return isNaN(v) || v > 8 ? null : {bw: BW_OPTS[Math.floor(v/3)], lift: LIFT_OPTS[v%3]}; };
+/* R10 = R9 plus frame depth: R10.<d>[_<piece>…].<the R9 link>. <d> indexes
+   DEPTH_OPTS and is what every piece stands on unless it is listed after it, as
+   <set letter><d><i>-<j>[-<y>] in base 36. A sketch on one depth costs five
+   characters over R9; spelling every piece's depth out would cost five times
+   the link. '_' and '-' appear in no R9 link and split nothing in a block plan. */
+const DEPTH_SETS = {c:'cells', p:'pads', s:'slopes', t:'stairs'};
 function encode(m=model, rails=railsOn){
-  const depths = {};
-  for (const name of ['cells','pads','slopes','stairs']) depths[name]=[...m[name]].map(([k,v])=>[k,cellDepth(v)]);
-  return 'R10.'+encPart(JSON.stringify({r:encodeR9(m,rails),depth:cellDepth(m),depths}));
+  const d = cellDepth(m), odd = [];
+  for (const [ch,name] of Object.entries(DEPTH_SETS))
+    for (const [k,v] of m[name]) if (cellDepth(v) !== d)
+      odd.push(ch + DEPTH_OPTS.indexOf(cellDepth(v)) + nums(k).map(n=>n.toString(36)).join('-'));
+  return 'R10.' + DEPTH_OPTS.indexOf(d) + odd.map(x=>'_'+x).join('') + '.' + encodeR9(m,rails);
 }
 function encodeR9(m=model, rails=railsOn){
   let c='',s='',p='',nr='',sl='',ar='',st='';
@@ -2337,7 +2356,22 @@ function encodeR9(m=model, rails=railsOn){
    on 12' frames, which is what they were when those links were made.        */
 function decode(str){
   if (!str || str.length>2000000) return null;
-  if (str.startsWith('R10.')){
+  if (str.startsWith('R10.') && !str.startsWith('R10.%7B')){
+    const dot = str.indexOf('.', 4), head = str.slice(4, dot).split('_');
+    const d = DEPTH_OPTS[+head[0]];
+    if (dot < 0 || head[0].length !== 1 || d === undefined || !str.startsWith('R9.', dot+1)) return null;
+    const out = decode(str.slice(dot+1)); if (!out) return null;
+    out.model.depth = d;
+    for (const name of Object.values(DEPTH_SETS)) for (const v of out.model[name].values()) v.depth = d;
+    for (const x of head.slice(1)){
+      const name = DEPTH_SETS[x[0]], dd = DEPTH_OPTS[+x[1]];
+      if (!name || dd === undefined || !/^[0-9a-z]+(-[0-9a-z]+){1,2}$/.test(x.slice(2))) return null;
+      const v = out.model[name].get(x.slice(2).split('-').map(n=>parseInt(n,36)).join(','));
+      if (v) v.depth = dd;
+    }
+    normalizeKit(out.model); return out;
+  }
+  if (str.startsWith('R10.')){                   // the first R10 spelled each depth out in JSON
     try {
       const data=JSON.parse(decodeURIComponent(str.slice(4)));
       if (!DEPTH_OPTS.includes(data.depth) || typeof data.r!=='string' || !data.r.startsWith('R9.')) return null;
@@ -3911,13 +3945,14 @@ function buildPicks(){
   }
   for (const k of model.arrays){
     const [i,j]=nums(k), y=topmost(i,j); if (y<0) continue;
-    const v=model.cells.get(k3(i,j,y));
+    const v=model.cells.get(k3(i,j,y)); useKit(v);   // the array sits on THIS bay's kit
     const m = new THREE.Mesh(pickBox, pickMat);
     m.position.set(bcX(i,v.r), (y+1)*LIFT+1.1, bcZ(j,v.r));
     m.scale.set(bfX(v.r)-.1,2.2,bfZ(v.r)-.1);
     m.userData = {t:'array', key:k};
     pickGroup.add(m);
   }
+  useNext();
   scene.add(pickGroup);
 }
 const raycaster = new THREE.Raycaster(), mouseV = new THREE.Vector2();
@@ -4777,10 +4812,33 @@ let persistT=0;
 function persist(){
   clearTimeout(persistT);
   persistT = setTimeout(()=>{
-    const enc = snapshot();
-    try{ history.replaceState(null,'','#'+enc); }catch(e){}
-    try{ localStorage.setItem(mode==='site'?'racklab-site-v1':'racklab-v1', enc); }catch(e){}
+    try{ localStorage.setItem(saveKey(mode==='site'), snapshot()); }catch(e){}
   }, 250);
+}
+/* A link is a copy, never a shared file. Work lives in this browser alone and
+   the address bar no longer follows each edit, so a URL only carries a sketch
+   when Copy share link builds one. Opening a link hands you that sketch to
+   build on; whatever you had saved of the same kind steps aside, one tap away. */
+const saveKey = isSite => isSite ? 'racklab-site-v1' : 'racklab-v1';
+function adoptLink(h){
+  const key = saveKey(h.startsWith('P1*'));
+  try{
+    const cur = localStorage.getItem(key);
+    // an untouched earlier link isn't yours, so it doesn't push your backup out
+    if (cur && cur!==h && cur!==localStorage.getItem(key+'-link')){
+      localStorage.setItem(key+'-mine', cur);
+    }
+    localStorage.setItem(key, h); localStorage.setItem(key+'-link', h);
+    if (localStorage.getItem(key+'-mine')) document.getElementById('linknote').hidden = false;
+  }catch(e){}
+  try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+}
+function backToMine(){
+  document.getElementById('linknote').hidden = true;
+  let mine = null;
+  try{ mine = localStorage.getItem(saveKey(mode==='site')+'-mine'); }catch(e){}
+  if (!mine) return;
+  pushUndo(); applyEnc(mine); toast('back to your sketch — undo brings the link back');
 }
 function syncInputs(){
   document.getElementById('nameip').value = model.name;
@@ -5250,6 +5308,8 @@ function rebuild(refit){
   grid.visible = mode!=='site';
   siteGrid.visible = mode==='site';
   document.getElementById('hintov').hidden = mode==='site' ? site.lots.length>0 : cur.any;
+  // nothing to select on an empty slab, and the hint says click to raise a bay
+  if (mode==='build' && !cur.any && tool==='select') setTool('build');
   if (bnd.minX < bnd.maxX){
     pt1.position.set((bnd.minX+bnd.maxX)/2, 13, (bnd.minZ+bnd.maxZ)/2+4);
     pt2.position.set((bnd.minX+bnd.maxX)/2-30, 10, (bnd.minZ+bnd.maxZ)/2+10);
@@ -5688,7 +5748,7 @@ function sheetTextIn(){
   L.push('RACK LAB COUNT SHEET — '+name.toUpperCase());
   L.push('STOCK CHECK: frame depth is per bay (36/42/48 inches). Campus nominal frames are 8x4, 12x4, 16x3 and 19x3 feet; 19-foot lifts are not supported.');
   L.push('Campus model pieces are not an inventory. Confirm dimensions, connections and quantities before ordering.');
-  L.push('Reference: https://mars-campus-2026.gene-8dc.workers.dev/modular/README (reviewed 2026-09-07)');
+  L.push('Reference: https://mars-campus-2026.gene-8dc.workers.dev/studio (frame library) and https://mars-campus-2026.gene-8dc.workers.dev/history/README.html#year-2026 (evidence notes), checked 2026-10-04');
   if (D.any){
     L.push(`${D.ft.w}' x ${D.ft.d}' footprint · top deck ${D.ft.h>=LIFT?D.ft.h+"'":'18"'} · ${D.nCells} bays · ${D.kits} deck kits`);
     L.push(oneKit(D)
@@ -5961,7 +6021,7 @@ function wireUI(){
     useNext();
     model = TPL[lastTpl]();
     selectedBay=null;
-    view.frame=false;view.cutaway=false;
+    view.frame=false;view.cutaway=false;syncViewButtons();
     syncBW(); rebuild(true); persist(); openSheet('');
     toast(b.dataset.t==='blank' ? 'clean slab'
         : b.dataset.t==='star'  ? `a star shade and a bay of rack, side by side — ${SS_D}′ against ${FT(BW)}×${FT(BL)}`
@@ -6002,6 +6062,7 @@ function wireUI(){
     if(k==='frame')view.cutaway=false;
     b.classList.toggle('on', view[k]);
     b.setAttribute('aria-pressed', String(view[k]));
+    syncViewButtons();
     rebuild(false);
   });
   const slider = document.getElementById('sunslide');
@@ -6028,6 +6089,8 @@ function wireUI(){
     if (!cur || !cur.any) return;
     pushUndo(); model = mk([],[],[]); rebuild(false); persist(); toast('cleared — undo brings it back');
   });
+  document.getElementById('lnMine').addEventListener('click', backToMine);
+  document.getElementById('lnX').addEventListener('click', ()=>{ document.getElementById('linknote').hidden = true; });
   document.getElementById('aLink').addEventListener('click', e=>{
     copyText(location.href.split('#')[0]+'#'+snapshot(), e.currentTarget);
   });
@@ -6185,14 +6248,14 @@ function wireUI(){
 
   window.addEventListener('hashchange', ()=>{
     const h = location.hash.slice(1);
-    if (!h || h===snapshot()) return;
+    if (!h) return;
     if (h.startsWith('P1*')){
       const s = decodeSite(h);
-      if (s){ pushUndo(); site=s; selLot=-1; setMode('site',true); rebuild(true); }
+      if (s){ pushUndo(); adoptLink(h); site=s; selLot=-1; setMode('site',true); rebuild(true); }
       return;
     }
     const d = decode(h);
-    if (d){ pushUndo(); model=d.model; railsOn=d.rails; adoptBW(model);
+    if (d){ pushUndo(); adoptLink(h); model=d.model; railsOn=d.rails; adoptBW(model);
       if (d.hour != null) sunHour = d.hour;
       setMode('build',true); syncInputs(); rebuild(true); }
   });
@@ -6331,9 +6394,15 @@ function cameraPreset(name){
     aimCamera(name,cx,valid?bnd.maxY/2:0,cz,size);
   }
   document.querySelectorAll('[data-camera]').forEach(b=>{b.classList.toggle('on',b.dataset.camera===name);b.setAttribute('aria-pressed',String(b.dataset.camera===name));});
-  document.querySelector('button[data-v="frame"]').classList.toggle('on',view.frame);
-  document.querySelector('button[data-v="frame"]').setAttribute('aria-pressed',String(view.frame));
+  syncViewButtons();
   rebuild(false);
+}
+// Frame view and Cutaway switch each other off; their buttons have to follow
+function syncViewButtons(){
+  const fv=document.querySelector('button[data-v="frame"]');
+  fv.classList.toggle('on',view.frame); fv.setAttribute('aria-pressed',String(view.frame));
+  if(!view.cutaway){ const c=document.querySelector('[data-camera="cutaway"]');
+    c.classList.remove('on'); c.setAttribute('aria-pressed','false'); }
 }
 function aimCamera(name,x,y,z,size){
   const d=(size*.6+4)/Math.tan(camera.fov*Math.PI/360)/Math.min(1,Math.max(.3,camera.aspect));
@@ -6494,6 +6563,7 @@ wireUI();
   const h = location.hash.slice(1);
   if (h.startsWith('P1*')) s = decodeSite(h);
   else if (h) d = decode(h);
+  if (d || s) adoptLink(h);
   if (!d){ try{ const v = localStorage.getItem('racklab-v1'); if (v) d = decode(v); }catch(e){} }
   if (!s){ try{ const v = localStorage.getItem('racklab-site-v1'); if (v) s = decodeSite(v); }catch(e){} }
   if (d){ model = d.model; railsOn = d.rails; adoptBW(model);

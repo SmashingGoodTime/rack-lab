@@ -143,8 +143,10 @@ see it get flagged.
 
 ## Notes
 
-- Designs are saved to `localStorage` and encoded into the URL, so a link carries the whole
-  structure with it. Links are **R10** — every piece carries the kit it was drawn on. Links
+- Your work saves to this browser's `localStorage` and nowhere else; nobody can edit your
+  sketch. The address bar doesn't follow your edits. **Copy share link** builds a URL that
+  carries the whole structure, and opening one gives you a copy to build on. If you already
+  had a sketch saved, it's kept, and **Back to mine** brings it back. Links are **R10** — every piece carries the kit it was drawn on. Links
   from every earlier version still decode, with their pieces drawn on the one kit those
   links carried. Older links retain 42″ depth.
 - The illustrative load model assumes **60 psf live + 10 psf dead**: an occupied deck, people standing, sitting, moving

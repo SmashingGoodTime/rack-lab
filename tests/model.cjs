@@ -38,7 +38,17 @@ assert.equal(edited.cells.get('12,12,0').depth,3);assert.equal(edited.cells.get(
 stack.cells.set('12,12,2',{r:0,bw:12,lift:12,depth:4,deck:true});model=stack;assert.throws(()=>editedBayModel('12,12,0',12,16,4),/ceiling/); 
 
 assert.equal(decode('R10.bad'),null);
-const corrupt=JSON.parse(decodeURIComponent(encode().slice(4)));corrupt.depth=9;assert.equal(decode('R10.'+encPart(JSON.stringify(corrupt))),null);
+// compact R10: one depth costs a few characters over R9; odd pieces are listed by key
+const uniform=fixture(4);uniform.cells.set('15,12,0',{r:0,bw:12,lift:12,depth:4,deck:true});
+assert.ok(encode(uniform).length-encodeR9(uniform).length<=7,'a one-depth sketch stays short');
+const mixedD=fixture(4);mixedD.cells.set('15,12,0',{r:0,bw:12,lift:12,depth:3,deck:true});mixedD.pads.set('20,12',{r:0,bw:12,lift:12,depth:3,canopy:false});
+const back=decode(encode(mixedD)).model;
+assert.equal(back.cells.get('12,12,0').depth,4);assert.equal(back.cells.get('15,12,0').depth,3);
+assert.equal(encode(back),encode(mixedD),'mixedD depths round-trip');
+for(const bad of ['R10.9.'+encodeR9(mixedD),'R10.1_c9c-c-0.'+encodeR9(mixedD),'R10.1_q1c-c-0.'+encodeR9(mixedD),'R10.1_c1c.'+encodeR9(mixedD),'R10.1.R8.x','R10.1'])assert.equal(decode(bad),null,bad);
+// the first R10 spelled depths out as JSON; those links still open
+const json=d=>'R10.'+encPart(JSON.stringify({r:encodeR9(mixedD),depth:d,depths:{cells:[['12,12,0',4],['15,12,0',3]],pads:[],slopes:[],stairs:[]}}));
+assert.equal(decode(json(4)).model.cells.get('15,12,0').depth,3);assert.equal(decode(json(9)),null);
 model=fixture(3);site={name:'Test block',lots:[]};mode='build';inventory=validateInventory({'Upright frame 12′ × 36″':0});
 const project=projectData(),restored=parseProject(JSON.parse(JSON.stringify(project)));
 assert.equal(restored.d.model.cells.get('12,12,0').depth,3);assert.equal(restored.stock['Upright frame 12′ × 36″'],0);
