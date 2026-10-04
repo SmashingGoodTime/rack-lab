@@ -16,16 +16,18 @@ Open `index.html` in any modern browser. That's it — no build step, no server.
 ## The kit is per piece
 
 **ROW SPREAD** and **UPRIGHT HEIGHT** are 8′, 12′ or 16′ each, and they belong to the
-**piece**, not the sketch. The two strips say what the **next** piece lands as, exactly
+**piece**, not the sketch. Frame depth is also per piece: **36″, 42″ or 48″**. The two strips say what the **next** piece lands as, exactly
 the way the N–S / E–W strip has always said which way it runs. Everything already on the
 ground keeps what it was drawn on, so a 16′ shed can stand against a 12′ room and the
 count sheet tallies both. Nothing gets re-laid and nothing gets dropped.
 
-One rule holds it together: **a column is one height.** The piece on the ground sets it
+One rule holds it together: **a column is one height and depth.** The piece on the ground sets it
 and anything stacked on it inherits it, because a stack of frames is one line of steel —
 you don't splice a 12′ frame onto a 16′ one halfway up. The column next door is free to be
 something else. Width is free either way: the bay above only has to land on the footprint
 below.
+
+The table below uses the legacy 42″ frame depth; aisle = row spread − twice frame depth.
 
 | Row spread | Aisle | Ply on a 12′ bay | Worst joist span |
 |---|---|---|---|
@@ -41,13 +43,23 @@ below.
 
 ## The kit
 
+**Campus reference review (7 Sep 2026):** the colleague's nominal library lists
+8′ × 4′, 12′ × 4′, 16′ × 3′ and 19′ × 3′ frames. Select 36″ or 48″ depth to model
+those nominal depths; 42″ remains the legacy default. Height options remain 8′, 12′
+and 16′; 19′ lifts are not supported. The live campus comparison remains available.
+The sizes come from the [campus component studio](https://mars-campus-2026.gene-8dc.workers.dev/studio):
+nominal dimensions, not a stock inventory, and nothing about capacity.
+
+**Frame view** exposes rack and timber by hiding finish surfaces. Counts and
+saved designs stay the same. Return to full view when studying shade.
+
 Real pallet-rack sizes throughout:
 
 - **Bays** — a bay is its row spread wide × **12′ long** × its upright height tall. Every
   bay is its own piece: its long side can run east–west or north–south, and two bays side
   by side can run different ways and be different sizes.
-- **Uprights** — four **42″** frames, two rack rows to a bay, with the aisle between the
-  rows. 42″ + aisle + 42″ is the bay's width **exactly**, so the outer posts land right on
+- **Uprights** — four frames at the selected **36″, 42″ or 48″ depth**, two rack rows to a bay, with the aisle between the
+  rows. frame depth + aisle + frame depth is the bay's width **exactly**, so the outer posts land right on
   the bay line and the deck sheet runs out flush with them — nothing over to trip on,
   nothing short to fall through, and nothing sticking out past the footprint you stake out.
 - **Rows and beams** — two frames with a 12′ beam between them, on each of the frame's post
@@ -56,7 +68,7 @@ Real pallet-rack sizes throughout:
   **share** them, so the second piece buys one frame line instead of two. Where the two
   disagree in height you buy the **taller** frame and the shorter bay's beams land partway
   up it — rack frames are drilled the whole way up. Two pieces only share when their **rows
-  line up**, which means the same row spread; a different width against a face stands its
+  line up**, which means the same row spread, frame depth and orientation; a different width against a face stands its
   own frame line. Bays back to back keep their own rows either way, the way rack really
   goes together. The count sheet says how many frames the sharing saved.
 - **Long span** — the SPAN tool lays a bay whose long side is **20′ instead of 12′**: same
@@ -132,10 +144,53 @@ see it get flagged.
 ## Notes
 
 - Designs are saved to `localStorage` and encoded into the URL, so a link carries the whole
-  structure with it. Links are **R9** — every piece carries the kit it was drawn on. Links
+  structure with it. Links are **R10** — every piece carries the kit it was drawn on. Links
   from every earlier version still decode, with their pieces drawn on the one kit those
-  links carried.
-- Sized for **60 psf live + 10 psf dead**: an occupied deck, people standing, sitting, moving
+  links carried. Older links retain 42″ depth.
+- The illustrative load model assumes **60 psf live + 10 psf dead**: an occupied deck, people standing, sitting, moving
   about. A packed dance floor is 100 and wants an engineer.
 - A sketchpad, not engineering. Anything over one lift, and anything on a 20′ span, wants
   real eyes on it.
+
+## Workspace controls
+
+- **Select** a bay in the view or the accessible dropdown. Edit its width, column height/depth,
+  roof, floor and shade. Dimension edits validate occupancy and support before applying; Undo restores geometry.
+- **Camera presets:** Isometric, Plan, North, South, Cutaway and Frame selection. These are
+  perspective viewpoints. Cutaway exposes the interior; Frame view exposes the structure.
+- Setup explanations and count-sheet sections collapse independently. Light/dark themes,
+  blue uprights, orange beams and a teal selection outline improve visual separation.
+- **Inventory** compares needed stock with on-hand quantities and shortfalls. Blank means
+  unknown; zero means counted and absent. Inventory persists locally and is included in project files.
+  Mars-wide mode aggregates materials across all placed camps.
+- **Download project / Open project** save and restore structure, block layout and inventory as JSON.
+  Share URLs carry geometry, not private inventory. **Print / PDF** previews a dimensioned plan,
+  materials, unresolved checks and inventory, with printable HTML download and browser PDF printing.
+
+Changing depth updates posts, beam lines, compatible frame sharing, joist support spans and
+illustrative tributary reactions. The reaction model assumes continuous equal-stiffness joists
+under uniform loading; it does not verify actual stock, connections, anchoring or construction.
+
+## Verification
+
+Run `node tests/model.cjs`. It covers all 27 width/height/depth kits, mixed-depth sharing,
+stacking, legacy and R10 links, project validation, inventory, edit rejection and joist geometry.
+
+## Mars starting points
+
+The generic pavilion, courtyard, workshop and stage cards have been replaced with:
+
+- **Mars gathering hall:** six shaded bays, a clear central ground aisle, four low side
+  gallery floors, north projection wall and open south entrance.
+- **Café + sun lounge:** two roofed service/lounge bays, windows, a south lean-to and
+  an open shaded entrance bay. The lean-to uses the existing opaque slope material;
+  it does not reproduce the campus café's transparent wall.
+- **Living rooms + porch:** two separate rooms with doors and windows, a shared partition,
+  and two open shade bays forming a common porch.
+- **Solar utility shed** and **Blank slab** remain available.
+
+These are campus-inspired planning layouts, not measured replicas. Cards show footprint
+previews and uses. They inherit next-piece dimensions, replace the structure with Undo,
+and restore finish visibility when loaded. Raised floors are 18″; access details still
+need planning. Tests cover all three new starts across 27 kits (81 fixtures), including
+hall aisle/floor separation, café slope retention and independent living-room doors.

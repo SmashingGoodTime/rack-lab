@@ -366,7 +366,39 @@ footer span:last-child{text-align:right}
 .rosesun{position:absolute;inset:0;pointer-events:none}
 .rosesun::before{content:"";position:absolute;left:50%;top:2px;width:5px;height:5px;margin-left:-2.5px;
   border-radius:50%;background:var(--straw);box-shadow:0 0 0 2px var(--paper)}
+
+/* A quieter drafting workspace. */
+html,body{overflow:hidden}
+
+#print-preview{width:min(1100px,94vw);height:90vh;max-width:none;border:1px solid var(--line2);background:var(--panel);color:var(--ink);padding:12px;border-radius:8px}
+#print-preview::backdrop{background:#101820bb}.print-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px}.print-toolbar b{margin-right:auto}.print-toolbar button{padding:8px;cursor:pointer}#print-frame{width:100%;height:calc(100% - 50px);border:0;background:white}.technical-notes{margin-top:12px;color:var(--muted)}.technical-notes summary{font-size:11px}.technical-notes .spec{line-height:1.6}
+
+#app{grid-template-rows:auto auto 1fr auto}
+#projectbar{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+#projectbar span{font:10px var(--mono);letter-spacing:.15em;color:var(--muted);margin-right:auto}
+#projectbar button,#camera-presets button,.inspector-actions button,#apply-bay{border:1px solid var(--line2);background:var(--panel);color:var(--ink);padding:7px 10px;border-radius:5px;cursor:pointer;font:11px var(--sans)}
+#projectbar button:hover,#camera-presets button:hover{border-color:var(--accent)}
+#camera-presets{position:absolute;top:12px;right:52px;display:flex;gap:4px;z-index:5;max-width:calc(100% - 195px);flex-wrap:wrap;justify-content:flex-end}
+#camera-presets .on{background:var(--accent);color:var(--on-accent)}
+#inspector{border:1px solid var(--line2);border-left:3px solid #3c9d9c;border-radius:6px;padding:10px;margin-bottom:16px;background:var(--panel2)}
+#inspector select{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line2);padding:7px 4px;border-radius:4px;font:12px var(--sans)}
+.inspector-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}.inspector-fields label{font-size:11px;color:var(--muted)}
+.selection-title{font:600 14px var(--mono);margin:12px 0}.selection-title span{display:block;font:11px var(--sans);margin-top:5px;color:var(--muted)}
+.quiet{font-size:11px;color:var(--muted);line-height:1.55}.inspector-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+#apply-bay.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);width:100%}
+#inspector-error{color:var(--bad);font-size:12px}
+.schedule-group{border-bottom:1px solid var(--line);padding:10px 0}.schedule-group summary{cursor:pointer;font:600 12px var(--sans);list-style-position:inside}.schedule-group summary span{display:block;margin:3px 0 0 14px;font:10px var(--sans);color:var(--muted)}
+.schedule-group[open]>summary{margin-bottom:12px}.schedule-group .spec{font-size:11px}.chipline{gap:5px}.chip{font-size:9px;letter-spacing:.02em}
+.inventory{width:100%;border-collapse:collapse;font-size:10px}.inventory th,.inventory td{padding:6px 3px;text-align:left;border-bottom:1px solid var(--line)}.inventory input{width:52px;border:1px solid var(--line2);border-radius:4px;background:var(--panel);color:var(--ink);padding:6px 3px}.inventory td:first-child{max-width:115px}.inventory .shortfall{font-weight:600;color:var(--accent)}
+#campus-reference summary{cursor:pointer}.tb-meta{display:none!important}.tools button{border-radius:4px}.vopts{gap:5px;flex-wrap:wrap;max-width:calc(100% - 20px)}
+@media(min-width:941px){main{grid-template-columns:265px 1fr 325px}.hint{bottom:36px;font-size:9px}}
+@media(max-width:940px){#projectbar{padding:5px 8px;gap:5px;overflow-x:auto;flex-shrink:0}#projectbar span{display:none}#projectbar button{white-space:nowrap;font-size:10px}#camera-presets{top:72px;left:10px;right:10px;max-width:none;justify-content:flex-start}.subs{top:114px}.vopts{max-width:calc(100% - 50px)}#inspector{margin-bottom:16px}.inventory input{min-height:38px}#camera-presets button{padding:7px;font-size:10px}}
+
+#tpls .template-card{display:grid;grid-template-columns:42px 1fr;gap:10px;text-align:left;padding:11px;align-items:center;white-space:normal}
+.template-card strong{display:block;font-size:12px}.template-card small{display:block;font-size:10px;color:var(--accent);margin:4px 0}.template-description{display:block;font-size:11px;line-height:1.4;color:var(--muted);font-weight:normal;text-transform:none;letter-spacing:0}
+.template-map{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:3px;width:42px}.template-map i{height:11px;border:1px solid var(--line2)}.template-map .filled{background:#416d85;border-color:#d68a42}.template-map .empty{border-style:dashed;opacity:.35}
 </style>
+<dialog id="print-preview"><div class="print-toolbar"><b>Print-ready planning sheet</b><button id="run-print">Print / PDF</button><button id="download-print">Download sheet</button><button onclick="this.closest('dialog').close()">Close</button></div><iframe id="print-frame" title="Printable Rack Lab plan"></iframe></dialog>
 <div id="app">
   <header>
     <div class="tb-title"><b>RACK LAB</b><span>A MARS MUSIC SHEET · M-5s</span></div>
@@ -381,16 +413,23 @@ footer span:last-child{text-align:right}
       <button id="aLink" title="Copies a link that rebuilds exactly what you see">🔗<span class="lb"> Copy share link</span></button>
       <button id="aSheet" title="Copies the count sheet as text">⧉<span class="lb"> Copy count sheet</span></button>
     </nav>
-    <div class="tb-meta"><b>STRUCTURE SKETCHPAD</b><span>RACK BAYS · 42″ UPRIGHTS · NO CONCRETE</span></div>
+    <div class="tb-meta"><b>STRUCTURE SKETCHPAD</b><span>36″ / 42″ / 48″ FRAMES · PER BAY</span></div>
     <!-- sun: Bombay Beach, CA · winter solstice · solar time -->
 
   </header>
+  <div id="projectbar"><span>DESIGN WORKSPACE</span><button id="save-project">Download project</button><button id="open-project">Open project</button><button id="print-project">Print / PDF</button><button id="theme-button">Light / dark</button><input type="file" id="project-file" accept=".json,application/json" hidden></div>
   <main>
     <aside id="controls" aria-label="Setup">
       <div class="shhead"><span class="grab"></span><b>Setup</b><button class="shx" aria-label="Close">✕</button></div>
       <div id="buildpanel">
         <h3 class="lbl">Structure</h3>
         <input id="nameip" placeholder="name your build" maxlength="28" autocomplete="off" spellcheck="false">
+        <section id="inspector" aria-label="Selected bay"></section>
+        <h3 class="lbl">Next piece · frame depth</h3>
+        <div class="tpls kit" id="depthpick" aria-label="Depth for new bays">
+          <button data-depth="3">36″</button><button data-depth="3.5" class="on">42″</button><button data-depth="4">48″</button>
+        </div>
+        <div class="note">Depth is per bay. Stacking inherits the supporting column's depth.</div>
         <h3 class="lbl">Row spread · bay width</h3>
         <div class="tpls kit" id="bwpick" role="group" aria-label="How far apart the two rack rows stand">
           <button data-bw="8">8′ <small>1′ aisle</small></button>
@@ -404,17 +443,31 @@ footer span:last-child{text-align:right}
           <button data-lift="16">16′ <small>2 lifts</small></button>
         </div>
         <div class="note" id="bwnote"></div>
-        <div class="note" id="kitnote"><b>These set the next piece.</b> Everything already on
+        <details class="note" id="campus-reference">
+          <summary><b>Campus stock · compare dimensions</b></summary>
+          <p>Nominal campus frames: <b>8′ × 4′, 12′ × 4′, 16′ × 3′, 19′ × 3′</b>; beams: <b>12′</b>.
+            Select 36″, 42″ or 48″ for new bays, or edit a selected column. The comparison below checks your selected dimensions against the nominal library. Nominal size does not establish capacity or availability.</p>
+          <div id="stockcompare"></div>
+          <p>The 19′ frame is not a supported lift. Confirm frame depth, beam connections and available quantities before matching a sketch to stock. Different depths cannot automatically share an end frame.</p>
+          <p><b>Layout precedent:</b> the photo notes describe Chiba's central aisle, side galleries and tiered seating, plus the café's sloped transparent wall. Use these to study circulation and sightlines; room locations and furnishing dimensions remain provisional.</p>
+          <p><a href="https://mars-campus-2026.gene-8dc.workers.dev/studio" target="_blank" rel="noopener noreferrer">Campus recreation ↗</a> ·
+            <a href="https://mars-campus-2026.gene-8dc.workers.dev/modular/README" target="_blank" rel="noopener noreferrer">Evidence &amp; accuracy ↗</a></p>
+          <p>Reviewed 7 Sep 2026. CAD layout and photo evidence are useful precedents; dimensions remain unverified and modeled pieces are not stock on hand.</p>
+        </details>
+        <details class="note" id="kitnote"><summary>How bays share frames</summary><b>These set the next piece.</b> Everything already on
           the ground keeps the row spread and the frame height it was drawn on, so a 16′ shed can
           stand against a 12′ room. <b>Stacking</b> inherits the column's height — a stack of
           frames is one line of steel. Two pieces meeting <b>end to end</b> share the frame between
           them and you buy the <b>taller</b> of the two; a different <b>row spread</b> puts the rows
-          somewhere else, so that join stands its own frame line.</div>
-        <h3 class="lbl">Start from</h3>
+          somewhere else, so that join stands its own frame line. Depth and orientation must match too.</details>
+        <h3 class="lbl">Mars starting points</h3>
+        <p class="quiet">Campus-inspired layouts, not measured replicas. Uses your next-piece dimensions. Replaces this structure; Undo restores it.</p>
         <div class="tpls one" id="tpls">
-          <button data-t="blank">Blank slab</button>
-          <button data-t="room">Standard room</button>
-          <button data-t="solar">Solar shed</button>
+          <button data-t="hall" class="template-card"><span class="template-map" style="--cols:3" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i></span><span><strong>Mars gathering hall</strong><small>6 bays · central aisle</small><span class="template-description">A north projection wall, raised side galleries and a clear south entrance.</span></span></button>
+          <button data-t="cafe" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="empty"></i></span><span><strong>Café + sun lounge</strong><small>3 bays + south lean-to</small><span class="template-description">Service space, a windowed lounge, south lean-to and shaded entry porch.</span></span></button>
+          <button data-t="living" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i></span><span><strong>Living rooms + porch</strong><small>4 bays · 2 private rooms</small><span class="template-description">Separate doors, a shared partition and a shaded outdoor gathering strip.</span></span></button>
+          <button data-t="solar" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i></span><span><strong>Solar utility shed</strong><small>South-facing panels</small><span class="template-description">A sheltered service bay with a south solar lean-to.</span></span></button>
+          <button data-t="blank" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="empty"></i></span><span><strong>Blank slab</strong><small>Start from scratch</small><span class="template-description">An empty field for your own layout.</span></span></button>
         </div>
         <h3 class="lbl">Sun · Bombay Beach, winter</h3>
         <input type="range" id="sunslide" min="24" max="76" step="1" value="56"
@@ -434,7 +487,7 @@ footer span:last-child{text-align:right}
           structure off without touching the rest</small></span></label>
 
         <h3 class="lbl fold" id="howtog" role="button" tabindex="0"
-            aria-expanded="true" aria-controls="hownotes">How it works<span class="car">▾</span></h3>
+            aria-expanded="false" aria-controls="hownotes">How it works<span class="car">▾</span></h3>
         <div id="hownotes">
         <div class="note"><b>1 · Raise bays.</b> <span class="k">BUILD</span>, then click the ground.
           One click = one <b><span class="bwft">12′</span> × 12′ × <span class="ltft">12′</span></b> bay:
@@ -457,8 +510,8 @@ footer span:last-child{text-align:right}
           landing on a joist. Bays end to end along a row
           <b>share the frame between them</b>; bays back to back each keep their own, the way rack
           really goes together.</div>
-        <div class="note"><b>2b · The kit — how wide, how tall.</b> Two strips up top set the only
-          two numbers in here that aren't per-bay, because together they <b>are</b> the bay.
+        <div class="note"><b>2b · The kit — how wide, how tall.</b> Two strips up top set the
+          width and height of <b>the next bay</b>. Each drawn bay retains its own dimensions.
           <span class="k">ROW SPREAD</span> is its width: <b>8′</b> puts the two 42″ racks a foot
           apart, <b>12′</b> opens a 5′ aisle, <b>16′</b> opens 9′. Only the joist length and the
           sheet count move with it — a 2×8 at 16″ o.c. carries the widest of the three under the
@@ -469,8 +522,8 @@ footer span:last-child{text-align:right}
           of a slope, and the stair, which regrows its flights so the tread stays walkable
           (<b>7 / 11 / 15</b> steps, <b>34° / 31° / 30°</b>). <b>36′ stays the ceiling</b>, so 16′
           frames buy two lifts where 12′ buy three. Both at <b>12′</b> is the <b>12′ cube</b>, and
-          the default. Changing either changes every bay at once, so it <b>starts the sketch
-          again</b> on the new kit — <span class="k">⌘Z</span> puts the old one back.</div>
+          the default. Changing either sets <b>the next piece</b>; existing bays keep their kit.
+          Compare nominal campus depths in <b>Campus stock</b> above before selecting physical frames.</div>
         <div class="note"><b>3 · Long span.</b> <span class="k">SPAN 20′</span> lays a bay whose long
           side is <b>20′ instead of 12′</b> — same four uprights, just further apart, with the steel
           beams swapped for lumber. The two heights are <b>not the same stick</b>: the four
@@ -559,6 +612,7 @@ footer span:last-child{text-align:right}
     </aside>
     <div id="viewport">
       <div class="tools" id="tools" aria-label="Tools">
+        <button data-t="select" title="Select a bay to inspect or edit (V)">Select <kbd>V</kbd></button>
         <button data-t="build">Build<kbd>B</kbd></button>
         <button data-t="span">Span 20′<kbd>L</kbd></button>
         <button data-t="deck">Deck<kbd>D</kbd></button>
@@ -597,6 +651,11 @@ footer span:last-child{text-align:right}
           <button data-p="1" title="turn right at the mid flat — wraps a corner (6)">⤸ Wrap R</button>
         </div>
       </div>
+      <div id="camera-presets" aria-label="Camera presets">
+        <button data-camera="iso">Isometric</button><button data-camera="plan">Plan</button>
+        <button data-camera="north">North</button><button data-camera="south">South</button>
+        <button data-camera="cutaway">Cutaway</button><button data-camera="selection">Frame selection</button>
+      </div>
       <div class="compass" aria-hidden="true"><div class="rose" id="rose"></div><div class="rosesun" id="rosesun"></div></div>
       <div class="vopts" id="vopts">
         <button data-v="dims">Dims</button>
@@ -604,6 +663,7 @@ footer span:last-child{text-align:right}
         <button data-v="sunpath">Sun path</button>
         <button data-v="figure">Figure</button>
         <button data-v="ballast">Ballast</button>
+        <button data-v="frame" aria-pressed="false" title="Inspect rack and timber with ply, glazing, shade and solar surfaces hidden. Counts stay the same.">Frame view</button>
         <button class="act" id="vfit" title="Frame everything">⌖ Fit</button>
       </div>
       <div class="hint" id="hinttxt">1 unit = 1 ft · grid = 4′ · bay = 12′×12′<br>drag orbit · scroll zoom · right-drag pan</div>
@@ -1739,8 +1799,10 @@ let LIFT = 12;                                // …and the kit of the piece bei
 const CEIL_FT = 36;                           // …and the ceiling over all of them
 const LIFTS_MAX = 3;                          // no column ever goes past three, whatever the frame
 const maxLifts = () => clamp(Math.floor(CEIL_FT/LIFT), 1, LIFTS_MAX);
-const DEPTH = 3.5;                            // 42" upright frame, post to post
-const POST = DEPTH/2;
+const DEPTH_OPTS = [3, 3.5, 4];
+let nextDepth = 3.5;
+let DEPTH = 3.5;                            // 42" upright frame, post to post
+let POST = DEPTH/2;
 /* ROW SPREAD — how far apart the two rack rows stand, which IS the bay's width.
    Each row is a 42" frame, so the spread is 3'6" + aisle + 3'6". It has to land
    on the 4' module grid, which gives three honest widths:
@@ -1779,8 +1841,10 @@ let BW = 12;                                  // …and the kit of the piece bei
    which is why level y still means what it always meant.                   */
 const cellBW   = v => (v && v.bw)   || nextBW;
 const cellLift = v => (v && v.lift) || nextLift;
-const useKit  = v => { BW = cellBW(v); LIFT = cellLift(v); };
-const useNext = () => { BW = nextBW; LIFT = nextLift; };
+const cellDepth = v => DEPTH_OPTS.includes(v?.depth) ? v.depth : 3.5;
+const useDepth = d => { DEPTH=d; POST=d/2; ROW_IN=d/2; };
+const useKit  = v => { BW = cellBW(v); LIFT = cellLift(v); useDepth(cellDepth(v)); };
+const useNext = () => { BW = nextBW; LIFT = nextLift; useDepth(nextDepth); };
 /* Whatever the ground piece of this column was drawn on — what a piece stacked
    on it has to be, and what level y measures in. */
 const colLift = (m,i,j) => {
@@ -1793,8 +1857,8 @@ const colBW = (m,i,j) => {
 };
 const BWM = () => BW/MOD;                     // …in 4' modules: 2, 3 or 4
 const ROW_GAP = () => BW - 2*DEPTH;           // the aisle left between two 42" racks
-const ROW_IN = POST;                          // row line, in from the bay edge
-const SKIN_IN = ROW_IN - POST;                // 0 — the deck lands flush with the steel
+let ROW_IN = POST;                          // row line, in from the bay edge
+const SKIN_IN = 0;                // 0 — the deck lands flush with the steel
 const JOIST_SPAN = () => Math.max(DEPTH, BW-2*DEPTH);   // worst clear span a joist sees
 /* Deck build-up. A 2×8 joist on edge plus ¾" ply is 8" of structure, and the
    beam it lands on is another 2" of steel below that. So the beam sits 10⅓"
@@ -2052,7 +2116,7 @@ const COMPASS16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW
 const bearing = a => COMPASS16[(rnd((a*180/Math.PI)/22.5)%16+16)%16];
 let sunHour = 14;                              // mid-afternoon: the shadows that matter
 
-const blank = ()=>({ name:'', bw:BW, lift:LIFT, cells:new Map(), skins:new Map(), pads:new Map(),
+const blank = ()=>({ name:'', bw:BW, lift:LIFT, depth:nextDepth, cells:new Map(), skins:new Map(), pads:new Map(),
                      slopes:new Map(), arrays:new Set(), stairs:new Map(), stars:new Set() });
 let model = blank();
 /* A sketch carries its own KIT — the row spread and the upright height — so a
@@ -2062,12 +2126,12 @@ let model = blank();
    of the read and puts it back. */
 const bwOf   = m => (m && m.bw) || 8;
 const liftOf = m => (m && m.lift) || 12;
-function atKit(w, h, fn){
-  const sw=BW, sh=LIFT, nw=nextBW, nh=nextLift;
-  BW=w; LIFT=h; nextBW=w; nextLift=h;
-  try { return fn(); } finally { BW=sw; LIFT=sh; nextBW=nw; nextLift=nh; }
+function atKit(w, h, fn, depth=DEPTH){
+  const sw=BW, sh=LIFT, nw=nextBW, nh=nextLift, sd=DEPTH, nd=nextDepth;
+  BW=w; LIFT=h; nextBW=w; nextLift=h; nextDepth=depth; useDepth(depth);
+  try { return fn(); } finally { BW=sw; LIFT=sh; nextBW=nw; nextLift=nh; nextDepth=nd; useDepth(sd); }
 }
-const atModel = (m, fn)=>atKit(bwOf(m), liftOf(m), fn);
+const atModel = (m, fn)=>atKit(bwOf(m), liftOf(m), fn, cellDepth(m));
 // cells:  "i,j,y" bay anchored at module (i,j), level y -> {r, deck, canopy, rail, floor}
 //                 deck = the walkable roof on top · floor = a floor at its base
 // pads:   "i,j"   18" riser, one bay footprint      -> {r, canopy}
@@ -2107,13 +2171,13 @@ const DIRV = [[0,-1],[1,0],[0,1],[-1,0]];     // N E S W in grid steps
 const DIRA = [0, Math.PI/2, Math.PI, 3*Math.PI/2];   // …as a compass bearing
 const COMPASS = ['N','E','S','W'];
 let railsOn = true;
-let tool = 'build';
+let tool = 'select';
 let bayRot = 0;                               // which way the NEXT bay lands
 let wallMode = 0;                             // 0 solid · 1 door · 2 window
 let deckMode = 0;                             // 0 the roof deck · 1 a floor at the base
 let stairTurn = 0;                            // head: 0 straight out · -1 left · +1 right
 let stairWrap = 0;                            // mid flat: 0 straight on · ±1 turn there too
-const view = { dims:true, figure:true, ballast:false, lanes:true, sunpath:false };
+const view = { dims:true, figure:true, ballast:false, lanes:true, sunpath:false, frame:false, cutaway:false };
 let cur = null;                               // last derive() result
 
 /* the module step from one bay footprint to the next, in direction d */
@@ -2234,6 +2298,11 @@ const encKit = v => {
 const decKit = ch => { const v = d36(ch);
   return isNaN(v) || v > 8 ? null : {bw: BW_OPTS[Math.floor(v/3)], lift: LIFT_OPTS[v%3]}; };
 function encode(m=model, rails=railsOn){
+  const depths = {};
+  for (const name of ['cells','pads','slopes','stairs']) depths[name]=[...m[name]].map(([k,v])=>[k,cellDepth(v)]);
+  return 'R10.'+encPart(JSON.stringify({r:encodeR9(m,rails),depth:cellDepth(m),depths}));
+}
+function encodeR9(m=model, rails=railsOn){
   let c='',s='',p='',nr='',sl='',ar='',st='';
   for (const [k,v] of m.cells){ const [i,j,y]=nums(k);
     c += i.toString(36)+j.toString(36)+(y*4+(v.r&3)).toString(36)+
@@ -2267,7 +2336,23 @@ function encode(m=model, rails=railsOn){
    back. Anything without a 'w' was drawn on 8' rows and anything without an 'l'
    on 12' frames, which is what they were when those links were made.        */
 function decode(str){
-  if (!str) return null;
+  if (!str || str.length>2000000) return null;
+  if (str.startsWith('R10.')){
+    try {
+      const data=JSON.parse(decodeURIComponent(str.slice(4)));
+      if (!DEPTH_OPTS.includes(data.depth) || typeof data.r!=='string' || !data.r.startsWith('R9.')) return null;
+      const out=decode(data.r); if (!out) return null;
+      out.model.depth=data.depth;
+      for (const name of ['cells','pads','slopes','stairs']){
+        if (!Array.isArray(data.depths?.[name])) return null;
+        for (const [key,depth] of data.depths[name]){
+          if (!DEPTH_OPTS.includes(depth)) return null;
+          const v=out.model[name].get(key); if(v) v.depth=depth;
+        }
+      }
+      normalizeKit(out.model); return out;
+    } catch(e){ return null; }
+  }
   const r9 = str.startsWith('R9.');
   const t7 = r9 || str.startsWith('R7.') || str.startsWith('R8.');
   return atKit(t7 ? kitFromFlags(str,'w',BW_OPTS,8) : 8,
@@ -2373,7 +2458,7 @@ function decodeR5(str, sw){                     // sw: chars per stair — 4 sin
     m.stars.add(kp(i,j));
   }
   pruneModel(m);
-  m.bw = BW; m.lift = LIFT;
+  m.bw = BW; m.lift = LIFT; m.depth=3.5;
   return readFlags(t[t.length-1], m);
 }
 /* R4 — the same plan, drawn before 20' bays, stair turns and per-structure
@@ -2420,7 +2505,7 @@ function decodeR4(str){
     m.stairs.set(k3(i,j,v%3), {d:Math.floor(v/3), t:0, w:0, r:0});
   }
   pruneModel(m);
-  m.bw = BW; m.lift = LIFT;
+  m.bw = BW; m.lift = LIFT; m.depth=3.5;
   return readFlags(t[t.length-1], m);
 }
 /* Old links were drawn on a fictional square bay. Rebuild them on the real one:
@@ -2505,7 +2590,7 @@ function decodeOld(str){
   const flags = t[want-1] || '';
   // an old 'z' grain meant the 12' beams ran north–south — turn the whole thing
   const out = flags.indexOf('z') >= 0 ? rotateModel(m) : m;
-  out.bw = BW; out.lift = LIFT;
+  out.bw = BW; out.lift = LIFT; out.depth=3.5;
   return { model: out, rails: flags[0] !== 'n', hour: null };
 }
 
@@ -2600,7 +2685,7 @@ function deriveIn(m, rails){
     const ew = isEW(v.r), base = y*LIFT;
     for (const line of rowLines(i,j,v.r)) for (const e of rowEnds(i,j,v.r)){
       const x = ew ? e : line, z = ew ? line : e;
-      const kk = FKEY(x,z,base), f = frames.get(kk) || {x, z, y, base, h:0, mixed:false, X:0, Z:0};
+      const kk = FKEY(x,z,base)+'|'+DEPTH+'|'+(ew?'Z':'X'), f = frames.get(kk) || {x, z, y, base, depth:DEPTH, h:0, mixed:false, X:0, Z:0};
       if (f.h && f.h !== LIFT) f.mixed = true;  // two bay heights on one line of steel
       if (LIFT > f.h) f.h = LIFT;               // …and you buy the taller one
       if (y < f.y) f.y = y;
@@ -2636,7 +2721,7 @@ function deriveIn(m, rails){
   let beamsN=0, spanHi=0, spanLo=0;
   const BR=(x,y,z,dir,len,wood,hi)=>{ const kk=rnd(x*4)+'|'+rnd(y*4)+'|'+rnd(z*4)+'|'+dir;
     if (brSeen.has(kk)) return; brSeen.add(kk);
-    beamRuns.push({x,y,z,dir,len,wood,hi});
+    beamRuns.push({x,y,z,dir,len,wood,hi,plies:wood&&hi?spanPlies():2,trib:SPAN_TRIB()});
     if (!wood) beamsN++; else hi ? spanHi++ : spanLo++; };
   for (const [k,v] of cells){ useKit(v); const [i,j,y]=nums(k);
     const L = bayLen(v.r), wood = isLong(v.r), ew = isEW(v.r);
@@ -2651,12 +2736,17 @@ function deriveIn(m, rails){
      3.5, 4.5 and 8, and solving that gives the inner lines 2.563' of tributary
      against the outer pair's 1.437'. Naming this number is the whole point —
      every other figure on the sheet rests on a beam nobody checked the stamp on. */
-  const TRIB_IN = 2.5634;
+  const tributary = (width,depth)=>{
+    const a=depth,b=width-2*depth;
+    if (b<=0) return 1.25*a; // coincident middle supports: two-span beam
+    const moment=-(a*a*a+b*b*b)/(4*(2*a+3*b));
+    return Math.max(a/2+moment/a,(a+b)/2-moment/a);
+  };
   const PSF = DES_LL + DES_DL;
   let beamLoad = 0, beamLoadL = 0;
   for (const v of cells.values()){ useKit(v);
     if (!v.deck && !v.floor) continue;
-    const L = bayLen(v.r), lb = rnd(TRIB_IN*L*PSF);
+    const L = bayLen(v.r), lb = rnd(tributary(BW,DEPTH)*L*PSF);
     if (lb > beamLoad){ beamLoad = lb; beamLoadL = L; }
   }
 
@@ -2834,12 +2924,12 @@ function deriveIn(m, rails){
     }
     if (!hit) continue;
     for (const s of [-1,1]) collars.push({
-      x: f.x + (f.ax==='X' ? s*POST : 0),
-      z: f.z + (f.ax==='Z' ? s*POST : 0), topY: f.y*LIFT });
+      x: f.x + (f.ax==='X' ? s*f.depth/2 : 0),
+      z: f.z + (f.ax==='Z' ? s*f.depth/2 : 0), topY: f.base });
   }
   // an upright with no upright under it is standing on lumber
   let badStacks=0;
-  for (const f of frameList) if (f.base>0 && ![...frames.values()].some(g=>g!==f && rnd(g.x*4)===rnd(f.x*4) && rnd(g.z*4)===rnd(f.z*4) && rnd((g.base+g.h)*4)===rnd(f.base*4))) badStacks++;
+  for (const f of frameList) if (f.base>0 && ![...frames.values()].some(g=>g.depth===f.depth && (g.X>=g.Z?'X':'Z')===f.ax && rnd(g.x*4)===rnd(f.x*4) && rnd(g.z*4)===rnd(f.z*4) && rnd((g.base+g.h)*4)===rnd(f.base*4))) badStacks++;
 
   /* Rooms: flood-fill the bays on each level, a wall closes the 4' edge it
      covers, so a partition only half across only half divides.            */
@@ -2956,17 +3046,19 @@ function deriveIn(m, rails){
      now. A riser out in the open still needs two rim beams, but a floor inside a
      bay lands on the low beams that are already standing there. */
   const beams = beamsN + 2*nPads;
-  const plies = spanPlies();                    // …and how many plies the spread costs
-  const span212 = plies*spanHi;                 // 2×12 × 20' — these carry the deck
+  const plies = Math.max(2,...beamRuns.filter(b=>b.wood&&b.hi).map(b=>b.plies));                    // …and how many plies the spread costs
+  const span212 = beamRuns.filter(b=>b.wood&&b.hi).reduce((n,b)=>n+b.plies,0);                 // 2×12 × 20' — these carry the deck
   const span26  = 2*spanLo;                     // doubled 2×6 — base bracing, carries itself
   const cribbing = 9*nPads;                     // nine pads on the dirt under every riser
   // 2×8 × 8' joists at 16" o.c. — ten across a 12' bay, sixteen across a 20'
   let joists = 0, deckSheets = 0, deckArea = 0;
-  for (const v of pads.values()){               // a riser is a 20' bay as often as a 12'
-    joists += joistsOf(v.r); deckSheets += sheetsOf(v.r); deckArea += bayArea(v.r); }
+  const joistLens=new Map();
+  const addJoists=v=>{const n=joistsOf(v.r);joists+=n;joistLens.set(cellBW(v),(joistLens.get(cellBW(v))||0)+n);};
+  for (const v of pads.values()){ useKit(v);               // a riser is a 20' bay as often as a 12'
+    addJoists(v); deckSheets += sheetsOf(v.r); deckArea += bayArea(v.r); }
   for (const [k,v] of cells){ useKit(v);
-    if (v.deck){ joists += joistsOf(v.r); deckSheets += sheetsOf(v.r); deckArea += bayArea(v.r); }
-    if (v.floor){ joists += joistsOf(v.r); deckSheets += sheetsOf(v.r); }  // same kit, down low
+    if (v.deck){ addJoists(v); deckSheets += sheetsOf(v.r); deckArea += bayArea(v.r); }
+    if (v.floor){ addJoists(v); deckSheets += sheetsOf(v.r); }  // same kit, down low
   }
   /* Slope rafters. A slope drops the whole 12' lift over the bay's run, so the
      rafter is the hypotenuse: 14'5" off an 8' face, 17' off a 12' one, 23'4" off
@@ -3009,13 +3101,13 @@ function deriveIn(m, rails){
   /* Which kits are actually on the ground — the sheet stops being able to say
      "a 12' bay" the moment two pieces disagree, so it counts them instead. */
   function kitSpread(cs){
-    const bw = new Map(), lf = new Map();
+    const bw = new Map(), lf = new Map(), dp=new Map();
     for (const v of cs.values()){
       bw.set(cellBW(v), (bw.get(cellBW(v))||0)+1);
-      lf.set(cellLift(v), (lf.get(cellLift(v))||0)+1);
+      lf.set(cellLift(v), (lf.get(cellLift(v))||0)+1);dp.set(cellDepth(v),(dp.get(cellDepth(v))||0)+1);
     }
     const srt = mp => [...mp.entries()].sort((a,b)=>a[0]-b[0]);
-    return { bw:srt(bw), lift:srt(lf) };
+    return { bw:srt(bw), lift:srt(lf),depth:srt(dp) };
   }
   const half = v => rnd(v*2)/2;
   const ft = !any ? null : {
@@ -3032,11 +3124,13 @@ function deriveIn(m, rails){
   return { frames:frameList, beamRuns, girtRuns, faces, skinGeom, arrayDraws, collars,
     rails:rails_, ballast, canopyDraws, occ, floorDraws, floors, floorArea,
     nCells, nPads, decked, kits, beams, girts, girtLens, openFaces, cribbing,
-    joists, studs, studs12, studs8, ply, sc, cutSheets, deckSheets,
+    joists, joistLens, studs, studs12, studs8, ply, sc, cutSheets, deckSheets,
     framesN: frameList.length, mixedFrames, sharedFrames, tallest,
     kits2: kitSpread(cells),
+    frameStock: frameStockRows(frameList),
+    maxJoistSpan: Math.max(0,...[...cells.values()].map(v=>Math.max(cellDepth(v),cellBW(v)-2*cellDepth(v)))),
     beamLoad, beamLoadL, psf:PSF,
-    longBays, span212, span26, plies, spanTrib:SPAN_TRIB(),
+    longBays, span212, span26, plies, spanTrib:Math.max(0,...beamRuns.filter(b=>b.wood&&b.hi).map(b=>b.trib)),
     nSlopes, plySlopes, solarSlopes, rafters, rafterKit,
     solarPanels, solarWatts, solarDay, solarFaces, solarBest, solarWorst, solarBlind,
     nStairs, stairRuns, stairStock, stairEdges, stairWide, stairTurned, stairWrapped,
@@ -3082,10 +3176,10 @@ const dummy = new THREE.Object3D();
 const C = h => new THREE.Color(h).convertSRGBToLinear();
 const M = (h,o={}) => new THREE.MeshStandardMaterial({color:C(h), roughness:.88, metalness:.04, ...o});
 const MATS = {
-  steel: M('#7C4423', {roughness:.6, metalness:.25}),
+  steel: M('#416D85', {roughness:.6, metalness:.25}),
   beam:  M('#C2521C', {roughness:.55, metalness:.3}),
-  wood:  M('#C9A76F'),
-  girt:  M('#B99257'),
+  wood:  M('#D6BD8C'),
+  girt:  M('#BA9861'),
   ply:   M('#C39655'),
   barrel:M('#5D6E76', {roughness:.5, metalness:.2}),
   cloth: M('#5A5F40', {transparent:true, opacity:.68, side:THREE.DoubleSide}),
@@ -3117,8 +3211,8 @@ function box(k,x,y,z,sx,sy,sz,ry=0,rx=0,rz=0){
    frame two bays share is one frame, not two, which is the whole reason
    building tight is cheaper. A 12' frame gets four lacing panels, which is
    about what the real ones carry.                                          */
-function upright(cx,cz,y0,h,ax){
-  const o = POST, W = 2*o, X = ax==='X';
+function upright(cx,cz,y0,h,ax,depth=DEPTH){
+  const o = depth/2, W = 2*o, X = ax==='X';
   const n = Math.max(3, rnd(h/2.9));
   const ph = h/n, dl = Math.hypot(W,ph), ang = Math.atan2(ph,W);
   for (const s of [-1,1]){                     // the two posts, on plates
@@ -3149,7 +3243,7 @@ function beamDraw(b){
     else             box('beam', b.x, b.y, b.z, .22, .36, b.len-.3);
     return;
   }
-  const n = b.hi ? spanPlies() : 2, d = b.hi ? .94 : .46, t = .125;
+  const n = b.hi ? (b.plies||spanPlies()) : 2, d = b.hi ? .94 : .46, t = .125;
   const cy = b.y + .18 - d/2;                  // hang the top where the steel's top was
   for (let q=0;q<n;q++){
     const o = (q-(n-1)/2)*t;
@@ -3262,9 +3356,9 @@ function ballastDraw(b){
     else             box('steel', bx, 2.86, bz, .16, .09, 2.3);
   }
 }
-function deck(cx,cz,w,d,topY){
+function deck(cx,cz,w,d,topY,r=0){
   box('ply',cx,topY-.04,cz,w,.08,d);
-  const acrossX = w <= d;                      // joists span the short way, always
+  const acrossX = !isEW(r);                      // joists span the short way, always
   const span = acrossX ? w : d, along = acrossX ? d : w;
   const n = Math.min(40, Math.floor(along/1.333)+1);
   for (let i=0;i<n;i++){
@@ -3283,14 +3377,14 @@ function groundDeck(cx,cz,w,d,r,y0){
                 beamDraw({x:cx,y:y0+.8,z:cz+d/2,dir:'X',len:w}); }
   else        { beamDraw({x:cx-w/2,y:y0+.8,z:cz,dir:'Z',len:d});
                 beamDraw({x:cx+w/2,y:y0+.8,z:cz,dir:'Z',len:d}); }
-  deck(cx,cz,w-.1,d-.1,y0+FLOOR_H);
+  deck(cx,cz,w-.1,d-.1,y0+FLOOR_H,r);
 }
 /* A FLOOR inside a bay is the same deck kit — but the four low beams are already
    standing exactly where a rim beam would go, so it just lands on them. Nothing
    on the dirt, no rim beams bought twice, and no steel left at ankle height
    running the length of the room you were trying to make.                   */
-function bayFloor(cx,cz,w,d,y0){
-  deck(cx,cz,w-.1,d-.1,y0+FLOOR_IN);
+function bayFloor(cx,cz,w,d,y0,r=0){
+  deck(cx,cz,w-.1,d-.1,y0+FLOOR_IN,r);
 }
 function railEdge(x1,z1,x2,z2,topY){
   const len = Math.hypot(x2-x1,z2-z1), n = Math.max(2, rnd(len/4)+1);
@@ -3351,6 +3445,7 @@ function figureAt(x,z){
    window centred in its 4' course leaves a 5" or a 3" leg of ply each side —
    that is a ripped sheet, not a header spanning the whole wall.             */
 function skinDraw(key, ops, g){
+  if (view.frame || (view.cutaway && g && g.side===2)) return;                       // wall finishes, including door leaves
   const a=key.split(','), D=a[0], p=+a[1], q=+a[2], len=+a[3], y=+a[4];
   const ftL = g ? g.ftL : len*MOD;
   const skin = (g ? g.off : 0) + (g ? g.out : 0)*PLY_OUT;   // ply lands outboard of the girts
@@ -3557,16 +3652,16 @@ function drawAll(D, m=model, rails=railsOn, withFigure=true){
   atModel(m, ()=>drawAllIn(D, m, rails, withFigure));
 }
 function drawAllIn(D, m, rails, withFigure){
-  for (const f of D.frames) upright(f.x, f.z, f.base, f.h, f.ax);
+  for (const f of D.frames) upright(f.x, f.z, f.base, f.h, f.ax, f.depth);
   for (const b of D.beamRuns) beamDraw(b);
   for (const g of D.girtRuns) girtDraw(g);
   for (const [k,v] of m.cells){ useKit(v);
     const [i,j,y]=nums(k), cx=bcX(i,v.r), cz=bcZ(j,v.r), topY=(y+1)*LIFT;
-    if (v.deck) deck(cx,cz,bfX(v.r)-.1,bfZ(v.r)-.1,topY);
+    if (v.deck) deck(cx,cz,bfX(v.r)-.1,bfZ(v.r)-.1,topY,v.r);
   }
   useNext();
   for (const f of D.floorDraws) atKit(f.bw||BW, f.lift||LIFT, ()=>
-    bayFloor(bcX(f.i,f.r), bcZ(f.j,f.r), bfX(f.r), bfZ(f.r), f.y*LIFT));
+    bayFloor(bcX(f.i,f.r), bcZ(f.j,f.r), bfX(f.r), bfZ(f.r), f.y*LIFT,f.r));
   for (const [k,v] of m.slopes){ useKit(v); const [i,j,y]=nums(k); slopeDraw(i,j,y,v); }
   useNext();
   for (const s of D.stairRuns) atKit(s.bw||BW, s.lift||LIFT, ()=>stairDraw(s));
@@ -3713,7 +3808,11 @@ function flush(){
   const unit = new THREE.BoxGeometry(1,1,1);
   const cyl  = new THREE.CylinderGeometry(.95,.95,2.9,14);
   for (const k in B){
-    const arr = B[k];
+    // Inspection only: keep the model, bounds, quantities and shared links intact.
+    if (view.frame && ['ply','glass','cloth','solar'].includes(k)) continue;
+    const arr = view.cutaway && ['ply','glass','cloth','solar'].includes(k)
+      ? B[k].filter(o=>o.sy>o.sx && o.sy>o.sz && o.z<(bnd.minZ+bnd.maxZ)/2) : B[k];
+    if(!arr.length) continue;
     const geo = k==='barrel' ? cyl : unit;
     const im = new THREE.InstancedMesh(geo, MATS[k], arr.length);
     arr.forEach((o,i)=>{
@@ -4330,11 +4429,11 @@ function resolveAction(hit, tl){
 function normalizeKit(m){
   const bw = m.bw || nextBW, lift = m.lift || nextLift;
   for (const set of [m.cells, m.pads, m.slopes, m.stairs])
-    for (const v of set.values()){ if (!v.bw) v.bw = bw; if (!v.lift) v.lift = lift; }
+    for (const v of set.values()){ if (!v.bw) v.bw = bw; if (!v.lift) v.lift = lift; if (!DEPTH_OPTS.includes(v.depth)) v.depth=3.5; }
   /* A column is one height. Anything that came in disagreeing — a hand-edited
      link, a lot dropped in from somewhere else — gets the ground piece's. */
   for (const [k,v] of m.cells){ const [i,j,y]=nums(k);
-    if (y > 0){ const g = m.cells.get(k3(i,j,0)); if (g) v.lift = g.lift; } }
+    if (y > 0){ const g = m.cells.get(k3(i,j,0)); if (g) {v.lift = g.lift; v.depth=cellDepth(g);} } }
   return m;
 }
 function pruneModel(m){
@@ -4398,7 +4497,7 @@ function pruneModel(m){
     const [i,j,y]=nums(k);
     useKit(v);
     const host = m.cells.get(k);
-    if (host){ v.r = host.r; v.bw = host.bw; v.lift = host.lift; continue; }
+    if (host){ v.r = host.r; v.bw = host.bw; v.lift = host.lift; v.depth=cellDepth(host); continue; }
     let ok=false;
     for (const r of [0,1,2,3]){
       const [dx,dz]=stepOf(v.d,r);
@@ -4436,7 +4535,7 @@ function pruneModel(m){
     v.w = clamp(v.w|0, -1, 1);
     let ok = false;
     for (const rr of [v.r&1, (v.r&1)^1]){ const hb = hostBehind(i,j,y,v.d,rr);
-      if (hb){ v.r = rr; v.bw = hb.bw; v.lift = hb.lift; useKit(v); ok = true; break; } }
+      if (hb){ v.r = rr; v.bw = hb.bw; v.lift = hb.lift; v.depth=cellDepth(hb); useKit(v); ok = true; break; } }
     const w=bmX(v.r), h=bmZ(v.r);
     for (const [a,b] of stairCells(i,j,v.d,v.r,v.t,v.w)){
       if (!inField(a,b,v.r)) ok=false;
@@ -4493,7 +4592,7 @@ function apply(a){
       const below = model.cells.get(k3(i,j,y-1));
       const lift = y > 0 ? colLift(model,i,j) : nextLift;
       const bw = below ? cellBW(below) : nextBW;
-      model.cells.set(k3(i,j,y), {r, bw, lift, deck:true, canopy:false, floor:false,
+      model.cells.set(k3(i,j,y), {r, bw, lift, depth:below?cellDepth(below):nextDepth, deck:true, canopy:false, floor:false,
                                   rail:neighbourRail(i,j,y,r)});
       if (below) below.canopy = false;
     }
@@ -4528,7 +4627,7 @@ function apply(a){
   if (a.kind==='skinOff') model.skins.delete(a.key);
   if (a.kind==='canopyCell'){ const c=model.cells.get(a.k); if (c) c.canopy=!c.canopy; }
   if (a.kind==='canopyPad'){ const p=model.pads.get(a.k); if (p) p.canopy=!p.canopy; }
-  if (a.kind==='padOn')  model.pads.set(kp(a.i,a.j), {r:a.r, bw:nextBW, lift:nextLift, canopy:false});
+  if (a.kind==='padOn')  model.pads.set(kp(a.i,a.j), {r:a.r, bw:nextBW, lift:nextLift, depth:nextDepth, canopy:false});
   if (a.kind==='padOff') model.pads.delete(kp(a.i,a.j));
   if (a.kind==='slopeOn'){ const [si,sj]=nums(a.k);
     model.slopes.set(a.k, {d:a.d, r:a.r, solar:!!a.solar,
@@ -4746,19 +4845,19 @@ function rotateModel(src){
   const turn = d=>(d+3)&3;
   const RB = (i,j,r,v)=>atKit(cellBW(v), cellLift(v), ()=>[j, G-bmX(r)-i, r^1]);   // anchor + its new rotation
   for (const [k,v] of src.cells){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r,v);
-    m.cells.set(k3(a,b,y), {r, bw:v.bw, lift:v.lift, deck:v.deck, canopy:v.canopy,
+    m.cells.set(k3(a,b,y), {r, bw:v.bw, lift:v.lift, depth:cellDepth(v), deck:v.deck, canopy:v.canopy,
                             floor:!!v.floor, rail:v.rail!==false}); }
   for (const [k,v] of src.pads){ const [i,j]=nums(k), [a,b,r]=RB(i,j,v.r,v);
-    m.pads.set(kp(a,b), {r, bw:v.bw, lift:v.lift, canopy:v.canopy}); }
+    m.pads.set(kp(a,b), {r, bw:v.bw, lift:v.lift, depth:cellDepth(v), canopy:v.canopy}); }
   for (const k of src.arrays){ const [i,j]=nums(k);
     const v = src.cells.get(k3(i,j,topOf(src,i,j)));
     const [a,b] = RB(i,j, v?v.r:0, v); m.arrays.add(kp(a,b)); }
   // a star shade is square and eight-fold, so a quarter turn only moves it
   for (const k of src.stars){ const [i,j]=nums(k); m.stars.add(kp(j, G-SS_M-i)); }
   for (const [k,v] of src.slopes){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r,v);
-    m.slopes.set(k3(a,b,y), {d:turn(v.d), r, bw:v.bw, lift:v.lift, solar:v.solar}); }
+    m.slopes.set(k3(a,b,y), {d:turn(v.d), r, bw:v.bw, lift:v.lift, depth:cellDepth(v), solar:v.solar}); }
   for (const [k,v] of src.stairs){ const [i,j,y]=nums(k), [a,b,r]=RB(i,j,v.r,v);
-    m.stairs.set(k3(a,b,y), {d:turn(v.d), t:v.t||0, w:v.w||0, r, bw:v.bw, lift:v.lift}); }
+    m.stairs.set(k3(a,b,y), {d:turn(v.d), t:v.t||0, w:v.w||0, r, bw:v.bw, lift:v.lift, depth:cellDepth(v)}); }
   for (const [s,v] of src.skins){
     const p=s.split(','), D=p[0], a=+p[1], b=+p[2], len=+p[3], y=+p[4];
     /* a Z line at z=b spanning x a..a+len becomes an X line at x=b spanning z
@@ -4770,7 +4869,7 @@ function rotateModel(src){
                 {ops: D==='Z' ? ops.slice().reverse() : ops.slice()});
   }
   pruneModel(m);
-  m.bw = src.bw || BW; m.lift = src.lift || LIFT;
+  m.bw = src.bw || BW; m.lift = src.lift || LIFT; m.depth=cellDepth(src);
   return m;
 }
 /* Templates hand skins their openings as an op per 4' module. A bare number is
@@ -4780,14 +4879,14 @@ function mk(cellArr, skinArr, padArr, slopeArr, arrArr, stairArr, starArr){
   const m = blank();
   m.name = model.name;
   for (const [i,j,y,r,d,c,fl,nr] of cellArr)
-    m.cells.set(k3(i,j,y), {r, bw:nextBW, lift:nextLift,
+    m.cells.set(k3(i,j,y), {r, bw:nextBW, lift:nextLift, depth:nextDepth,
                             deck:!!d, canopy:!!c, floor:!!fl, rail:nr!==false});
   for (const s of skinArr||[]) m.skins.set(s.slice(0,5).join(','),
     {ops: Array.isArray(s[5]) ? s[5].slice() : opsOf({op:s[5]||0}, s[3])});
-  for (const [i,j,r,c] of padArr||[]) m.pads.set(kp(i,j), {r, bw:nextBW, lift:nextLift, canopy:!!c});
-  for (const [i,j,y,d,r,sol] of slopeArr||[]) m.slopes.set(k3(i,j,y), {d, r, bw:nextBW, lift:nextLift, solar:!!sol});
+  for (const [i,j,r,c] of padArr||[]) m.pads.set(kp(i,j), {r, bw:nextBW, lift:nextLift, depth:nextDepth, canopy:!!c});
+  for (const [i,j,y,d,r,sol] of slopeArr||[]) m.slopes.set(k3(i,j,y), {d, r, bw:nextBW, lift:nextLift, depth:nextDepth, solar:!!sol});
   for (const [i,j] of arrArr||[]) m.arrays.add(kp(i,j));
-  for (const [i,j,y,d,t,w] of stairArr||[]) m.stairs.set(k3(i,j,y), {d, t:t||0, w:w||0, r:0, bw:nextBW, lift:nextLift});
+  for (const [i,j,y,d,t,w] of stairArr||[]) m.stairs.set(k3(i,j,y), {d, t:t||0, w:w||0, r:0, bw:nextBW, lift:nextLift, depth:nextDepth});
   for (const [i,j] of starArr||[]) m.stars.add(kp(i,j));
   pruneModel(m);
   return m;
@@ -4803,6 +4902,37 @@ const ctr = n => rnd((G-n)/2);                // n modules, centred on the field
 /* one op per module, everything else solid */
 const oneOp = (len, k, op)=>{ const a=new Array(len).fill(0); a[k]=op; return a; };
 const TPL = {
+  hall: ()=>{
+    // A clear central ground aisle, low side galleries, north projection wall.
+    const w=tplW(),i=ctr(3*w),j=ctr(6),c=[],s=[];
+    for(let x=0;x<3;x++)for(let z=0;z<2;z++){
+      c.push([i+x*w,j+z*3,0,0,0,1,x!==1]);
+      if(z===0)s.push(['Z',i+x*w,j,w,0,0]);
+      if(x===0)s.push(['X',i,j+z*3,3,0,oneOp(3,1,2)]);
+      if(x===2)s.push(['X',i+3*w,j+z*3,3,0,oneOp(3,1,2)]);
+    }
+    return mk(c,s);
+  },
+  cafe: ()=>{
+    // Enclosed service room beside a windowed lounge; open shaded approach.
+    const w=tplW(),i=ctr(2*w),j=ctr(6),c=[],s=[];
+    c.push([i,j,0,0,1,0,1],[i+w,j,0,0,1,0,1],[i,j+3,0,0,0,1,0]);
+    s.push(['Z',i,j,w,0,0],['Z',i+w,j,w,0,0]);
+    s.push(['X',i,j,3,0,oneOp(3,1,2)],['X',i+2*w,j,3,0,oneOp(3,1,2)]);
+    s.push(['Z',i,j+3,w,0,oneOp(w,Math.floor(w/2),1)]);
+    return mk(c,s,[],[[i+w,j+3,0,2,0,0]]);
+  },
+  living: ()=>{
+    // Two private rooms opening onto a shared ground-level shade porch.
+    const w=tplW(),i=ctr(2*w),j=ctr(6),c=[],s=[];
+    for(let x=0;x<2;x++){
+      c.push([i+x*w,j,0,0,1,0,1],[i+x*w,j+3,0,0,0,1,0]);
+      s.push(['Z',i+x*w,j,w,0,oneOp(w,Math.floor(w/2),2)]);
+      s.push(['Z',i+x*w,j+3,w,0,oneOp(w,Math.floor(w/2),1)]);
+    }
+    for(let x=0;x<=2;x++)s.push(['X',i+x*w,j,3,0,0]);
+    return mk(c,s);
+  },
   blank: ()=>mk([],[],[]),
   /* A run of enclosed room on the ground with a roof deck over it: bays end to
      end, walls all round, a door and windows worked into the long south side one
@@ -4883,18 +5013,42 @@ function bwLine(){
        was drawn on.`
     : `<br>Every piece keeps what it was drawn on, so a ${FT(BW)} piece can go up against
        something else entirely.`;
-  return `<b>The next piece: ${FT(BW)} rows on ${FT(LIFT)} frames.</b> Two 42″ racks with a
-    <b>${FT(aisle)} aisle</b> between them, so it lands <b>${FT(BW)} × ${FT(BL)} × ${FT(LIFT)}</b>${cube?' — a <b>cube</b>':''},
-    ${sheetsOf(0)} sheet${sheetsOf(0)===1?'':'s'} of ply${plyClean(0)?' with no cuts':' with one ripped in half'},
-    on ${joistsOf(0)} 2×8 joists ${FT(BW)} long over a <b>${FT(JOIST_SPAN())}</b> worst clear span,
-    <b>${g} girt rows</b> up an outside face, <b>${L} lift${L===1?'':'s'}</b> under the
-    ${FT(CEIL_FT)} ceiling, and a stair of <b>${stairSteps()} steps a flight</b> —
-    ${inch(stairRise())} on ${inch(stairTread())}, <b>${stairDeg()}°</b>, ${FT(flightRun())} of ground a flight.
-    ${spread}`;
+  return `<b>Next: ${FT(BW)} × 12′ × ${FT(LIFT)}</b><br>${nextDepth*12}″ frames · ${FT(aisle)} aisle · ${FT(JOIST_SPAN())} support span.<br>Existing bays keep their own dimensions.`;
+}
+// Gene's nominal library is evidence, not a replacement for the R9 kit.
+const CAMPUS_STOCK = [{height:8,depth:4},{height:12,depth:4},{height:16,depth:3},{height:19,depth:3}];
+function stockComparison(width, height, depth=nextDepth){
+  const stock = CAMPUS_STOCK.find(s=>s.height===height);
+  if (!stock) return null;
+  return {width, height, depth:stock.depth, modelDepth:depth, modelAisle:width-2*depth,
+    campusAisle:width-2*stock.depth, modelSpan:Math.max(depth,width-2*depth),
+    campusSpan:Math.max(stock.depth,width-2*stock.depth)};
+}
+function renderStockComparison(){
+  const host = document.getElementById('stockcompare'); if (!host) return;
+  const kits = new Map();
+  for (const v of model.cells.values()){
+    const w=cellBW(v), h=cellLift(v), depth=cellDepth(v), key=w+':'+h+':'+depth;
+    kits.set(key, {w,h,depth,n:(kits.get(key)?.n||0)+1});
+  }
+  const show = (w,h,label,depth=nextDepth)=>{
+    const c=stockComparison(w,h,depth); if (!c) return '';
+    return `<p><b>${label}: ${FT(w)} spread · ${FT(h)} height</b></p>
+      <table class="mini" aria-label="${label} stock depth comparison">
+        <thead><tr><th>Geometry</th><th>Model</th><th>Campus</th></tr></thead>
+        <tbody><tr><td>Frame depth</td><td>${c.modelDepth*12}″</td><td>${c.depth*12}″</td></tr>
+        <tr><td>Aisle</td><td>${FT(c.modelAisle)}</td><td>${FT(c.campusAisle)}</td></tr>
+        <tr><td>Longest span</td><td>${FT(c.modelSpan)}</td><td>${FT(c.campusSpan)}</td></tr></tbody>
+      </table>${c.campusAisle<=0?'<p><b>No aisle remains with this campus frame depth.</b></p>':''}`;
+  };
+  host.innerHTML = show(nextBW,nextLift,'Next piece')+
+    [...kits.values()].sort((a,b)=>a.w-b.w||a.h-b.h).map(k=>show(k.w,k.h,`${k.n} drawn bay${k.n===1?'':'s'}`,k.depth)).join('');
 }
 function syncBW(){
+  document.querySelectorAll('#depthpick button').forEach(b=>b.classList.toggle('on',+b.dataset.depth===nextDepth));
+  renderStockComparison();
   useNext();                                    // the strips describe the next piece
-  document.querySelectorAll('#bwpick button').forEach(b=>b.classList.toggle('on', +b.dataset.bw===nextBW));
+  document.querySelectorAll('#bwpick button').forEach(b=>{b.classList.toggle('on',+b.dataset.bw===nextBW);b.querySelector('small').textContent=FT(+b.dataset.bw-2*nextDepth)+' aisle';});
   document.querySelectorAll('#ltpick button').forEach(b=>{
     b.classList.toggle('on', +b.dataset.lift===nextLift);
     const s = b.querySelector('small');
@@ -4929,7 +5083,7 @@ const setLift = (h, say)=>setKit(nextBW, h, say);
    round. */
 function adoptBW(m){
   nextBW = bwOf(m); nextLift = liftOf(m); useNext();
-  m.bw = nextBW; m.lift = nextLift; normalizeKit(m); syncBW();
+  nextDepth=cellDepth(m); useDepth(nextDepth); m.bw = nextBW; m.lift = nextLift; normalizeKit(m); syncBW();
 }
 
 /* ─────────── dims, camera, theme, loop ─────────── */
@@ -5043,8 +5197,8 @@ function applyTheme(){
   sun.intensity = th.sunI * clamp(up*1.9, s.el>0 ? .16 : 0, 1);
   pt1.intensity = (isDark()||s.el<=0) ? .95 : 0;
   pt2.intensity = (isDark()||s.el<=0) ? .6 : 0;
-  grid.material.opacity = isDark()? .3 : .22;
-  siteGrid.material.opacity = isDark()? .2 : .16;
+  grid.material.opacity = isDark()? .13 : .12;
+  siteGrid.material.opacity = isDark()? .12 : .10;
 }
 function animate(){
   requestAnimationFrame(animate);
@@ -5081,12 +5235,16 @@ function rebuild(refit){
     drawAll(cur, model, railsOn);
   }
   flush();
+  refreshSelection();
   buildPicks();
   buildDims(cur);
   placeSun();
   applyTheme();
   if (!liteDraw){
     renderSchedule(cur);
+    renderStockComparison();
+    organizeSchedule();
+    renderInspector();
     if (mode==='site') renderSitePanel();
   }
   grid.visible = mode!=='site';
@@ -5133,8 +5291,12 @@ const kitList = (rows, unit) => rows.length === 1 ? FT(rows[0][0])
   : rows.map(([v,n])=>`${FT(v)}<small>×${n}</small>`).join(' · ');
 const kitPlain = rows => rows.length === 1 ? FT(rows[0][0])
   : rows.map(([v,n])=>`${FT(v)}×${n}`).join(' / ');
-const oneKit = D => !D.kits2 || (D.kits2.bw.length <= 1 && D.kits2.lift.length <= 1);
+const oneKit = D => !D.kits2 || (D.kits2.bw.length <= 1 && D.kits2.lift.length <= 1 && D.kits2.depth.length <= 1);
 function renderSchedule(D){
+  const v=mode==='build' && D?.any && oneKit(D)?model.cells.values().next().value:null;
+  return atKit(v?cellBW(v):nextBW,v?cellLift(v):nextLift,()=>renderScheduleIn(D),v?cellDepth(v):nextDepth);
+}
+function renderScheduleIn(D){
   const host = document.getElementById('schedbody');
   if (mode==='site'){ host.innerHTML = siteSheetHTML(); return; }
   if (!D.any){
@@ -5147,17 +5309,23 @@ function renderSchedule(D){
       <div class="spec">Nothing on the pad yet. Pick <b>BUILD</b>, click the ground, and this
         panel turns into a live materials count — upright frames, beams, 2×4 girts, joists,
         ply, screws, ballast, solar — for whatever you sketch.</div>
-      <div class="spec"><b>Try a start:</b> the templates on the left drop in a standard room or a
+      <div class="spec"><b>Try a start:</b> the templates on the left include a gathering hall, café, living rooms or a
         solar shed — then reshape them bay by bay. <b>ROW SPREAD</b> above them
         sets how far apart the two rack rows stand, which is the bay's width.</div>
       <div class="gate"><b>The ethos</b><br>
-        Real rack sizes — the next piece a ${FT(BW)}×${FT(BL)}×${FT(LIFT)} bay on four ${FT(LIFT)} × 42″ upright frames,
+        Real rack sizes — the next piece a ${FT(BW)}×${FT(BL)}×${FT(LIFT)} bay on four ${FT(LIFT)} × ${DEPTH*12}″ upright frames,
         two rack rows with a
         ${FT(ROW_GAP())} aisle inside it, 12′ beams high and low, ${girtRows().length} rows of 2×4 girts up every outside face. Count your camp's rack
         stock before you order anything.</div>`;
     return;
   }
   const chips = [];
+  const mismatches=[...model.cells.values()].filter(v=>CAMPUS_STOCK.find(s=>s.height===cellLift(v))?.depth!==cellDepth(v)).length;
+  if (mismatches) chips.push(`<span class="chip warn">${mismatches} bays differ from nominal campus stock; confirm your frame types</span>`);
+  if([...model.cells.values()].some(v=>cellBW(v)<=2*cellDepth(v))) chips.push('<span class="chip bad">No aisle between rack rows in one or more bays</span>');
+  if([...model.cells.values()].some(v=>cellDepth(v)!==3.5))chips.push('<span class="chip info">Depth changes support geometry. Confirm joist, beam, connection and ballast design against the actual stock.</span>');
+  if(D.maxJoistSpan>9) chips.push(`<span class="chip bad">${FT(D.maxJoistSpan)} joist support span exceeds the original 9′ planning basis; member design needs review</span>`);
+  if (view.frame) chips.push(`<span class="chip info">Frame inspection: surfaces hidden; quantities unchanged. Return to full view to study shade.</span>`);
   if (D.maxLvl >= 2) chips.push(`<span class="chip bad">${FT(D.ft.h)} of rack — that's a permitted structure, get an engineer</span>`);
   else if (D.maxLvl === 1) chips.push(`<span class="chip warn">two lifts — ${FT(D.ft.h)} on splice pins, engineer eyes before you skin it</span>`);
   else if (LIFT >= 16) chips.push(`<span class="chip warn">${FT(LIFT)} uprights — one lift already stands ${FT(LIFT)}, and a walled face that tall wants ${barPer()} barrels an arm, not two</span>`);
@@ -5194,7 +5362,7 @@ function renderSchedule(D){
   const steelBeams = D.beams + D.ballastRuns;
   // a frame is priced by the foot on the used market — $90–140 is what a 12' goes for
   const frameLo = rnd(LIFT*7.5), frameHi = rnd(LIFT*11.7);
-  const steelLo = D.framesN*frameLo + steelBeams*25, steelHi = D.framesN*frameHi + steelBeams*40;
+  const steelLo = D.frameStock.reduce((n,f)=>n+f.count*rnd(f.height*7.5),0) + steelBeams*25, steelHi = D.frameStock.reduce((n,f)=>n+f.count*rnd(f.height*11.7),0) + steelBeams*40;
   /* Panels a star shade brought with it are already on its own bill, so the
      generic rack-panel line only counts what you racked yourself. */
   const rackPanels = D.solarPanels - D.nStars*SS_PN;
@@ -5225,12 +5393,12 @@ function renderSchedule(D){
     ${chips.length?`<div class="chipline">${chips.join('')}</div>`:''}
     <h3 class="lbl">From stock — count, then order the gap</h3>
     <table class="sch">
-      ${needRow(`Upright frames <small>${oneKit(D)?`${FT(LIFT)} × 42″`:`42″ deep · ${kitList(D.kits2.lift)}`}, four to a bay</small>`+(D.stacked?` <small>(${D.stacked} on a second lift)</small>`:'')+(D.mixedFrames?` <small>(${D.mixedFrames} on a join of two heights — the taller)</small>`:''), D.framesN)}
+      ${D.frameStock.map(f=>needRow(`Upright frame ${FT(f.height)} × ${f.depth*12}″`,f.count)).join('')}
       ${D.beams?needRow('Beams, 12′ <small>(high and low, both post lines)</small>', D.beams):''}
       ${D.span212?needRow(`2×12 × 20′ <small>(long-span deck beams — ${D.plies} plies to a line, ${FT(D.spanTrib)} tributary)</small>`, D.span212):''}
       ${D.span26?needRow('2×6 × 20′ <small>(long-span base bracing — two plies to a line)</small>', D.span26):''}
       ${byLen(D.ballastLens, 'Beams laid flat', 'ballast outriggers, one per perimeter face', false)}
-      ${needRow(`2×8 × ${FT(BW)} <small>(deck joists, 16″ o.c. · ${FT(JOIST_SPAN())} worst clear span)</small>`, D.joists, true)}
+      ${byLen(D.joistLens, '2×8 joists', `16″ o.c. · ${FT(D.maxJoistSpan)} longest support span`, true)}
       ${byLen(D.girtLens, '2×4 girts', `${girtRows().length} rows up every outside face`, true)}
       ${rafterRows(D.rafterKit)}
       ${D.nStairs?needRow('2×12 × 14′ <small>(stringers · treads · landing rims)</small>', D.stairStock, true):''}
@@ -5258,7 +5426,7 @@ function renderSchedule(D){
       hanging in space a foot past the last one — a taller frame is more courses, so it grows a row.
       Girts come in the length of the face they run —
       the count above is split by stick, because a single total is a number you can't order.</div>
-    <div class="spec"><b>The racks fill the bay exactly.</b> 42″ + a ${FT(ROW_GAP())} aisle + 42″ is
+    <div class="spec"><b>The racks fill the bay exactly.</b> ${DEPTH*12}″ + a ${FT(ROW_GAP())} aisle + ${DEPTH*12}″ is
       ${FT(BW)} on the nose, so the outer posts land on the bay line and the ${PLYB()}-sheet roof runs out
       flush with them — nothing over to trip on, nothing short to fall through.
       ${plyClean(0) ? 'Every sheet lands whole.'
@@ -5383,7 +5551,7 @@ function renderSchedule(D){
       floor plan. Doorways still read as a wall here — count a room by what it's fenced by,
       not by how you get in.</div>`:''}
     <div class="spec">No rack stock yet? Used-market ballpark for the steel:
-      <b>${money(steelLo)}–${money(steelHi)}</b> (${FT(LIFT)} × 42″ frames ~$${frameLo}–${frameHi} ·
+      <b>${money(steelLo)}–${money(steelHi)}</b> (${FT(LIFT)} × ${DEPTH*12}″ frames ~$${frameLo}–${frameHi} ·
       12′ beams ~$25–40). Frames go by the foot, so height costs money before it costs anything else.
       Prices swing hard by region — count what you have before you order.</div>
     <h3 class="lbl">This sketch</h3>
@@ -5392,7 +5560,7 @@ function renderSchedule(D){
       <tr><td>Rack bays <small>${oneKit(D)?`${FT(BW)} × ${FT(BL)}`:'mixed kit'}</small></td><td>${D.nCells}</td></tr>
       <tr><td>Row spread <small>aisle between the racks</small></td><td>${D.kits2&&D.kits2.bw.length?kitList(D.kits2.bw):FT(BW)} ${oneKit(D)?`<small>${FT(ROW_GAP())}</small>`:''}</td></tr>
       <tr><td>Bay grain</td><td>${D.ewBays} <small>long E–W</small> · ${D.nsBays} <small>long N–S</small></td></tr>
-      <tr><td>Upright frames <small>42″ deep${D.sharedFrames?` · ${D.sharedFrames} shared`:''}</small></td><td>${D.framesN}</td></tr>
+      <tr><td>Upright frames <small>${D.frameStock.map(f=>f.depth*12+'″').filter((v,i,a)=>a.indexOf(v)===i).join(' / ')} deep${D.sharedFrames?` · ${D.sharedFrames} shared`:''}</small></td><td>${D.framesN}</td></tr>
       <tr><td>Lift height <small>floor to floor${oneKit(D)?` · ${girtRows().length} girt rows`:' · per piece'}</small></td><td>${D.kits2&&D.kits2.lift.length?kitList(D.kits2.lift):FT(LIFT)}</td></tr>
       <tr><td>Tallest column <small>ground to the top deck</small></td><td>${FT(D.tallest||0)}</td></tr>
       <tr><td>Beams, 12′</td><td>${D.beams}</td></tr>
@@ -5480,6 +5648,10 @@ function siteSheetHTML(){
       it rebuilds this exact plan on everyone's screen.</div>`;
 }
 function sheetText(){
+  const v=mode==='build' && cur?.any && oneKit(cur)?model.cells.values().next().value:null;
+  return atKit(v?cellBW(v):nextBW,v?cellLift(v):nextLift,()=>sheetTextIn(),v?cellDepth(v):nextDepth);
+}
+function sheetTextIn(){
   if (mode==='site'){
     const t = siteTotals(), L=[], pad=(s,n=26)=>(s+' ').padEnd(n,'.');
     L.push('RACK LAB BLOCK PLAN — '+((site.name||'untitled block').toUpperCase()));
@@ -5514,16 +5686,20 @@ function sheetText(){
   const D = cur, name = model.name || 'untitled sketch';
   const L = [], pad = (s,n=26)=>(s+' ').padEnd(n,'.');
   L.push('RACK LAB COUNT SHEET — '+name.toUpperCase());
+  L.push('STOCK CHECK: frame depth is per bay (36/42/48 inches). Campus nominal frames are 8x4, 12x4, 16x3 and 19x3 feet; 19-foot lifts are not supported.');
+  L.push('Campus model pieces are not an inventory. Confirm dimensions, connections and quantities before ordering.');
+  L.push('Reference: https://mars-campus-2026.gene-8dc.workers.dev/modular/README (reviewed 2026-09-07)');
   if (D.any){
     L.push(`${D.ft.w}' x ${D.ft.d}' footprint · top deck ${D.ft.h>=LIFT?D.ft.h+"'":'18"'} · ${D.nCells} bays · ${D.kits} deck kits`);
     L.push(oneKit(D)
-      ? `bay ${BW}' x ${BL}' x ${LIFT}' on four ${LIFT}' x 42" upright frames - 42" + ${ROW_GAP()}' aisle + 42" = the ${BW}' exactly`
-      : `bays on 42" upright frames, kit per piece - see the two lines below. Next piece: ${BW}' x ${BL}' x ${LIFT}'`);
+      ? `bay ${BW}' x ${BL}' x ${LIFT}' on four ${LIFT}' x ${DEPTH*12}in upright frames - ${DEPTH*12}in + ${ROW_GAP()}' aisle + ${DEPTH*12}in = the ${BW}' exactly`
+      : `bays on per-piece upright depths, kit per piece - see the two lines below. Next piece: ${BW}' x ${BL}' x ${LIFT}'`);
     L.push(`${D.ewBays} bays run long E-W, ${D.nsBays} run long N-S`+(D.longBays?`   (${D.longBays} stretched to 20')`:''));
     L.push(`sized for ${DES_LL} psf live + ${DES_DL} psf dead — an occupied deck, not a dance floor`);
     L.push('');
     L.push('FROM STOCK (count first, order the gap)');
-    L.push('  '+pad('upright frames 42" deep')+' '+D.framesN
+    for(const f of D.frameStock) L.push('  '+pad(`upright frame ${f.height}ft x ${f.depth*12}in`)+' '+f.count);
+    L.push('  '+pad('upright frames total')+' '+D.framesN
       + (D.stacked?`   (${D.stacked} on a second lift)`:'')
       + (D.sharedFrames?`   (${D.sharedFrames} shared on a join)`:''));
     if (!oneKit(D)){
@@ -5536,7 +5712,7 @@ function sheetText(){
     if (D.span26) L.push('  '+pad("2x6 x 20'")+' '+D.span26+'   (long-span base bracing, 2 plies a line)');
     for (const [len,n] of [...D.ballastLens].sort((a,b)=>a[0]-b[0]))
       L.push('  '+pad(`beams laid flat, ${len}'`)+' '+n+'   (ballast outriggers)');
-    L.push('  '+pad(`2x8 x ${BW}' deck joists`)+' '+ceil(D.joists*1.1)+'   (16" o.c., incl +10%)');
+    for(const [len,n] of D.joistLens) L.push('  '+pad(`2x8 x ${len}ft deck joists`)+' '+ceil(n*1.1)+'   (16in o.c., incl +10%)');
     for (const [len,n] of [...D.girtLens].sort((a,b)=>a[0]-b[0]))
       L.push('  '+pad(`2x4 girts, ${len}'`)+' '+ceil(n*1.1)+'   (4 rows per outside face, incl +10%)');
     for (const [k,n] of [...D.rafterKit].sort((a,b)=>a[0].localeCompare(b[0]))){
@@ -5782,7 +5958,10 @@ function wireUI(){
     const b = e.target.closest('button'); if (!b || !b.dataset.t) return;
     pushUndo();
     lastTpl = b.dataset.t;
+    useNext();
     model = TPL[lastTpl]();
+    selectedBay=null;
+    view.frame=false;view.cutaway=false;
     syncBW(); rebuild(true); persist(); openSheet('');
     toast(b.dataset.t==='blank' ? 'clean slab'
         : b.dataset.t==='star'  ? `a star shade and a bay of rack, side by side — ${SS_D}′ against ${FT(BW)}×${FT(BL)}`
@@ -5806,9 +5985,9 @@ function wireUI(){
       t.setAttribute('aria-expanded', open ? 'true' : 'false');
       try{ localStorage.setItem('racklab-how', open ? '1' : '0'); }catch(e){}
     };
-    let start = '1';
-    try{ start = localStorage.getItem('racklab-how') ?? '1'; }catch(e){}
-    set(start !== '0');
+    let start = '0';
+    try{ start = localStorage.getItem('racklab-how') ?? '0'; }catch(e){}
+    set(start === '1');
     t.addEventListener('click', ()=>set(n.hidden));
     t.addEventListener('keydown', e=>{
       if (e.key===' ' || e.key==='Enter'){ e.preventDefault(); set(n.hidden); }
@@ -5816,10 +5995,13 @@ function wireUI(){
   })();
   document.getElementById('vopts').addEventListener('click', e=>{
     const b = e.target.closest('button'); if (!b) return;
-    if (b.id==='vfit'){ fitCamera(); return; }
+    if (b.id==='vfit'){ cameraPreset('iso'); return; }
     const k = b.dataset.v;
+    if (!k) return;
     view[k] = !view[k];
+    if(k==='frame')view.cutaway=false;
     b.classList.toggle('on', view[k]);
+    b.setAttribute('aria-pressed', String(view[k]));
     rebuild(false);
   });
   const slider = document.getElementById('sunslide');
@@ -5940,7 +6122,7 @@ function wireUI(){
     }
     if (e.pointerType!=='mouse' || mode==='site') return;
     if (e.buttons){ hideGhost(); return; }
-    showGhost(resolveAction(pick(e), tool));
+    if(tool==='select'){hideGhost(); return;} showGhost(resolveAction(pick(e), tool));
   });
   function release(e, onView){
     if (!live.delete(e.pointerId)) return;           // not one of ours
@@ -5953,7 +6135,8 @@ function wireUI(){
           const n = h && h.object.userData.t==='lot' ? h.object.userData.n : -1;
           if (n !== selLot || n === -1){ selLot = n; rebuild(false); }
         } else {
-          apply(resolveAction(pick(e), downAt.b===2 ? 'erase' : tool));
+          if(tool==='select' && downAt.b!==2) selectBayAt(e);
+          else apply(resolveAction(pick(e), downAt.b===2 ? 'erase' : tool));
         }
       }
     }
@@ -5968,7 +6151,7 @@ function wireUI(){
 
   window.addEventListener('keydown', e=>{
     const tgt = e.target;
-    if (tgt && (tgt.tagName==='INPUT' || tgt.tagName==='TEXTAREA')) return;
+    if (tgt && (tgt.tagName==='INPUT' || tgt.tagName==='TEXTAREA' || tgt.tagName==='SELECT' || tgt.isContentEditable)) return;
     if ((e.ctrlKey||e.metaKey) && !e.shiftKey && e.key.toLowerCase()==='z'){ e.preventDefault(); undo(); return; }
     if ((e.ctrlKey||e.metaKey) && (e.key.toLowerCase()==='y' || (e.shiftKey && e.key.toLowerCase()==='z'))){ e.preventDefault(); redo(); return; }
     if (e.ctrlKey||e.metaKey||e.altKey) return;
@@ -5988,7 +6171,7 @@ function wireUI(){
     }
     if (k==='g'){ setBayDir(bayRot?0:1); return; }
     if (k==='o'){ rotateSketch(); return; }
-    const map = {b:'build', l:'span', d:'deck', w:'wall', a:'slope', p:'solar',
+    const map = {v:'select', b:'build', l:'span', d:'deck', w:'wall', a:'slope', p:'solar',
                  t:'stairs', s:'shade', r:'riser', y:'star', x:'rails', e:'erase'};
     if (map[k]) setTool(map[k]);
     if (tool==='wall' && '123'.includes(k)){
@@ -6053,7 +6236,257 @@ function seedSite(){                             // first visit: your sketch plu
 }
 
 /* ─────────────────── boot ───────────────────────────────── */
+/* Workspace tools: selection, stock inventory, cameras and portable exports. */
+let selectedBay = null, selectionOutline = null;
+let inventory = Object.create(null);
+try { inventory=validateInventory(JSON.parse(localStorage.getItem('racklab-inventory-v1')||'{}')); } catch(e){}
+const sectionState = Object.create(null);
+let inventoryRows = [];
+function validateInventory(data){
+  if (!data || typeof data!=='object' || Array.isArray(data)) throw Error('Invalid inventory');
+  const out=Object.create(null);
+  for(const [key,value] of Object.entries(data)){
+    if(key.length>250 || !Number.isSafeInteger(value) || value<0 || value>10000000) throw Error('Invalid stock count');
+    out[key]=value;
+  }
+  return out;
+}
+function frameStockRows(frames){
+  const stock=new Map();
+  for(const f of frames){ const key=f.h+':'+f.depth;
+    if(!stock.has(key)) stock.set(key,{height:f.h,depth:f.depth,count:0});
+    stock.get(key).count++;
+  }
+  return [...stock.values()].sort((a,b)=>a.height-b.height||a.depth-b.depth);
+}
+function selectBayAt(e){
+  setRay(e);
+  const hit=raycaster.intersectObjects(pickGroup.children.filter(o=>o.userData.t==='cell'),false)[0];
+  selectedBay=hit ? k3(hit.object.userData.i,hit.object.userData.j,hit.object.userData.y) : null;
+  refreshSelection(); renderInspector();
+  if(selectedBay && matchMedia('(max-width:940px)').matches) openSheet('setup');
+}
+function refreshSelection(){
+  if(selectionOutline){scene.remove(selectionOutline);selectionOutline.geometry.dispose();selectionOutline.material.dispose();selectionOutline=null;}
+  const v=model.cells.get(selectedBay); if(!v || mode==='site'){if(!v) selectedBay=null;return;}
+  atKit(cellBW(v),cellLift(v),()=>{
+    const [i,j,y]=nums(selectedBay), min=new THREE.Vector3(mX(i)-.12,y*LIFT-.12,mZ(j)-.12);
+    const max=new THREE.Vector3(mX(i)+bfX(v.r)+.12,(y+1)*LIFT+.12,mZ(j)+bfZ(v.r)+.12);
+    selectionOutline=new THREE.Box3Helper(new THREE.Box3(min,max),0x42d6d0);
+    selectionOutline.material.depthTest=false;selectionOutline.material.transparent=true;selectionOutline.material.opacity=.95;
+    selectionOutline.renderOrder=20;scene.add(selectionOutline);
+  },cellDepth(v));
+}
+function renderInspector(){
+  const host=document.getElementById('inspector'); if(!host) return;
+  const v=model.cells.get(selectedBay);
+  const options=(values,current,unit)=>values.map(n=>`<option value="${n}" ${n===current?'selected':''}>${n*unit}${unit===12?'″':'′'}</option>`).join('');
+  const bays=[...model.cells].map(([k,c],n)=>`<option value="${k}" ${k===selectedBay?'selected':''}>Bay ${n+1} · ${cellBW(c)}′ × ${bayLen(c.r)}′ · level ${nums(k)[2]+1}</option>`).join('');
+  host.innerHTML=`<h3 class="lbl">Selected bay</h3><select id="bay-select" aria-label="Select a bay"><option value="">Select in view or choose a bay…</option>${bays}</select>`;
+  if(!v){host.innerHTML+='<p class="quiet">Select inspects a bay. Build adds new bays using the settings below.</p>';return;}
+  const [i,j,y]=nums(selectedBay), depth=cellDepth(v), width=cellBW(v),height=cellLift(v);
+  host.innerHTML+=`<div class="selection-title">${width}′ × ${bayLen(v.r)}′ × ${height}′ <span>${depth*12}″ frame</span></div>
+    <div class="inspector-fields"><label>Bay width<select id="edit-width">${options(BW_OPTS,width,1)}</select></label>
+    <label>Column height<select id="edit-height">${options(LIFT_OPTS,height,1)}</select></label>
+    <label>Column depth<select id="edit-depth">${options(DEPTH_OPTS,depth,12)}</select></label></div>
+    <p class="quiet">Height and depth apply to this vertical column. Adjacent bays keep their kit.</p>
+    <button class="primary" id="apply-bay">Apply dimensions</button>
+    <div class="inspector-actions"><button data-bay-action="deck">Roof ${v.deck?'on':'off'}</button><button data-bay-action="floor">Floor ${v.floor?'on':'off'}</button><button data-bay-action="canopyCell">Shade ${v.canopy?'on':'off'}</button><button data-bay-action="focus">Frame bay</button><button data-bay-action="delete">Remove column above</button></div>
+    <p class="quiet">Aisle ${FT(width-2*depth)} · longest support span ${FT(Math.max(depth,width-2*depth))}. Steel frames + beams; ${v.deck?'timber joists and plywood roof':'no roof deck'}${v.floor?'; raised floor':''}. Shared stock is counted in Materials.</p><p id="inspector-error" role="status"></p>`;
+}
+function editedBayModel(key,width,height,depth){
+  if(!BW_OPTS.includes(width)||!LIFT_OPTS.includes(height)||!DEPTH_OPTS.includes(depth)) throw Error('Choose a supported kit.');
+  const next=decode(encode()).model, chosen=next.cells.get(key); if(!chosen) throw Error('Select a bay first.');
+  const [i,j]=nums(key);
+  for(const [k,v] of next.cells){const [a,b,y]=nums(k);if(a===i&&b===j){
+    if((y+1)*height>CEIL_FT) throw Error('This height would put the column above the 36′ ceiling.');
+    v.lift=height;v.depth=depth;
+  }}
+  chosen.bw=width;
+  const occupied=new Set();
+  for(const [k,v] of next.cells){const [a,b,y]=nums(k);atKit(cellBW(v),cellLift(v),()=>{
+    if(!inField(a,b,v.r))throw Error('This bay would leave the sketch field.');
+    for(let x=0;x<bmX(v.r);x++)for(let z=0;z<bmZ(v.r);z++){
+      const slot=k3(a+x,b+z,y);if(occupied.has(slot))throw Error('This width overlaps another bay.');occupied.add(slot);
+    }
+  },cellDepth(v));}
+  const before={}; for(const n of ['cells','pads','skins','slopes','stairs','arrays','stars']) before[n]=[...next[n].keys()].sort().join('|');
+  atModel(next,()=>pruneModel(next));
+  for(const n of Object.keys(before)) if(before[n]!==[...next[n].keys()].sort().join('|')) throw Error('That edit conflicts with another piece or its support. Make space or remove attachments first.');
+  if(next.cells.get(key)?.bw!==width) throw Error('This bay cannot take that width.');
+  return next;
+}
+function cameraPreset(name){
+  view.cutaway=name==='cutaway';
+  if(name==='cutaway') view.frame=false;
+  if(name==='selection' && mode==='site' && selLot>=0){
+    const l=site.lots[selLot],r=lotRect(l);if(r) aimCamera('iso',(r.x0+r.x1)/2,Math.min(l.D.ft.h/2,15),(r.z0+r.z1)/2,Math.max(r.x1-r.x0,r.z1-r.z0,l.D.ft.h));
+  } else if(name==='selection' && selectedBay && model.cells.has(selectedBay)){
+    const v=model.cells.get(selectedBay),[i,j,y]=nums(selectedBay);
+    atKit(cellBW(v),cellLift(v),()=>aimCamera('iso',bcX(i,v.r),(y+.5)*LIFT,bcZ(j,v.r),Math.max(bfX(v.r),bfZ(v.r),LIFT)),cellDepth(v));
+  } else if(name==='selection'){toast('Select a bay or camp first');return;}
+  else {
+    const valid=bnd.minX<bnd.maxX,cx=valid?(bnd.minX+bnd.maxX)/2:0,cz=valid?(bnd.minZ+bnd.maxZ)/2:0;
+    const size=valid?Math.max(bnd.maxX-bnd.minX,bnd.maxZ-bnd.minZ,bnd.maxY):40;
+    aimCamera(name,cx,valid?bnd.maxY/2:0,cz,size);
+  }
+  document.querySelectorAll('[data-camera]').forEach(b=>{b.classList.toggle('on',b.dataset.camera===name);b.setAttribute('aria-pressed',String(b.dataset.camera===name));});
+  document.querySelector('button[data-v="frame"]').classList.toggle('on',view.frame);
+  document.querySelector('button[data-v="frame"]').setAttribute('aria-pressed',String(view.frame));
+  rebuild(false);
+}
+function aimCamera(name,x,y,z,size){
+  const d=(size*.6+4)/Math.tan(camera.fov*Math.PI/360)/Math.min(1,Math.max(.3,camera.aspect));
+  controls.target.set(x,y,z);
+  if(name==='plan') camera.position.set(x,y+d,z+.001);
+  else if(name==='north') camera.position.set(x,y,z-d);
+  else if(name==='south') camera.position.set(x,y,z+d);
+  else camera.position.set(x+d*.58,y+d*.65,z+d*.74);
+  controls.update();
+}
+function saveInventory(){try{localStorage.setItem('racklab-inventory-v1',JSON.stringify(inventory));}catch(e){toast('Stock counts could not be saved locally. Download the project.');}}
+function materialsFor(D){
+  const items=new Map(),add=(name,n,waste=false)=>{if(n>0)items.set(name,(items.get(name)||0)+(waste?ceil(n*1.1):n));};
+  for(const f of D.frameStock)add(`Upright frame ${FT(f.height)} × ${f.depth*12}″`,f.count);
+  add('Beams, 12′',D.beams);add('2×12 × 20′',D.span212);add('2×6 × 20′',D.span26);
+  for(const [len,n] of D.ballastLens)add(`Beams laid flat, ${FT(len)}`,n);
+  for(const [len,n] of D.joistLens)add(`2×8 joists, ${FT(len)}`,n,true);
+  for(const [len,n] of D.girtLens)add(`2×4 girts, ${FT(len)}`,n,true);
+  for(const [key,n] of D.rafterKit){const [size,len]=key.split('|');add(`${size} × ${len}′`,n,true);}
+  add('2×12 × 14′',D.stairStock,true);add('4×4 × 6′',D.stairPost6);add('4×4 × 12′',D.stairPost12);add('2×8 × 10′',D.stairBrace);
+  add('2×4 × 12′',D.studs12,true);add('2×4 × 8′',D.studs8,true);add('Cribbing pads',D.cribbing);add('Ply 4×8 CDX',D.ply,true);
+  add('Screw boxes',D.sc.boxes);add('Water barrels, 55 gal',D.barrels);add('Ratchet straps',D.straps);add('Girt post clamps / lags',D.girts*2);
+  add('Shade cloth, ft²',D.canopyArea);add('Door + hinges + latch kits',D.doors);add('Window glazing + trim kits',D.wins);
+  add('Solar panels, '+PANEL_W+' W',D.solarPanels-D.nStars*SS_PN);
+  for(const [,rows] of SS_BOM)for(const [n,name] of rows)add('Star shade: '+name.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(),n*D.nStars);
+  return [...items].map(([name,needed])=>({name,needed}));
+}
+function currentMaterials(){
+  if(mode==='build')return cur?materialsFor(cur):[];
+  const totals=new Map();
+  for(const l of site.lots)for(const r of materialsFor(l.D||derive(l.m,l.rails)))totals.set(r.name,(totals.get(r.name)||0)+r.needed);
+  return [...totals].map(([name,needed])=>({name,needed}));
+}
+function inventoryHTML(rows,editable=true){
+  return `<p class="quiet">Blank means unknown. Zero means counted and none available. Counts stay on this device and travel in downloaded projects.</p>
+    <table class="inventory"><thead><tr><th>Material</th><th>Need</th><th>On hand</th><th>Short</th></tr></thead><tbody>${rows.map((r,i)=>{
+      const have=Object.hasOwn(inventory,r.name)?inventory[r.name]:null;
+      return `<tr><td>${esc(r.name)}</td><td>${r.needed}</td><td>${editable?`<input type="number" min="0" max="10000000" step="1" data-stock="${i}" aria-label="On hand: ${esc(r.name)}" placeholder="?" value="${have??''}">`:have??'Unknown'}</td><td class="shortfall">${have===null?'?':Math.max(0,r.needed-have)}</td></tr>`;
+    }).join('')}</tbody></table>`;
+}
+function organizeSchedule(){
+  const host=document.getElementById('schedbody');
+  inventoryRows=currentMaterials();
+  const children=[...host.children];let group=null;
+  for(const el of children){
+    if(el.classList.contains('chipline')){
+      const detail=document.createElement('details');detail.className='schedule-group checks';
+      detail.innerHTML=`<summary>Checks <span>${el.children.length} to review</span></summary>`;
+      host.insertBefore(detail,el);detail.appendChild(el);detail.open=sectionState.Checks??false;
+      detail.addEventListener('toggle',()=>sectionState.Checks=detail.open);continue;
+    }
+    if(el.tagName==='H3'){
+      const raw=el.textContent.trim(),label=raw.startsWith('From stock')?'Materials':raw==='To buy'?'Cost':raw;
+      group=document.createElement('details');group.className='schedule-group';group.open=sectionState[label]??label==='Materials';
+      const summary=document.createElement('summary');summary.textContent=label;group.appendChild(summary);
+      host.insertBefore(group,el);el.remove();const currentGroup=group;currentGroup.addEventListener('toggle',()=>sectionState[label]=currentGroup.open);
+    } else if(group)group.appendChild(el);
+  }
+  for(const detail of host.querySelectorAll(':scope > details.schedule-group')){
+    const notes=[...detail.children].filter(el=>el.classList.contains('spec')||el.classList.contains('gate'));
+    if(notes.length){const more=document.createElement('details');more.className='technical-notes';more.innerHTML='<summary>Notes & assumptions</summary>';detail.appendChild(more);notes.forEach(el=>more.appendChild(el));}
+  }
+  if(mode==='build' && cur?.any){
+    const access=document.createElement('details');access.className='schedule-group';access.open=sectionState.Access??false;
+    access.innerHTML=`<summary>Access & circulation</summary><p>${cur.nStairs} stairways · ${cur.doors} doors · ${cur.railOffBays} bays with rails off.</p><p class="quiet">Review a continuous route from each occupied deck to the ground, door approaches and sightlines. The campus hall's central aisle and galleries are useful precedents.</p>`;
+    access.addEventListener('toggle',()=>sectionState.Access=access.open);host.appendChild(access);
+  }
+  if(inventoryRows.length){
+    const inv=document.createElement('details');inv.className='schedule-group';inv.id='inventory-section';inv.open=sectionState.Inventory??false;
+    inv.innerHTML=`<summary>Inventory <span>needed / available / short</span></summary>${mode==='site'?'<p class="quiet">All camps combined; each camp retains its own kit and waste allowance.</p>':''}${inventoryHTML(inventoryRows)}`;
+    inv.addEventListener('toggle',()=>sectionState.Inventory=inv.open);host.appendChild(inv);
+  }
+}
+function projectData(){return {format:'rack-lab-project',version:1,mode,structure:encode(),site:encodeSite(),inventory:{...inventory}};}
+function parseProject(data){
+  if(data?.format!=='rack-lab-project'||data.version!==1||!['build','site'].includes(data.mode))throw Error('This is not a supported Rack Lab project.');
+  const d=decode(data.structure),s=decodeSite(data.site),stock=validateInventory(data.inventory);
+  if(!d||!s||typeof data.site!=='string'||data.site.split('!').slice(1).filter(Boolean).length!==s.lots.length)throw Error('The saved design is invalid.');
+  return {d,s,stock,mode:data.mode};
+}
+function downloadFile(name,content,type){
+  const url=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+function projectName(){return (mode==='site'?site.name:model.name||'rack-lab').replace(/[^a-z0-9_-]+/gi,'-').slice(0,60)||'rack-lab';}
+function planSVG(){
+  const rects=[],beams=[];
+  const collect=(m,ox=0,oz=0,rot=0,label='')=>atModel(m,()=>{
+    const a=rot*Math.PI/2,c=Math.cos(a),s=Math.sin(a),P=(x,z)=>[ox+x*c+z*s,oz-x*s+z*c];
+    const rect=(x,z,w,d,text,fill,dashed=false)=>rects.push({points:[[x,z],[x+w,z],[x+w,z+d],[x,z+d]].map(([x,z])=>P(x,z)),label:text,fill,dashed});
+    for(const [k,v] of m.cells){useKit(v);const [i,j,y]=nums(k);
+      rect(mX(i),mZ(j),bfX(v.r),bfZ(v.r),y?'':label||`${cellBW(v)}′ × ${bayLen(v.r)}′`,'#e1eaf0',y>0);
+      if(!y)for(const offset of [0,DEPTH,BW-DEPTH,BW])beams.push(isEW(v.r)?[P(mX(i),mZ(j)+offset),P(mX(i)+bfX(v.r),mZ(j)+offset)]:[P(mX(i)+offset,mZ(j)),P(mX(i)+offset,mZ(j)+bfZ(v.r))]);
+    }
+    for(const [k,v] of m.pads){useKit(v);const [i,j]=nums(k);rect(mX(i),mZ(j),bfX(v.r),bfZ(v.r),'Riser','#ece1c9');}
+    for(const [k,v] of m.slopes){useKit(v);const [i,j]=nums(k);rect(mX(i),mZ(j),bfX(v.r),bfZ(v.r),v.solar?'Solar slope':'Slope','#efdfbb');}
+    for(const [k,v] of m.stairs){useKit(v);const [i,j]=nums(k),cells=stairCells(i,j,v.d,v.r,v.t,v.w);
+      if(cells.length){const xs=cells.map(p=>mX(p[0])),zs=cells.map(p=>mZ(p[1]));rect(Math.min(...xs),Math.min(...zs),Math.max(...xs)-Math.min(...xs)+bfX(v.r),Math.max(...zs)-Math.min(...zs)+bfZ(v.r),'Stair reservation','#dce8d8',true);}
+    }
+    for(const k of m.stars){const [i,j]=nums(k);rect(mX(i),mZ(j),40,40,'Star shade reservation','#e8e3ed',true);}
+  });
+  if(mode==='site')for(const l of site.lots)collect(l.m,l.x,l.z,l.rot,l.name);else collect(model);
+  if(!rects.length)return '<p>No footprint drawn.</p>';
+  const xs=rects.flatMap(r=>r.points.map(p=>p[0])),zs=rects.flatMap(r=>r.points.map(p=>p[1]));
+  const x0=Math.min(...xs),z0=Math.min(...zs),w=Math.max(...xs)-x0,h=Math.max(...zs)-z0,pad=Math.max(w,h)*.15+3,font=Math.max(w,h)/45;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${z0-pad} ${w+2*pad} ${h+2*pad}" role="img" aria-label="Dimensioned footprint plan, north up" style="width:100%;max-height:420px;background:#faf8f0"><g stroke="#315b70" stroke-width="${font/12}">${rects.map(r=>`<polygon fill="${r.dashed?'none':r.fill}" stroke-dasharray="${r.dashed?font/2:0}" points="${r.points.map(p=>p.join(',')).join(' ')}"/>`).join('')}</g><g stroke="#a95d2c" stroke-width="${font/14}">${beams.map(p=>`<line x1="${p[0][0]}" y1="${p[0][1]}" x2="${p[1][0]}" y2="${p[1][1]}"/>`).join('')}</g><g fill="#273d48" font-family="system-ui" font-size="${font}" text-anchor="middle">${rects.map(r=>`<text x="${r.points.reduce((n,p)=>n+p[0],0)/4}" y="${r.points.reduce((n,p)=>n+p[1],0)/4}">${esc(r.label)}</text>`).join('')}<text x="${x0+w/2}" y="${z0-pad*.45}">${rnd(w*10)/10}′ overall · N ↑</text><text x="${x0+w/2}" y="${z0+h+pad*.6}">${rnd(h*10)/10}′ north–south</text></g></svg>`;
+}
+function printDocument(){
+  const checks=[...document.querySelectorAll('#schedbody .chipline .chip')].map(e=>e.textContent);
+  return `<!doctype html><html lang="en"><meta charset="utf-8"><title>Rack Lab · ${esc(projectName())}</title><style>body{font:14px/1.5 system-ui;color:#263640;max-width:1000px;margin:32px auto;padding:0 20px}h1{font-size:26px}pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font:11px/1.5 monospace}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #ddd;padding:7px;text-align:left}svg{break-inside:avoid}@media print{body{margin:0;max-width:none}.print-action{display:none}}@page{margin:16mm}</style><body><button class="print-action" onclick="window.print()">Print / Save as PDF</button><h1>${esc(mode==='site'?site.name||'Block plan':model.name||'Rack Lab structure')}</h1><p>Planning sheet · ${new Date().toLocaleDateString()} · dimensions in feet</p>${planSVG()}<p>Footprints and beam lines shown. Dashed outlines show upper bays or reserved stair/star-shade space. Ballast and anchoring clearance are additional; confirm against the 3D model before staking out.</p><h2>Unresolved checks</h2><ul>${checks.map(t=>`<li>${esc(t)}</li>`).join('')||'<li>Review dimensions, connections, load ratings and access before building.</li>'}</ul><h2>Materials and dimensions</h2><pre>${esc(sheetText())}</pre><h2>Inventory</h2>${inventoryHTML(inventoryRows,false)}</body></html>`;
+}
+function wireWorkspace(){
+  document.getElementById('depthpick').addEventListener('click',e=>{const b=e.target.closest('[data-depth]');if(!b)return;nextDepth=+b.dataset.depth;model.depth=nextDepth;useNext();syncBW();persist();});
+  document.getElementById('inspector').addEventListener('change',e=>{if(e.target.id==='bay-select'){selectedBay=e.target.value||null;refreshSelection();renderInspector();}});
+  document.getElementById('inspector').addEventListener('click',e=>{
+    if(e.target.id==='apply-bay'){
+      try{const next=editedBayModel(selectedBay,+document.getElementById('edit-width').value,+document.getElementById('edit-height').value,+document.getElementById('edit-depth').value);pushUndo();model=next;rebuild(false);persist();syncBW();}
+      catch(err){document.getElementById('inspector-error').textContent=err.message;}return;
+    }
+    const a=e.target.dataset.bayAction;if(!a||!selectedBay)return;
+    if(a==='focus'){cameraPreset('selection');return;}
+    if(a==='delete'){const [i,j,y]=nums(selectedBay);apply({kind:'eraseCol',i,j,y});return;}
+    apply({kind:a,k:selectedBay});
+  });
+  document.getElementById('camera-presets').addEventListener('click',e=>{if(e.target.dataset.camera)cameraPreset(e.target.dataset.camera);});
+  document.getElementById('schedbody').addEventListener('input',e=>{
+    if(!e.target.matches('[data-stock]'))return;
+    const r=inventoryRows[+e.target.dataset.stock];if(!r)return;
+    const text=e.target.value.trim(),value=Number(text);
+    if(text==='' )delete inventory[r.name];
+    else if(Number.isSafeInteger(value)&&value>=0&&value<=10000000)inventory[r.name]=value;
+    else{e.target.setCustomValidity('Enter a whole number from 0 to 10000000, or leave blank.');e.target.reportValidity();return;}
+    e.target.setCustomValidity('');e.target.closest('tr').querySelector('.shortfall').textContent=text===''?'?':Math.max(0,r.needed-value);saveInventory();
+  });
+  document.getElementById('save-project').onclick=()=>downloadFile(projectName()+'.racklab.json',JSON.stringify(projectData(),null,2),'application/json');
+  document.getElementById('open-project').onclick=()=>document.getElementById('project-file').click();
+  document.getElementById('project-file').onchange=async e=>{
+    const file=e.target.files[0];if(!file)return;
+    try{if(file.size>3000000)throw Error('Project file exceeds 3 MB.');const p=parseProject(JSON.parse(await file.text()));pushUndo();model=p.d.model;railsOn=p.d.rails;site=p.s;inventory=p.stock;selectedBay=null;if(p.d.hour!=null)sunHour=p.d.hour;adoptBW(model);setMode(p.mode,true);syncInputs();rebuild(true);persist();saveInventory();toast('Project restored');}
+    catch(err){toast(err.message||'Could not open project');}finally{e.target.value='';}
+  };
+  document.getElementById('print-project').onclick=()=>{
+    const html=printDocument(),dialog=document.getElementById('print-preview');
+    document.getElementById('print-frame').srcdoc=html;
+    document.getElementById('download-print').onclick=()=>downloadFile(projectName()+'.print.html',html,'text/html');
+    document.getElementById('run-print').onclick=()=>{const win=document.getElementById('print-frame').contentWindow;win.focus();win.print();};
+    dialog.showModal();
+  };
+  document.getElementById('theme-button').onclick=()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';};
+}
+
 initThree();
+wireWorkspace();
 initGhosts();
 wireUI();
 (function load(){
@@ -6075,7 +6508,7 @@ document.querySelectorAll('#wallmode button').forEach(x=>x.classList.toggle('on'
 document.querySelectorAll('#stairdir button').forEach(x=>x.classList.toggle('on', +x.dataset.s===stairTurn));
 document.querySelectorAll('#stairwrap button').forEach(x=>x.classList.toggle('on', +x.dataset.p===stairWrap));
 document.querySelectorAll('#deckmode button').forEach(x=>x.classList.toggle('on', +x.dataset.k===deckMode));
-setTool('build');
+setTool('select');
 setMode(mode, true);
 updateActs();
 rebuild(true);
@@ -6083,4 +6516,3 @@ animate();
 window.RACKLAB = { model:()=>model, site:()=>site, encode, decode, encodeSite, decodeSite,
                    rebuild, fitCamera, setMode, sun:()=>({hour:sunHour, ...sunAt(sunHour)}) };
 </script>
-
