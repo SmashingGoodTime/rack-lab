@@ -473,8 +473,8 @@ html,body{overflow:hidden;overflow:clip}   /* clip: focus can't scroll the page 
         <p class="quiet">Campus-inspired layouts, not measured replicas. Uses your next-piece dimensions. Replaces this structure; Undo restores it.</p>
         <div class="tpls one" id="tpls">
           <button data-t="hall" class="template-card"><span class="template-map" style="--cols:3" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i></span><span><strong>Mars gathering hall</strong><small>6 bays · central aisle</small><span class="template-description">A north projection wall, raised side galleries and a clear south entrance.</span></span></button>
-          <button data-t="cafe" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="empty"></i></span><span><strong>Café + sun lounge</strong><small>3 bays + south lean-to</small><span class="template-description">Service space, a windowed lounge, south lean-to and shaded entry porch.</span></span></button>
-          <button data-t="living" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i></span><span><strong>Living rooms + porch</strong><small>4 bays · 2 private rooms</small><span class="template-description">Separate doors, a shared partition and a shaded outdoor gathering strip.</span></span></button>
+          <button data-t="cafe" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="empty"></i></span><span><strong>Café + sun lounge</strong><small>3 bays + south lean-to</small><span class="template-description">Service space, a windowed lounge, south lean-to and a roofed entry porch.</span></span></button>
+          <button data-t="living" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="filled"></i><i class="filled"></i></span><span><strong>Living rooms + porch</strong><small>4 bays · 2 private rooms</small><span class="template-description">Separate doors, a shared partition and a roofed outdoor gathering strip.</span></span></button>
           <button data-t="solar" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="filled"></i><i class="filled"></i></span><span><strong>Solar utility shed</strong><small>South-facing panels</small><span class="template-description">A sheltered service bay with a south solar lean-to.</span></span></button>
           <button data-t="blank" class="template-card"><span class="template-map" style="--cols:2" aria-hidden="true"><i class="empty"></i></span><span><strong>Blank slab</strong><small>Start from scratch</small><span class="template-description">An empty field for your own layout.</span></span></button>
         </div>
@@ -4964,7 +4964,7 @@ const TPL = {
     // A clear central ground aisle, low side galleries, north projection wall.
     const w=tplW(),i=ctr(3*w),j=ctr(6),c=[],s=[];
     for(let x=0;x<3;x++)for(let z=0;z<2;z++){
-      c.push([i+x*w,j+z*3,0,0,0,1,x!==1]);
+      c.push([i+x*w,j+z*3,0,0,1,0,x!==1]);
       if(z===0)s.push(['Z',i+x*w,j,w,0,0]);
       if(x===0)s.push(['X',i,j+z*3,3,0,oneOp(3,1,2)]);
       if(x===2)s.push(['X',i+3*w,j+z*3,3,0,oneOp(3,1,2)]);
@@ -4972,19 +4972,19 @@ const TPL = {
     return mk(c,s);
   },
   cafe: ()=>{
-    // Enclosed service room beside a windowed lounge; open shaded approach.
+    // Enclosed service room beside a windowed lounge; a roofed entry porch.
     const w=tplW(),i=ctr(2*w),j=ctr(6),c=[],s=[];
-    c.push([i,j,0,0,1,0,1],[i+w,j,0,0,1,0,1],[i,j+3,0,0,0,1,0]);
+    c.push([i,j,0,0,1,0,1],[i+w,j,0,0,1,0,1],[i,j+3,0,0,1,0,0]);
     s.push(['Z',i,j,w,0,0],['Z',i+w,j,w,0,0]);
     s.push(['X',i,j,3,0,oneOp(3,1,2)],['X',i+2*w,j,3,0,oneOp(3,1,2)]);
     s.push(['Z',i,j+3,w,0,oneOp(w,Math.floor(w/2),1)]);
     return mk(c,s,[],[[i+w,j+3,0,2,0,0]]);
   },
   living: ()=>{
-    // Two private rooms opening onto a shared ground-level shade porch.
+    // Two private rooms opening onto a shared roofed porch.
     const w=tplW(),i=ctr(2*w),j=ctr(6),c=[],s=[];
     for(let x=0;x<2;x++){
-      c.push([i+x*w,j,0,0,1,0,1],[i+x*w,j+3,0,0,0,1,0]);
+      c.push([i+x*w,j,0,0,1,0,1],[i+x*w,j+3,0,0,1,0,0]);
       s.push(['Z',i+x*w,j,w,0,oneOp(w,Math.floor(w/2),2)]);
       s.push(['Z',i+x*w,j+3,w,0,oneOp(w,Math.floor(w/2),1)]);
     }

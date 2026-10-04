@@ -182,13 +182,13 @@ stacking, legacy and R10 links, project validation, inventory, edit rejection an
 
 The generic pavilion, courtyard, workshop and stage cards have been replaced with:
 
-- **Mars gathering hall:** six shaded bays, a clear central ground aisle, four low side
+- **Mars gathering hall:** six roofed bays, a clear central ground aisle, four low side
   gallery floors, north projection wall and open south entrance.
 - **Café + sun lounge:** two roofed service/lounge bays, windows, a south lean-to and
-  an open shaded entrance bay. The lean-to uses the existing opaque slope material;
+  a roofed, open-sided entrance bay. The lean-to uses the existing opaque slope material;
   it does not reproduce the campus café's transparent wall.
 - **Living rooms + porch:** two separate rooms with doors and windows, a shared partition,
-  and two open shade bays forming a common porch.
+  and two roofed, open-sided bays forming a common porch.
 - **Solar utility shed** and **Blank slab** remain available.
 
 These are campus-inspired planning layouts, not measured replicas. Cards show footprint
